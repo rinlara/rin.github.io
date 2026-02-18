@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ขอหมายเลขเกียรติบัตร</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <style>
+    .bg-gradient-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .bg-gradient-success {
+      background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+    }
+    
+    .bg-gradient-info {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .bg-gradient-warning {
+      background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    }
+    
+    .bg-gradient-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #343a40 100%);
+    }
+    
+    .shadow-lg {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .card {
+      border-radius: 12px !important;
+      transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .table-hover tbody tr:hover {
+      background-color: #f8f9fa;
+      cursor: pointer;
+    }
+    
+    .badge {
+      padding: 0.6em 1em !important;
+    }
+    
+    .btn-info {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border: none;
+    }
+    
+    .btn-info:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Font Awesome Icons - Inline */
+    .fa {
+      display: inline-block;
+      font-style: normal;
+      font-variant: normal;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .fa-certificate::before { content: "\f0a3"; }
+    .fa-info-circle::before { content: "\f05a"; }
+    .fa-calendar::before { content: "\f073"; }
+    .fa-user::before { content: "\f007"; }
+    .fa-book::before { content: "\f02d"; }
+    .fa-calendar-alt::before { content: "\f073"; }
+    .fa-calendar-check::before { content: "\f274"; }
+    .fa-user-edit::before { content: "\f4ff"; }
+    .fa-signature::before { content: "\f5b7"; }
+    .fa-hashtag::before { content: "\f292"; }
+    .fa-sticky-note::before { content: "\f24a"; }
+    .fa-chart-line::before { content: "\f201"; }
+    .fa-lightbulb::before { content: "\f0eb"; }
+    .fa-bolt::before { content: "\f0e7"; }
+    .fa-star::before { content: "\f005"; }
+    .fa-history::before { content: "\f1da"; }
+    .fa-clock::before { content: "\f017"; }
+    .fa-check-circle::before { content: "\f058"; }
+    .fa-times-circle::before { content: "\f057"; }
+    .fa-check-double::before { content: "\f560"; }
+    .fa-info-circle::before { content: "\f05a"; }
+    .fa-exclamation-triangle::before { content: "\f071"; }
+    .fa-check::before { content: "\f00c"; }
+    .fa-inbox::before { content: "\f01c"; }
+    .fa-exclamation-circle::before { content: "\f06a"; }
+    .fa-plus::before { content: "\f067"; }
+    .fa-paper-plane::before { content: "\f1d8"; }
+    .fa-lock::before { content: "\f023"; }
+    .fa-infinity::before { content: "\f534"; }
+    .fa-home::before { content: "\f015"; }
+    .fa-file-alt::before { content: "\f15c"; }
+    .fa-user-cog::before { content: "\f4fe"; }
+    .fa-sign-out-alt::before { content: "\f2f5"; }
+    .fa-copyright::before { content: "\f1f9"; }
+    .fa-eye::before { content: "\f06e"; }
+    .fa-spinner::before { content: "\f110"; }
+  </style>
+</head>
+<body data-user-role="<%= user.role %>" data-user-fullname="<%= user.full_name %>">
+
+  <div class="container-fluid px-4 py-4">
+    <% if (locals.error) { %>
+      <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <span class="fa fa-exclamation-triangle me-2"></span>
+        <%= locals.error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+
+    <% if (locals.success) { %>
+      <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <span class="fa fa-check-circle me-2"></span>
+        <%= locals.success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card shadow-lg mb-4 border-0">
+          <div class="card-header bg-gradient-primary text-white py-4">
+            <h4 class="mb-0">
+              <span class="fa fa-certificate me-2"></span>
+              <strong>แบบฟอร์มขอหมายเลขเกียรติบัตร</strong>
+            </h4>
+          </div>
+          <div class="card-body p-4">
+            <!-- ข้อมูลผู้ขอ -->
+            <div class="mb-4 p-3 bg-light rounded border">
+              <h6 class="text-primary mb-3 fw-bold">
+                <span class="fa fa-user me-2"></span>ข้อมูลผู้ขอ
+              </h6>
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <p class="mb-1"><strong class="text-muted">ชื่อ-นามสกุล:</strong></p>
+                  <p class="fw-bold text-dark"><%= user.full_name %></p>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <p class="mb-1"><strong class="text-muted">โรงเรียน:</strong></p>
+                  <p class="fw-bold text-dark"><%= user.school_name %></p>
+                </div>
+              </div>
+              <% if (user.role === 'teacher') { %>
+                <div class="col-md-12">
+                  <p class="mb-1"><strong class="text-muted">วิชาที่สอน:</strong></p>
+                  <p class="fw-bold text-dark"><%= user.subject %></p>
+                </div>
+              <% } else { %>
+                <div class="col-md-12">
+                  <p class="mb-1"><strong class="text-muted">ตำแหน่ง:</strong></p>
+                  <p class="fw-bold text-dark"><%= user.position %></p>
+                </div>
+              <% } %>
+            </div>
+
+            <!-- ฟอร์มขอหมายเลขเกียรติบัตร -->
+            <form id="requestForm" action="/request-certificate" method="POST" class="needs-validation" novalidate>
+              <!-- ชื่อโครงการ -->
+              <div class="mb-3">
+                <label for="event_name" class="form-label fw-bold">
+                  <span class="fa fa-book me-2 text-primary"></span>
+                  ชื่อโครงการ/กิจกรรม <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control form-control-lg" id="event_name" name="event_name" required 
+                       placeholder="เช่น การอบรมการใช้เทคโนโลยีสารสนเทศ ประจำปี 2567"
+                       maxlength="500">
+                <div class="invalid-feedback">
+                  กรุณาระบุชื่อโครงการหรือกิจกรรม
+                </div>
+                <small class="text-muted">
+                  <span class="fa fa-info-circle me-1"></span>
+                  กรุณาระบุชื่อโครงการหรือกิจกรรมที่ต้องการขอหมายเลขเกียรติบัตร
+                </small>
+              </div>
+
+              <!-- วันที่ขอ -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="request_date" class="form-label fw-bold">
+                    <span class="fa fa-calendar-alt me-2 text-primary"></span>
+                    วันที่ขอ <span class="text-danger">*</span>
+                  </label>
+                  <input type="date" class="form-control form-control-lg" id="request_date" name="request_date" required>
+                  <div class="invalid-feedback">
+                    กรุณาระบุวันที่ขอ
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label for="event_date" class="form-label fw-bold">
+                    <span class="fa fa-calendar-check me-2 text-primary"></span>
+                    วันที่จัดกิจกรรม <span class="text-danger">*</span>
+                  </label>
+                  <input type="date" class="form-control form-control-lg" id="event_date" name="event_date" required>
+                  <div class="invalid-feedback">
+                    กรุณาระบุวันที่จัดกิจกรรม
+                  </div>
+                </div>
+              </div>
+
+              <!-- ชื่อคนขอ -->
+              <div class="mb-3">
+                <label for="requester_name" class="form-label fw-bold">
+                  <span class="fa fa-user-edit me-2 text-primary"></span>
+                  ชื่อคนขอ <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control form-control-lg" id="requester_name" name="requester_name" 
+                       value="<%= user.full_name %>" required readonly>
+                <small class="text-muted">
+                  <span class="fa fa-lock me-1"></span>
+                  ชื่อคนขอจะถูกดึงจากข้อมูลส่วนตัวอัตโนมัติ
+                </small>
+              </div>
+
+              <!-- ชื่อเจ้าของลายเซ็น -->
+              <div class="mb-3">
+                <label for="signature_owner" class="form-label fw-bold">
+                  <span class="fa fa-signature me-2 text-primary"></span>
+                  ชื่อเจ้าของลายเซ็น <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control form-control-lg" id="signature_owner" name="signature_owner" required 
+                       placeholder="เช่น ผู้อำนวยการโรงเรียน / หัวหน้ากลุ่มสาระ">
+                <div class="invalid-feedback">
+                  กรุณาระบุชื่อเจ้าของลายเซ็น
+                </div>
+                <small class="text-muted">
+                  <span class="fa fa-info-circle me-1"></span>
+                  ระบุชื่อและตำแหน่งของผู้มีอำนาจลงนามในเกียรติบัตร
+                </small>
+              </div>
+
+              <!-- จำนวนหมายเลขเกียรติบัตร -->
+              <div class="mb-3">
+                <label for="certificate_count" class="form-label fw-bold">
+                  <span class="fa fa-hashtag me-2 text-primary"></span>
+                  จำนวนหมายเลขเกียรติบัตรที่ต้องการ <span class="text-danger">*</span>
+                </label>
+                <input type="number" class="form-control form-control-lg" id="certificate_count" name="certificate_count" 
+                       min="1" required value="10">
+                <div class="invalid-feedback">
+                  กรุณาระบุจำนวนหมายเลขเกียรติบัตร (ต้องมากกว่า 0)
+                </div>
+                <small class="text-muted">
+                  <span class="fa fa-infinity me-1"></span>
+                  สามารถขอได้ไม่จำกัดจำนวน
+                </small>
+              </div>
+
+              <!-- รายละเอียดเพิ่มเติม -->
+              <div class="mb-4">
+                <label for="description" class="form-label fw-bold">
+                  <span class="fa fa-sticky-note me-2 text-primary"></span>
+                  รายละเอียดเพิ่มเติม (ถ้ามี)
+                </label>
+                <textarea class="form-control form-control-lg" id="description" name="description" rows="4" 
+                          placeholder="ระบุรายละเอียดเพิ่มเติมเกี่ยวกับโครงการหรือกิจกรรม"></textarea>
+              </div>
+
+              <!-- หมายเหตุ -->
+              <div class="alert alert-info border-0 shadow-sm">
+                <h6 class="alert-heading fw-bold">
+                  <span class="fa fa-info-circle me-2"></span>หมายเหตุ
+                </h6>
+                <hr class="my-2">
+                <ul class="mb-0 ps-3">
+                  <li class="mb-2">ระบบจะรันหมายเลขเกียรติบัตรให้อัตโนมัติ รูปแบบ: <strong>10125/2569</strong></li>
+                  <li class="mb-2">หมายเลขจะขึ้นต้นด้วยปี พ.ศ. และตามด้วยหมายเลขลำดับ</li>
+                  <li class="mb-2">หลังจากส่งคำขอ รอการตรวจสอบจากเจ้าหน้าที่ภายใน 1-3 วันทำการ</li>
+                  <li>สามารถติดตามสถานะการอนุมัติได้ที่เมนู "ประวัติการขอ"</li>
+                </ul>
+              </div>
+
+              <!-- ปุ่มส่งคำขอ -->
+              <button type="submit" class="btn btn-primary btn-lg w-100 shadow-lg">
+                <span class="fa fa-paper-plane me-2"></span>
+                <strong>ส่งคำขอหมายเลขเกียรติบัตร</strong>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-md-4">
+        <!-- สถิติการขอ -->
+        <div class="card shadow-lg mb-4 border-0">
+          <div class="card-header bg-gradient-success text-white py-3">
+            <h6 class="mb-0 fw-bold">
+              <span class="fa fa-chart-line me-2"></span>สถิติการขอ
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-3 align-items-center">
+              <span class="text-muted">คำขอทั้งหมด:</span>
+              <strong class="fs-4 text-primary" id="totalRequests"><%= requests.length %></strong>
+            </div>
+            <div class="d-flex justify-content-between mb-3 align-items-center">
+              <span class="text-muted">รอตรวจสอบ:</span>
+              <strong class="fs-4 text-warning" id="pendingRequests"><%= pendingCount %></strong>
+            </div>
+            <div class="d-flex justify-content-between mb-3 align-items-center">
+              <span class="text-muted">อนุมัติแล้ว:</span>
+              <strong class="fs-4 text-success" id="approvedRequests"><%= approvedCount %></strong>
+            </div>
+            <div class="progress" style="height: 8px;">
+              <div class="progress-bar bg-success" role="progressbar" id="approvalProgress" style="width: 0%"></div>
+            </div>
+            <small class="text-muted mt-2 d-block" id="approvalRate">อัตราการอนุมัติ: 0%</small>
+          </div>
+        </div>
+
+        <!-- คำแนะนำ -->
+        <div class="card shadow-lg mb-4 border-0">
+          <div class="card-header bg-gradient-info text-white py-3">
+            <h6 class="mb-0 fw-bold">
+              <span class="fa fa-lightbulb me-2"></span>คำแนะนำ
+            </h6>
+          </div>
+          <div class="card-body">
+            <ul class="list-unstyled mb-0">
+              <li class="mb-3">
+                <span class="fa fa-check-circle text-success me-2"></span>
+                กรอกข้อมูลให้ครบถ้วนและถูกต้อง
+              </li>
+              <li class="mb-3">
+                <span class="fa fa-check-circle text-success me-2"></span>
+                ตรวจสอบวันที่จัดกิจกรรมให้แน่ชัด
+              </li>
+              <li class="mb-3">
+                <span class="fa fa-check-circle text-success me-2"></span>
+                ระบุจำนวนหมายเลขให้เหมาะสมกับความต้องการ
+              </li>
+              <li class="mb-3">
+                <span class="fa fa-check-circle text-success me-2"></span>
+                ระบุชื่อเจ้าของลายเซ็นให้ชัดเจน
+              </li>
+              <li>
+                <span class="fa fa-check-circle text-success me-2"></span>
+                สามารถดูประวัติการขอได้ด้านล่าง
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- เคล็ดลับ -->
+        <div class="card shadow-lg border-0">
+          <div class="card-header bg-gradient-warning text-dark py-3">
+            <h6 class="mb-0 fw-bold">
+              <span class="fa fa-bolt me-2"></span>เคล็ดลับ
+            </h6>
+          </div>
+          <div class="card-body">
+            <p class="mb-0">
+              <span class="fa fa-star text-warning me-2"></span>
+              <strong>ตรวจสอบข้อมูลให้ครบถ้วน</strong> ก่อนส่งคำขอเพื่อให้การอนุมัติรวดเร็วขึ้น
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ประวัติการขอหมายเลขเกียรติบัตร -->
+    <% if (requests.length > 0) { %>
+      <div class="card shadow-lg mt-4 border-0">
+        <div class="card-header bg-gradient-secondary text-white py-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 fw-bold">
+              <span class="fa fa-history me-2"></span>ประวัติการขอหมายเลขเกียรติบัตร
+            </h4>
+            <span class="badge bg-light text-dark" id="requestCount"><%= requests.length %> รายการ</span>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-4">วันที่ขอ</th>
+                  <th>โครงการ/กิจกรรม</th>
+                  <th>จำนวน</th>
+                  <th>สถานะ</th>
+                  <th class="text-center">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody">
+                <!-- รายการจะถูกสร้างโดย JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    <% } else { %>
+      <div class="card shadow-lg mt-4 border-0">
+        <div class="card-body text-center py-5">
+          <div class="mb-4">
+            <span class="fa fa-inbox fa-4x text-muted"></span>
+          </div>
+          <h5 class="text-muted mb-3">
+            <span class="fa fa-exclamation-circle me-2"></span>
+            ยังไม่มีประวัติการขอหมายเลขเกียรติบัตร
+          </h5>
+          <p class="text-muted mb-4">
+            เริ่มต้นการขอหมายเลขเกียรติบัตรของคุณตอนนี้!
+          </p>
+          <a href="#requestForm" class="btn btn-primary btn-lg shadow-lg">
+            <span class="fa fa-plus me-2"></span>
+            <strong>ขอหมายเลขเกียรติบัตร</strong>
+          </a>
+        </div>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- ซ่อนข้อมูล requests ไว้ใน div -->
+  <div id="requestsData" style="display:none;"><%= JSON.stringify(requests) %></div>
+  
+  <script>
+    // ========== ตัวแปรข้อมูล ==========
+    var userData = {
+      role: document.body.getAttribute('data-user-role'),
+      fullName: document.body.getAttribute('data-user-fullname')
+    };
+    
+    var requestsData = JSON.parse(document.getElementById('requestsData').textContent);
+    
+    // ========== ฟังก์ชันเริ่มต้น ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      // คำนวณอัตราการอนุมัติ
+      calculateApprovalRate();
+      
+      // สร้างตารางประวัติการขอ
+      if (requestsData.length > 0) {
+        renderHistoryTable();
+      }
+    });
+    
+    // ========== ฟังก์ชันคำนวณอัตราการอนุมัติ ==========
+    function calculateApprovalRate() {
+      var total = parseInt(document.getElementById('totalRequests').textContent);
+      var approved = parseInt(document.getElementById('approvedRequests').textContent);
+      
+      if (total > 0) {
+        var rate = Math.round((approved / total) * 100);
+        document.getElementById('approvalProgress').style.width = rate + '%';
+        document.getElementById('approvalRate').textContent = 'อัตราการอนุมัติ: ' + rate + '%';
+      }
+    }
+    
+    // ========== ฟังก์ชันสร้างตารางประวัติการขอ ==========
+    function renderHistoryTable() {
+      var tbody = document.getElementById('historyTableBody');
+      var html = '';
+      
+      for (var i = 0; i < requestsData.length; i++) {
+        var request = requestsData[i];
+        var createdAt = new Date(request.created_at);
+        
+        // สร้างสถานะ
+        var statusBadge = '';
+        if (request.status === 'pending') {
+          statusBadge = '<span class="badge bg-warning text-dark fs-6"><span class="fa fa-clock me-1"></span>รอตรวจสอบ</span>';
+        } else if (request.status === 'approved') {
+          statusBadge = '<span class="badge bg-success fs-6"><span class="fa fa-check-circle me-1"></span>อนุมัติแล้ว</span>';
+        } else if (request.status === 'rejected') {
+          statusBadge = '<span class="badge bg-danger fs-6"><span class="fa fa-times-circle me-1"></span>ไม่อนุมัติ</span>';
+        } else if (request.status === 'completed') {
+          statusBadge = '<span class="badge bg-info fs-6"><span class="fa fa-check-double me-1"></span>เสร็จสิ้น</span>';
+        }
+        
+        html += '<tr>';
+        html += '  <td class="ps-4 align-middle">';
+        html += '    <div><span class="fa fa-calendar me-2 text-muted"></span>' + createdAt.toLocaleDateString('th-TH') + '</div>';
+        html += '    <small class="text-muted"><span class="fa fa-clock me-1"></span>' + createdAt.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + '</small>';
+        html += '  </td>';
+        html += '  <td class="align-middle">';
+        html += '    <div class="fw-bold">' + (request.event_name || '') + '</div>';
+        html += '    <small class="text-muted"><span class="fa fa-user me-1"></span>' + (request.signature_owner || '') + '</small>';
+        html += '  </td>';
+        html += '  <td class="align-middle">';
+        html += '    <span class="badge bg-primary fs-6"><span class="fa fa-certificate me-1"></span>' + (request.certificate_count || 0) + ' หมายเลข</span>';
+        html += '  </td>';
+        html += '  <td class="align-middle">' + statusBadge + '</td>';
+        html += '  <td class="text-center align-middle">';
+        html += '    <div class="d-flex gap-2 justify-content-center">';
+        html += '      <a href="/request-detail/' + request.id + '" class="btn btn-sm btn-info" title="ดูรายละเอียดการอนุมัติ">';
+        html += '        <span class="fa fa-info-circle"></span> รายละเอียด';
+        html += '      </a>';
+        
+        if (request.status === 'approved') {
+          html += '      <a href="/certificates/' + request.id + '" class="btn btn-sm btn-primary" title="ดูหมายเลขเกียรติบัตร">';
+          html += '        <span class="fa fa-eye"></span> ดูหมายเลข';
+          html += '      </a>';
+        }
+        
+        html += '    </div>';
+        html += '  </td>';
+        html += '</tr>';
+      }
+      
+      tbody.innerHTML = html;
+    }
+
+    // ========== ตรวจสอบความถูกต้องของฟอร์ม ==========
+    (function() {
+      'use strict'
+      var forms = document.querySelectorAll('.needs-validation')
+      Array.prototype.slice.call(forms)
+        .forEach(function(form) {
+          form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+              event.preventDefault()
+              event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+          }, false)
+        })
+    })()
+
+    // ========== ตรวจสอบจำนวนหมายเลขเกียรติบัตร ==========
+    var certificateCount = document.getElementById('certificate_count');
+    if (certificateCount) {
+      certificateCount.addEventListener('input', function(e) {
+        if (this.value < 1) {
+          this.value = 1;
+        }
+      });
+    }
+
+    // ========== ตั้งค่าวันที่เริ่มต้นเป็นวันนี้ ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      var today = new Date().toISOString().split('T')[0];
+      var requestDate = document.getElementById('request_date');
+      var eventDate = document.getElementById('event_date');
+      
+      if (requestDate) {
+        requestDate.value = today;
+        requestDate.setAttribute('max', today);
+      }
+      
+      if (eventDate) {
+        eventDate.setAttribute('min', today);
+      }
+    });
+
+    // ========== แสดงการแจ้งเตือนเมื่อคลิกปุ่ม ==========
+    var requestForm = document.getElementById('requestForm');
+    if (requestForm) {
+      requestForm.addEventListener('submit', function() {
+        var button = this.querySelector('button[type="submit"]');
+        if (button) {
+          button.disabled = true;
+          button.innerHTML = '<span class="fa fa-spinner fa-spin me-2"></span>กำลังส่งคำขอ...';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

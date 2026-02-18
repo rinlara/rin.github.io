@@ -1,0 +1,368 @@
+<!-- ✅ แก้ไข CDN ให้ถูกต้อง (ลบช่องว่างท้าย) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+
+<div class="profile-container">
+  <!-- ✨ Toast Notification แบบใหม่ (เล็ก + สวย + หายเอง) -->
+  <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+  <div class="row g-4">
+    <!-- ส่วนรูปภาพและข้อมูลพื้นฐาน -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body text-center py-4">
+          <div class="profile-img-container mb-3">
+            <img src="<%= user?.image_path ? user.image_path + '?t=' + Date.now() : 'https://via.placeholder.com/150/004aad/FFFFFF?text=รูปบุคลากร' %>" 
+                 alt="รูปภาพบุคลากร" 
+                 class="profile-img rounded-circle"
+                 id="profileImage">
+          </div>
+          
+          <h5 class="card-title text-primary fw-bold mt-2"><%= user?.full_name || 'ไม่ระบุชื่อ' %></h5>
+          <p class="text-muted mb-3"><%= user?.position || '-' %></p>
+          
+          <button class="btn btn-outline-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#uploadImageModal">
+            <i class="fas fa-camera me-1"></i> เปลี่ยนรูปภาพ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ส่วนฟอร์มแก้ไขข้อมูล -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-white border-0 py-3">
+          <h3 class="card-title text-primary mb-0">
+            <i class="fas fa-user-edit me-2"></i> แก้ไขข้อมูลส่วนตัว (บุคลากร)
+          </h3>
+        </div>
+        <div class="card-body">
+          <form action="/staff/profile/update" method="POST">
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label class="form-label">ชื่อ-สกุล <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="full_name" value="<%= user?.full_name || '' %>" required>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">อีเมล <span class="text-danger">*</span></label>
+                <input type="email" class="form-control" name="email" value="<%= user?.email || '' %>" required>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">เบอร์โทรศัพท์ <span class="text-danger">*</span></label>
+                <input type="tel" class="form-control" name="phone" value="<%= user?.phone || '' %>" required>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">ตำแหน่ง <span class="text-danger">*</span></label>
+                <select class="form-select" name="position" required>
+                  <option value="">เลือกตำแหน่ง</option>
+                  <optgroup label="กลุ่มอำนวยการ">
+                    <option value="นักวิชาการศึกษา (กลุ่มอำนวยการ)" <%= (user?.position === 'นักวิชาการศึกษา (กลุ่มอำนวยการ)') ? 'selected' : '' %>>นักวิชาการศึกษา (กลุ่มอำนวยการ)</option>
+                    <option value="เจ้าพนักงานธุรการ" <%= (user?.position === 'เจ้าพนักงานธุรการ') ? 'selected' : '' %>>เจ้าพนักงานธุรการ</option>
+                    <option value="นักจัดการงานทั่วไป" <%= (user?.position === 'นักจัดการงานทั่วไป') ? 'selected' : '' %>>นักจัดการงานทั่วไป</option>
+                  </optgroup>
+                  <optgroup label="กลุ่มบริหารงานการเงินและสินทรัพย์">
+                    <option value="นักวิชาการเงินและบัญชี" <%= (user?.position === 'นักวิชาการเงินและบัญชี') ? 'selected' : '' %>>นักวิชาการเงินและบัญชี</option>
+                    <option value="เจ้าพนักงานการเงินและบัญชี" <%= (user?.position === 'เจ้าพนักงานการเงินและบัญชี') ? 'selected' : '' %>>เจ้าพนักงานการเงินและบัญชี</option>
+                    <option value="นักวิชาการพัสดุ" <%= (user?.position === 'นักวิชาการพัสดุ') ? 'selected' : '' %>>นักวิชาการพัสดุ</option>
+                    <option value="เจ้าพนักงานพัสดุ" <%= (user?.position === 'เจ้าพนักงานพัสดุ') ? 'selected' : '' %>>เจ้าพนักงานพัสดุ</option>
+                  </optgroup>
+                  <optgroup label="กลุ่มนโยบายและแผน">
+                    <option value="นักวิเคราะห์นโยบายและแผน" <%= (user?.position === 'นักวิเคราะห์นโยบายและแผน') ? 'selected' : '' %>>นักวิเคราะห์นโยบายและแผน</option>
+                    <option value="นักวิชาการสถิติ" <%= (user?.position === 'นักวิชาการสถิติ') ? 'selected' : '' %>>นักวิชาการสถิติ</option>
+                  </optgroup>
+                  <optgroup label="กลุ่มบริหารงานบุคคล">
+                    <option value="นักทรัพยากรบุคคล" <%= (user?.position === 'นักทรัพยากรบุคคล') ? 'selected' : '' %>>นักทรัพยากรบุคคล</option>
+                  </optgroup>
+                  <optgroup label="กลุ่มพัฒนาครูและบุคลากรทางการศึกษา">
+                    <option value="นักวิชาการศึกษา (พัฒนาครู)" <%= (user?.position === 'นักวิชาการศึกษา (พัฒนาครู)') ? 'selected' : '' %>>นักวิชาการศึกษา (พัฒนาครู)</option>
+                    <option value="นักเทคโนโลยีการศึกษา" <%= (user?.position === 'นักเทคโนโลยีการศึกษา') ? 'selected' : '' %>>นักเทคโนโลยีการศึกษา</option>
+                  </optgroup>
+                  <optgroup label="กลุ่มส่งเสริมการจัดการศึกษา">
+                    <option value="นักวิชาการศึกษา (ส่งเสริม)" <%= (user?.position === 'นักวิชาการศึกษา (ส่งเสริม)') ? 'selected' : '' %>>นักวิชาการศึกษา (ส่งเสริม)</option>
+                    <option value="นักประชาสัมพันธ์" <%= (user?.position === 'นักประชาสัมพันธ์') ? 'selected' : '' %>>นักประชาสัมพันธ์</option>
+                  </optgroup>
+                  <optgroup label="กลุ่มส่งเสริมการศึกษาทางไกล / ICT">
+                    <option value="นักเทคโนโลยีสารสนเทศ" <%= (user?.position === 'นักเทคโนโลยีสารสนเทศ') ? 'selected' : '' %>>นักเทคโนโลยีสารสนเทศ</option>
+                    <option value="นักวิชาการคอมพิวเตอร์" <%= (user?.position === 'นักวิชาการคอมพิวเตอร์') ? 'selected' : '' %>>นักวิชาการคอมพิวเตอร์</option>
+                    <option value="เจ้าหน้าที่ระบบเครือข่าย" <%= (user?.position === 'เจ้าหน้าที่ระบบเครือข่าย') ? 'selected' : '' %>>เจ้าหน้าที่ระบบเครือข่าย</option>
+                  </optgroup>
+                  <optgroup label="กลุ่มกฎหมายและคดี">
+                    <option value="นิติกร" <%= (user?.position === 'นิติกร') ? 'selected' : '' %>>นิติกร</option>
+                    <option value="เจ้าพนักงานกฎหมาย" <%= (user?.position === 'เจ้าพนักงานกฎหมาย') ? 'selected' : '' %>>เจ้าพนักงานกฎหมาย</option>
+                  </optgroup>
+                  <optgroup label="กลุ่มนิเทศ ติดตาม และประเมินผล">
+                    <option value="ศึกษานิเทศก์" <%= (user?.position === 'ศึกษานิเทศก์') ? 'selected' : '' %>>ศึกษานิเทศก์</option>
+                    <option value="นักวิชาการศึกษา (นิเทศ)" <%= (user?.position === 'นักวิชาการศึกษา (นิเทศ)') ? 'selected' : '' %>>นักวิชาการศึกษา (นิเทศ)</option>
+                  </optgroup>
+                  <optgroup label="หน่วยตรวจสอบภายใน">
+                    <option value="ผู้ตรวจสอบภายใน" <%= (user?.position === 'ผู้ตรวจสอบภายใน') ? 'selected' : '' %>>ผู้ตรวจสอบภายใน</option>
+                    <option value="นักวิชาการตรวจสอบ" <%= (user?.position === 'นักวิชาการตรวจสอบ') ? 'selected' : '' %>>นักวิชาการตรวจสอบ</option>
+                  </optgroup>
+                  <optgroup label="อื่น ๆ">
+                    <option value="ลูกจ้างประจำ" <%= (user?.position === 'ลูกจ้างประจำ') ? 'selected' : '' %>>ลูกจ้างประจำ</option>
+                    <option value="พนักงานราชการ" <%= (user?.position === 'พนักงานราชการ') ? 'selected' : '' %>>พนักงานราชการ</option>
+                    <option value="ลูกจ้างชั่วคราว" <%= (user?.position === 'ลูกจ้างชั่วคราว') ? 'selected' : '' %>>ลูกจ้างชั่วคราว</option>
+                    <option value="พนักงานขับรถ" <%= (user?.position === 'พนักงานขับรถ') ? 'selected' : '' %>>พนักงานขับรถ</option>
+                    <option value="พนักงานธุรการ" <%= (user?.position === 'พนักงานธุรการ') ? 'selected' : '' %>>พนักงานธุรการ</option>
+                  </optgroup>
+                </select>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">หน่วยงาน <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="school_name" 
+                       value="<%= user?.school_name || 'สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2' %>" 
+                       required readonly>
+              </div>
+            </div>
+            
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary px-4 py-2">
+                <i class="fas fa-save me-1"></i> บันทึกการเปลี่ยนแปลง
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal อัปโหลดรูปภาพ -->
+<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="fas fa-cloud-upload-alt me-2"></i>อัปโหลดรูปภาพโปรไฟล์</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="imageUploadForm">
+          <div class="mb-3">
+            <label for="imageFile" class="form-label">เลือกรูปภาพ (JPG, PNG)</label>
+            <input class="form-control" type="file" id="imageFile" name="profile_image" accept="image/jpeg,image/png" required>
+            <div class="form-text text-muted">ขนาดไฟล์ไม่เกิน 2 MB</div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100" id="uploadBtn">
+            <i class="fas fa-upload me-1"></i> อัปโหลดรูปภาพ
+          </button>
+        </form>
+        <div id="uploadMessage" class="mt-2" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* 🎨 โทนสี: น้ำเงินกรม + เทาสว่าง */
+.profile-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+.profile-img-container {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 4px solid #e2e8f0;
+  border-radius: 50%;
+}
+
+.profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.form-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #1e293b;
+}
+
+.form-control, .form-select {
+  padding: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #004aad;
+  box-shadow: 0 0 0 3px rgba(0, 74, 173, 0.15);
+}
+
+.btn-primary {
+  background: #004aad;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #003a8a;
+}
+
+.card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+  transition: box-shadow 0.3s;
+}
+
+.card:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.09);
+}
+
+.card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* ✨ Toast Notification แบบใหม่ */
+.toast-custom {
+  min-width: 280px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border: none;
+  background: white;
+  color: #1e293b;
+  opacity: 0;
+  animation: fadeInOut 3s forwards;
+}
+
+.toast-custom .toast-body {
+  padding: 1rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.toast-success .toast-body {
+  border-left: 4px solid #10b981;
+}
+
+.toast-error .toast-body {
+  border-left: 4px solid #ef4444;
+}
+
+.toast-body i {
+  font-size: 1.2rem;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-20px); }
+  15% { opacity: 1; transform: translateY(0); }
+  85% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // ✨ แสดง toast จาก query string (success/error)
+  const urlParams = new URLSearchParams(window.location.search);
+  const success = urlParams.get('success');
+  const error = urlParams.get('error');
+
+  if (success) {
+    showToast(success, 'success');
+    // ลบ query string ออกจาก URL
+    history.replaceState(null, '', window.location.pathname);
+  }
+  if (error) {
+    showToast(error, 'error');
+    history.replaceState(null, '', window.location.pathname);
+  }
+
+  // ✨ ฟังก์ชันแสดง toast
+  function showToast(message, type) {
+    const toastContainer = document.getElementById('toastContainer');
+    const icon = type === 'success' ? 'fas fa-check-circle text-success' : 'fas fa-exclamation-circle text-danger';
+    const toastClass = type === 'success' ? 'toast-success' : 'toast-error';
+    
+    const toastHTML = `
+      <div class="toast-custom ${toastClass}" role="alert">
+        <div class="toast-body">
+          <i class="${icon}"></i>
+          <span>${message}</span>
+        </div>
+      </div>
+    `;
+    
+    toastContainer.innerHTML = toastHTML;
+    setTimeout(() => {
+      toastContainer.innerHTML = '';
+    }, 3000);
+  }
+
+  // ✨ อัปโหลดรูปภาพ
+  const uploadForm = document.getElementById('imageUploadForm');
+  if (uploadForm) {
+    uploadForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const fileInput = document.getElementById('imageFile');
+      const file = fileInput.files[0];
+      const uploadBtn = document.getElementById('uploadBtn');
+
+      if (!file) {
+        showToast('กรุณาเลือกไฟล์รูปภาพ', 'error');
+        return;
+      }
+
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        showToast('เฉพาะไฟล์ .jpeg, .jpg, .png เท่านั้น', 'error');
+        return;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        showToast('ขนาดไฟล์ต้องไม่เกิน 2 MB', 'error');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('profile_image', file);
+
+      uploadBtn.disabled = true;
+      uploadBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> กำลังอัปโหลด...';
+
+      try {
+        const response = await fetch('/staff/profile/upload-image', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          document.getElementById('profileImage').src = result.imagePath + '?t=' + new Date().getTime();
+          showToast('อัปโหลดรูปภาพสำเร็จ!', 'success');
+          setTimeout(() => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('uploadImageModal'));
+            modal.hide();
+          }, 1200);
+        } else {
+          showToast(result.error || 'อัปโหลดไม่สำเร็จ', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = '<i class="fas fa-upload me-1"></i> อัปโหลดรูปภาพ';
+      }
+    });
+  }
+});
+</script>

@@ -1,0 +1,460 @@
+<%
+const user = locals.user || {};
+const adminCount = locals.adminCount || 0;
+const superAdminCount = locals.superAdminCount || 0;
+const teacherCount = locals.teacherCount || 0;
+const staffCount = locals.staffCount || 0;
+const certCount = locals.certCount || 0;
+const certApprovedCount = locals.certApprovedCount || 0;
+const certPendingCount = locals.certPendingCount || 0;
+const certRejectedCount = locals.certRejectedCount || 0;
+const adminUsers = locals.adminUsers || [];
+const recentRequests = locals.recentRequests || [];
+%>
+
+<style>
+  :root {
+    --primary-navy: #003d7a;
+    --primary-blue: #0052a3;
+    --secondary-gold: #d4af37;
+    --light-bg: #f5f7fa;
+    --border-color: #e2e8f0;
+    --text-dark: #1a202c;
+    --text-muted: #718096;
+  }
+
+  .superadmin-container {
+    padding: 2.5rem;
+    background: linear-gradient(135deg, var(--light-bg) 0%, #ecf0f5 100%);
+  }
+
+  .page-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .page-header h1 {
+    color: var(--primary-navy);
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header .breadcrumb {
+    background: transparent;
+    padding: 0;
+  }
+
+  .page-header .breadcrumb-item.active {
+    color: var(--secondary-gold);
+    font-weight: 600;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 14px;
+    padding: 1.8rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0, 61, 122, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary-navy), var(--secondary-gold));
+  }
+
+  .stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 24px rgba(0, 61, 122, 0.12);
+    border-color: var(--secondary-gold);
+  }
+
+  .stat-card .stat-icon {
+    font-size: 2.2rem;
+    color: var(--primary-blue);
+    margin-bottom: 0.8rem;
+  }
+
+  .stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-navy);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-card .stat-label {
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  /* Sections */
+  .section-title {
+    color: var(--primary-navy);
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid var(--secondary-gold);
+    letter-spacing: 0.3px;
+  }
+
+  /* Table Styling */
+  .table-card {
+    background: white;
+    border-radius: 14px;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0, 61, 122, 0.08);
+    margin-bottom: 2rem;
+  }
+
+  .table {
+    margin-bottom: 0;
+  }
+
+  .table thead th {
+    background: linear-gradient(90deg, var(--primary-navy), var(--primary-blue));
+    color: white;
+    border: none;
+    font-weight: 700;
+    padding: 1rem;
+    letter-spacing: 0.2px;
+  }
+
+  .table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+  }
+
+  .table tbody tr:hover {
+    background-color: #f5f7fa;
+    box-shadow: inset 4px 0 0 var(--secondary-gold);
+  }
+
+  .table tbody td {
+    padding: 1rem;
+    color: var(--text-dark);
+    vertical-align: middle;
+  }
+
+  .badge-admin {
+    background: linear-gradient(90deg, #06b6d4, #0891b2);
+    color: white;
+    padding: 0.5em 0.95em;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .badge-superadmin {
+    background: linear-gradient(90deg, var(--secondary-gold), #e8be27);
+    color: var(--primary-navy);
+    padding: 0.5em 0.95em;
+    border-radius: 8px;
+    font-weight: 700;
+  }
+
+  .btn-action {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    margin: 0 0.25rem;
+  }
+
+  .btn-edit {
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    color: white;
+  }
+
+  .btn-edit:hover {
+    background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .btn-manage {
+    background: linear-gradient(90deg, var(--secondary-gold), #e8be27);
+    color: var(--primary-navy);
+    text-decoration: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 700;
+    display: inline-block;
+    transition: all 0.3s ease;
+  }
+
+  .btn-manage:hover {
+    background: linear-gradient(90deg, #e8be27, #d4af37);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      padding: 1.2rem;
+    }
+
+    .stat-card .stat-value {
+      font-size: 1.5rem;
+    }
+
+    .table-card {
+      padding: 1rem;
+      overflow-x: auto;
+    }
+  }
+</style>
+
+<div class="superadmin-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1><i class="fas fa-crown me-2" style="color: var(--secondary-gold);"></i>แดชบอร์ด Super Admin</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/superadmin/dashboard" style="color: var(--primary-blue);">Super Admin</a></li>
+        <li class="breadcrumb-item active">แดชบอร์ด</li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- Statistics Grid -->
+  <div class="stats-grid">
+    <!-- Admins Stats -->
+    <div class="stat-card">
+      <div class="stat-icon">👤</div>
+      <div class="stat-value"><%= adminCount %></div>
+      <div class="stat-label">แอดมิน</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">👑</div>
+      <div class="stat-value"><%= superAdminCount %></div>
+      <div class="stat-label">Super Admin</div>
+    </div>
+
+    <!-- Users Stats -->
+    <div class="stat-card">
+      <div class="stat-icon">🎓</div>
+      <div class="stat-value"><%= teacherCount %></div>
+      <div class="stat-label">ครู</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">👨‍💼</div>
+      <div class="stat-value"><%= staffCount %></div>
+      <div class="stat-label">บุคลากร</div>
+    </div>
+
+    <!-- Certificate Stats -->
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div class="stat-value"><%= certCount %></div>
+      <div class="stat-label">ทั้งหมด</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value"><%= certApprovedCount %></div>
+      <div class="stat-label">อนุมัติ</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-value"><%= certPendingCount %></div>
+      <div class="stat-label">รอตรวจสอบ</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">❌</div>
+      <div class="stat-value"><%= certRejectedCount %></div>
+      <div class="stat-label">ไม่อนุมัติ</div>
+    </div>
+  </div>
+
+  <!-- Admin Management Section -->
+  <div class="section-title">
+    <i class="fas fa-shield-alt me-2" style="color: var(--secondary-gold);"></i>จัดการแอดมิน
+  </div>
+
+  <div class="table-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0" style="color: var(--primary-navy); font-weight: 700;">แอดมินและ Super Admin</h5>
+      <a href="/superadmin/admins" class="btn-manage">
+        <i class="fas fa-cog me-2"></i>จัดการทั้งหมด
+      </a>
+    </div>
+    
+    <% if (adminUsers && adminUsers.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ชื่อเต็ม</th>
+              <th>อีเมล</th>
+              <th>บทบาท</th>
+              <th>สร้างเมื่อ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% adminUsers.forEach(admin => { %>
+              <tr>
+                <td>
+                  <strong><%= admin.full_name %></strong>
+                </td>
+                <td>
+                  <small class="text-muted"><%= admin.email %></small>
+                </td>
+                <td>
+                  <% if (admin.role === 'super_admin') { %>
+                    <span class="badge-superadmin">👑 Super Admin</span>
+                  <% } else { %>
+                    <span class="badge-admin">Admin</span>
+                  <% } %>
+                </td>
+                <td>
+                  <small class="text-muted">
+                    <%= new Date(admin.created_at).toLocaleDateString('th-TH') %>
+                  </small>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <div class="empty-state-icon">👤</div>
+        <p>ยังไม่มีแอดมิน</p>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Recent Certificate Requests Section -->
+  <div class="section-title">
+    <i class="fas fa-file-alt me-2" style="color: var(--secondary-gold);"></i>คำขอเกียรติบัตรล่าสุด
+  </div>
+
+  <div class="table-card">
+    <% if (recentRequests && recentRequests.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>โครงการ/กิจกรรม</th>
+              <th>ผู้ขอ</th>
+              <th>จำนวน</th>
+              <th>สถานะ</th>
+              <th>วันที่</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% recentRequests.forEach(req => { %>
+              <tr>
+                <td>
+                  <strong><%= req.event_name %></strong>
+                </td>
+                <td>
+                  <small><%= req.requester_name || '-' %></small>
+                </td>
+                <td>
+                  <span class="badge bg-primary"><%= req.certificate_count %></span>
+                </td>
+                <td>
+                  <% if (req.status === 'approved') { %>
+                    <span style="color: #10b981; font-weight: 600;">✅ อนุมัติแล้ว</span>
+                  <% } else if (req.status === 'pending') { %>
+                    <span style="color: #f59e0b; font-weight: 600;">⏳ รอตรวจสอบ</span>
+                  <% } else if (req.status === 'rejected') { %>
+                    <span style="color: #ef4444; font-weight: 600;">❌ ไม่อนุมัติ</span>
+                  <% } %>
+                </td>
+                <td>
+                  <small class="text-muted">
+                    <%= new Date(req.created_at).toLocaleDateString('th-TH') %>
+                  </small>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <p>ยังไม่มีคำขอเกียรติบัตร</p>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="section-title">
+    <i class="fas fa-bolt me-2" style="color: var(--secondary-gold);"></i>ลิงก์ด่วน
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <a href="/superadmin/admins" style="text-decoration: none;">
+      <div style="background: white; border-radius: 14px; padding: 1.5rem; text-align: center; border: 1px solid var(--border-color); transition: all 0.3s ease; cursor: pointer;"
+           onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0, 61, 122, 0.12)';"
+           onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+        <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">📋</div>
+        <div style="font-weight: 700; color: var(--primary-navy);">จัดการแอดมิน</div>
+      </div>
+    </a>
+
+    <a href="/superadmin/users" style="text-decoration: none;">
+      <div style="background: white; border-radius: 14px; padding: 1.5rem; text-align: center; border: 1px solid var(--border-color); transition: all 0.3s ease; cursor: pointer;"
+           onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0, 61, 122, 0.12)';"
+           onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+        <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">👥</div>
+        <div style="font-weight: 700; color: var(--primary-navy);">จัดการผู้ใช้</div>
+      </div>
+    </a>
+
+    <a href="/superadmin/audits" style="text-decoration: none;">
+      <div style="background: white; border-radius: 14px; padding: 1.5rem; text-align: center; border: 1px solid var(--border-color); transition: all 0.3s ease; cursor: pointer;"
+           onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0, 61, 122, 0.12)';"
+           onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+        <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">📊</div>
+        <div style="font-weight: 700; color: var(--primary-navy);">บันทึกการตรวจสอบ</div>
+      </div>
+    </a>
+  </div>
+</div>

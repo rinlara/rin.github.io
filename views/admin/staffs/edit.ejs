@@ -1,0 +1,59 @@
+<!-- 🔹 ส่วนหัวหลัก -->
+<section class="hero text-center py-4 rounded-4 shadow-sm mb-4" 
+  style="background: linear-gradient(135deg, #b91496, #e61bc0, #b236ba); color: white;">
+  <h1 class="fw-bold mb-2"><i class="bi bi-pencil me-2"></i>แก้ไขข้อมูลบุคลากร</h1>
+  <p class="mb-0 fs-5">รหัสบุคลากร: #<%= staff.id %></p>
+</section>
+
+<!-- 🔹 ปุ่มกลับ -->
+<div class="mb-4">
+  <a href="/admin/staffs" class="btn btn-outline-secondary d-inline-flex align-items-center">
+    <i class="bi bi-arrow-left me-1"></i> กลับไปหน้าจัดการบุคลากร
+  </a>
+</div>
+
+<!-- 🔹 ฟอร์มแก้ไข -->
+<div class="card shadow-sm rounded-3 border-0">
+  <div class="card-body p-4">
+    <form method="POST" action="/admin/staffs/edit/<%= staff.id %>" id="editStaffForm">
+      <div class="row g-3">
+        <div class="col-md-12">
+          <label class="form-label fw-medium">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
+          <input type="text" name="full_name" class="form-control form-control-lg" value="<%= staff.full_name %>" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-medium">อีเมล <span class="text-danger">*</span></label>
+          <input type="email" name="email" class="form-control form-control-lg" value="<%= staff.email %>" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-medium">เบอร์โทรศัพท์</label>
+          <input type="text" name="phone" class="form-control form-control-lg" value="<%= staff.phone || '' %>" placeholder="0812345678">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-medium">ตำแหน่ง</label>
+          <input type="text" name="position" class="form-control form-control-lg" value="<%= staff.position || '' %>" placeholder="เช่น ครู, ผู้อำนวยการ">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-medium">โรงเรียน</label>
+          <input type="text" name="school_name" class="form-control form-control-lg" value="<%= staff.school_name || '' %>" placeholder="ชื่อโรงเรียน">
+        </div>
+      </div>
+
+      <div class="d-flex gap-3 mt-4">
+        <button type="submit" class="btn btn-primary btn-lg px-4">
+          <i class="bi bi-check-circle me-1"></i> บันทึกการเปลี่ยนแปลง
+        </button>
+        <a href="/admin/staffs/show/<%= staff.id %>" class="btn btn-outline-info btn-lg px-4">
+          <i class="bi bi-eye me-1"></i> ดูรายละเอียด
+        </a>
+        <a href="/admin/staffs" class="btn btn-secondary btn-lg px-4">
+          <i class="bi bi-x me-1"></i> ยกเลิก
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

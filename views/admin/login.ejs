@@ -1,0 +1,148 @@
+<% locals.activePage = 'admin-login'; %>
+
+<div class="admin-login-container">
+  <div class="login-card card shadow-lg border-0 rounded-4">
+    <div class="card-body p-5">
+      <div class="text-center mb-4">
+        <div class="admin-icon mb-3">
+          <i class="bi bi-shield-lock-fill fa-3x text-primary" style="font-size: 2.5rem;"></i>
+        </div>
+        <h2 class="card-title text-primary fw-bold">🔐 เข้าสู่ระบบผู้ดูแลระบบ</h2>
+        <p class="text-muted">สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2</p>
+      </div>
+
+      <% if (locals.error) { %>
+        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          <%= error %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <% if (locals.success) { %>
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+          <i class="bi bi-check-circle me-2"></i>
+          <%= success %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <form method="POST" action="/admin/login">
+        <div class="mb-4">
+          <label for="email" class="form-label fw-semibold">อีเมลผู้ดูแลระบบ</label>
+          <div class="input-group">
+            <span class="input-group-text bg-primary text-white">
+              <i class="bi bi-envelope"></i>
+            </span>
+            <input type="email" class="form-control" id="email" name="email" 
+                   placeholder="admin@kkn2.go.th" required>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="password" class="form-label fw-semibold">รหัสผ่าน</label>
+          <div class="input-group">
+            <span class="input-group-text bg-primary text-white">
+              <i class="bi bi-lock"></i>
+            </span>
+            <input type="password" class="form-control" id="password" name="password" 
+                   placeholder="••••••••" required>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="bi bi-box-arrow-in-right me-2"></i>เข้าสู่ระบบ
+          </button>
+          <a href="/" class="btn btn-outline-secondary btn-lg">
+            <i class="bi bi-arrow-left me-2"></i>กลับหน้าหลัก
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+.admin-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+  padding: 20px;
+}
+
+.login-card {
+  max-width: 500px;
+  width: 100%;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 74, 173, 0.2);
+  background: white;
+}
+
+.admin-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-bottom: 0.5rem;
+}
+
+.input-group-text {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-right: none;
+  font-size: 1.1rem;
+}
+
+.form-control {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-left: none;
+  padding: 0.75rem 1rem;
+  font-size: 1.05rem;
+}
+
+.form-control:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn {
+  padding: 0.8rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #004aad 0%, #007bff 100%);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 74, 173, 0.4);
+  background: linear-gradient(135deg, #003a8a 0%, #0062cc 100%);
+}
+
+.btn-outline-secondary {
+  transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+  background: #f8fafc;
+  transform: translateY(-2px);
+}
+</style>

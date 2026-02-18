@@ -1,0 +1,404 @@
+<% locals.activePage = 'certificates'; %>
+
+<!-- โหลดฟอนต์ Sarabun + Bootstrap Icons -->
+<!-- Removed Google Fonts to avoid CSP/font loading issues -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: #f8f9fa;
+  }
+  .gov-header {
+    background-color: #0d2c54;
+    color: white;
+    border-bottom: 4px solid #d4af37;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+  }
+  .gov-card {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    box-shadow: none;
+    background-color: white;
+  }
+  .table thead th {
+    background-color: #e9ecef;
+    font-weight: 600;
+    color: #333;
+  }
+  .btn-gov-primary {
+    background-color: #0d2c54;
+    border-color: #0d2c54;
+    color: white;
+  }
+  .btn-gov-primary:hover {
+    background-color: #123b70;
+    border-color: #123b70;
+  }
+  .btn-gov-success-outline {
+    color: #155724;
+    border-color: #155724;
+  }
+  .btn-gov-success-outline:hover {
+    background-color: #155724;
+    color: white;
+  }
+  .role-badge-teacher {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .role-badge-staff {
+    background-color: #f0fdf4;
+    color: #166534;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .form-control, .form-select {
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+  }
+  .table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  .btn-view-cert {
+    background-color: #0d2c54;
+    border-color: #0d2c54;
+    color: white;
+    font-weight: 500;
+  }
+  .btn-view-cert:hover {
+    background-color: #123b70;
+    border-color: #123b70;
+  }
+  /* Modal */
+  .modal-content {
+    border: none;
+    border-radius: 6px;
+  }
+  .modal-header {
+    background-color: #0d2c54;
+    color: white;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+  .alert-warning {
+    border-radius: 6px !important;
+  }
+  .bg-light-warning {
+    background-color: #fffbf0 !important;
+  }
+</style>
+
+<!-- 🔹 ส่วนหัว — แบบราชการ (เต็มความกว้าง) -->
+<section class="gov-header">
+  <div class="container">
+    <div class="text-center">
+      <h1 class="fw-bold mb-1 fs-4">
+        <i class="bi bi-award me-2"></i>จัดการเกียรติบัตรทั้งหมด
+      </h1>
+      <p class="mb-0">รวมทั้งหมด <%= certificates?.length || 0 %> รายการในระบบ</p>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <!-- 🔍 แถบควบคุม -->
+  <div class="card gov-card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label fw-medium">ค้นหาชื่อเกียรติบัตร / ผู้รับ / โรงเรียน</label>
+          <input type="text" id="searchInput" class="form-control" placeholder="พิมพ์คำค้น...">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-medium">ประเภทผู้ใช้</label>
+          <select id="roleFilter" class="form-select">
+            <option value="">ทั้งหมด</option>
+            <option value="teacher">ครู</option>
+            <option value="staff">บุคลากร</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-medium">เรียงลำดับ</label>
+          <select id="sortSelect" class="form-select">
+            <option value="title">ชื่อเกียรติบัตร</option>
+            <option value="upload_date">วันที่อัปโหลด</option>
+            <option value="school_name">โรงเรียน</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-medium">กรองตามโรงเรียน</label>
+          <select id="schoolFilter" class="form-select">
+            <option value="">ทั้งหมด</option>
+            <% [...new Set(certificates?.map(c => c.school_name).filter(Boolean))].forEach(school => { %>
+              <option value="<%= school %>"><%= school %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-12 mt-3 d-flex justify-content-end gap-2">
+          <button id="exportCSV" class="btn btn-gov-success-outline">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> CSV
+          </button>
+          <button id="exportExcel" class="btn btn-gov-primary">
+            <i class="bi bi-filetype-xlsx me-1"></i> Excel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📋 ตาราง -->
+  <div class="card gov-card">
+    <div class="card-body p-0">
+      <% if (certificates && certificates.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0" id="certTable">
+            <thead>
+              <tr>
+                <th>ชื่อเกียรติบัตร</th>
+                <th>ผู้มอบรางวัล</th>
+                <th>ผู้รับ</th>
+                <th>ประเภท</th>
+                <th>โรงเรียน</th>
+                <th>วันที่อัปโหลด</th>
+                <th class="text-center">ดูรายละเอียด</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% certificates.forEach(cert => { %>
+                <tr data-role="<%= cert.role || 'unknown' %>">
+                  <td><%= cert.title %></td>
+                  <td><%= cert.issuing_agency %></td>
+                  <td><%= cert.full_name %></td>
+                  <td>
+                    <% if (cert.role === 'teacher') { %>
+                      <span class="role-badge-teacher">ครู</span>
+                    <% } else if (cert.role === 'staff') { %>
+                      <span class="role-badge-staff">บุคลากร</span>
+                    <% } else { %>
+                      <span class="text-muted">ไม่ระบุ</span>
+                    <% } %>
+                  </td>
+                  <td><%= cert.school_name || '-' %></td>
+                  <td><%= new Date(cert.upload_date).toLocaleDateString('th-TH') %></td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-view-cert rounded-pill viewCertBtn" 
+                            data-title="<%= cert.title %>" 
+                            data-owner="<%= cert.full_name %>" 
+                            data-role="<%= cert.role === 'teacher' ? 'ครู' : 'บุคลากร' %>"
+                            data-school="<%= cert.school_name || '-' %>" 
+                            data-agency="<%= cert.issuing_agency %>" 
+                            data-file="<%= cert.file_path ? (cert.file_path.startsWith('http') ? cert.file_path : `${process.env.APP_URL || 'http://localhost:3000'}${cert.file_path}`) : '' %>">
+                      <i class="bi bi-eye me-1"></i> ดู
+                    </button>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="text-center py-5">
+          <i class="bi bi-award fs-1 text-muted mb-3"></i>
+          <p class="text-muted">ยังไม่มีเกียรติบัตรในระบบ</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- 🪄 Modal แสดงรายละเอียด -->
+<div class="modal fade" id="certModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold"><i class="bi bi-award me-2"></i>รายละเอียดเกียรติบัตร</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <!-- ข้อมูลพื้นฐาน -->
+        <div class="border-bottom pb-3 mb-4">
+          <h4 id="modalTitle" class="fw-bold mb-3 text-dark"></h4>
+          <div class="row">
+            <div class="col-md-6">
+              <p class="mb-2"><strong><i class="bi bi-building me-2 text-primary"></i>ผู้มอบรางวัล:</strong></p>
+              <p id="modalAgency" class="text-muted ps-4"></p>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-2"><strong><i class="bi bi-person me-2 text-primary"></i>ผู้รับ:</strong></p>
+              <p id="modalOwner" class="text-muted ps-4"></p>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-2"><strong><i class="bi bi-tag me-2 text-primary"></i>ประเภท:</strong></p>
+              <p id="modalRole" class="text-muted ps-4"></p>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-2"><strong><i class="bi bi-geo me-2 text-primary"></i>โรงเรียน:</strong></p>
+              <p id="modalSchool" class="text-muted ps-4"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ส่วนไฟล์ -->
+        <div id="fileSection">
+          <!-- จะแสดง/ซ่อนตามว่ามีไฟล์หรือไม่ -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const table = document.querySelector('#certTable tbody');
+  const rows = Array.from(table?.querySelectorAll('tr') || []);
+  const searchInput = document.getElementById('searchInput');
+  const sortSelect = document.getElementById('sortSelect');
+  const schoolFilter = document.getElementById('schoolFilter');
+  const roleFilter = document.getElementById('roleFilter');
+  const perPage = 8;
+  let currentPage = 1;
+
+  // ฟิลเตอร์ + เรียงลำดับ (pagination ง่าย)
+  const renderTable = () => {
+    const searchTerm = (searchInput?.value || '').toLowerCase();
+    const school = schoolFilter?.value || '';
+    const role = roleFilter?.value || '';
+    
+    let filtered = rows.filter(row => {
+      const matchSearch = row.textContent.toLowerCase().includes(searchTerm);
+      const matchSchool = !school || (row.cells[4]?.textContent || '') === school;
+      const matchRole = !role || row.dataset.role === role;
+      return matchSearch && matchSchool && matchRole;
+    });
+
+    const sortBy = sortSelect?.value || 'title';
+    filtered.sort((a, b) => {
+      if (sortBy === 'upload_date') {
+        return new Date(b.cells[5]?.textContent) - new Date(a.cells[5]?.textContent);
+      }
+      const colIndex = sortBy === 'title' ? 0 : 4;
+      const aVal = a.cells[colIndex]?.textContent || '';
+      const bVal = b.cells[colIndex]?.textContent || '';
+      return aVal.localeCompare(bVal, 'th');
+    });
+
+    // แสดงผลทั้งหมด (ไม่ทำ pagination ชั่วคราวเพื่อความเรียบง่าย)
+    table.innerHTML = '';
+    filtered.forEach(row => table.appendChild(row));
+  };
+
+  [searchInput, sortSelect, schoolFilter, roleFilter].forEach(el => {
+    if (el) el.addEventListener('input', renderTable);
+  });
+
+  renderTable();
+
+  // Modal
+  document.querySelectorAll('.viewCertBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const fileUrl = btn.dataset.file;
+      
+      // ตั้งค่าข้อมูล
+      document.getElementById('modalTitle').textContent = btn.dataset.title;
+      document.getElementById('modalOwner').textContent = btn.dataset.owner;
+      document.getElementById('modalRole').textContent = btn.dataset.role;
+      document.getElementById('modalSchool').textContent = btn.dataset.school;
+      document.getElementById('modalAgency').textContent = btn.dataset.agency;
+      
+      // ส่วนไฟล์ - ตรวจสอบว่ามีไฟล์หรือไม่
+      const fileSection = document.getElementById('fileSection');
+      if (fileUrl && fileUrl.trim()) {
+        // มีไฟล์ - แสดง iframe และปุ่มดาวน์โหลด
+        fileSection.innerHTML = `
+          <div>
+            <p class="text-muted mb-3"><i class="bi bi-file-pdf me-2"></i><strong>ไฟล์เกียรติบัตร:</strong></p>
+            <div class="text-center mt-4">
+              <iframe 
+                width="100%" 
+                height="450" 
+                class="border rounded-3" 
+                src="${fileUrl}"
+                loading="lazy"
+                style="border: 2px solid #e9ecef;">
+              </iframe>
+            </div>
+            <div class="text-center mt-4">
+              <a href="${fileUrl}" class="btn btn-gov-primary me-2" target="_blank" download>
+                <i class="bi bi-download me-1"></i> ดาวน์โหลดไฟล์
+              </a>
+              <a href="${fileUrl}" class="btn btn-outline-primary" target="_blank">
+                <i class="bi bi-eye me-1"></i> ดูในแท็บใหม่
+              </a>
+            </div>
+          </div>
+        `;
+      } else {
+        // ไม่มีไฟล์ - แสดงข้อความแจ้งเตือน
+        fileSection.innerHTML = `
+          <div class="alert alert-warning border-warning bg-light-warning" role="alert">
+            <div class="text-center py-4">
+              <i class="bi bi-exclamation-triangle fs-3 text-warning mb-3" style="display: block;"></i>
+              <h5 class="text-dark fw-bold">ยังไม่มีไฟล์เกียรติบัตร</h5>
+              <p class="text-muted">เกียรติบัตรนี้ยังไม่มีการอัปโหลดไฟล์ PDF</p>
+            </div>
+          </div>
+        `;
+      }
+      
+      // แสดง modal
+      new bootstrap.Modal(document.getElementById('certModal')).show();
+    });
+  });
+
+  // Export CSV
+  document.getElementById('exportCSV')?.addEventListener('click', () => {
+    const headers = ['ชื่อเกียรติบัตร', 'ผู้มอบรางวัล', 'ผู้รับ', 'ประเภท', 'โรงเรียน', 'วันที่อัปโหลด', 'ลิงก์ไฟล์'];
+    const csvContent = [headers.join(',')];
+    rows.forEach(row => {
+      const cells = Array.from(row.cells).slice(0, 6);
+      const fileUrl = row.querySelector('button')?.dataset.file || '';
+      const escaped = cells.map(c => `"${c.textContent.trim().replace(/"/g, '""')}"`);
+      csvContent.push([...escaped, `"${fileUrl}"`].join(','));
+    });
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csvContent.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'เกียรติบัตรทั้งหมด.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  // Export Excel
+  document.getElementById('exportExcel')?.addEventListener('click', () => {
+    const wsData = [
+      ['ชื่อเกียรติบัตร', 'ผู้มอบรางวัล', 'ผู้รับ', 'ประเภท', 'โรงเรียน', 'วันที่อัปโหลด', 'ลิงก์ไฟล์']
+    ];
+    rows.forEach(row => {
+      const cells = Array.from(row.cells).slice(0, 6);
+      const fileUrl = row.querySelector('button')?.dataset.file || '';
+      wsData.push([...cells.map(c => c.textContent.trim()), fileUrl]);
+    });
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, 'เกียรติบัตร');
+    XLSX.writeFile(wb, 'เกียรติบัตรทั้งหมด.xlsx');
+  });
+});
+</script>

@@ -1,0 +1,384 @@
+<%
+// views/admin/certificate-approval.ejs
+// Admin Dashboard สำหรับตรวจสอบและอนุมัติเกียรติบัตร
+const baseUrl = locals.baseUrl || '';
+%>
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ตรวจสอบเกียรติบัตร — สพป.ขอนแก่น เขต 2</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+  <!-- Removed Google Fonts to comply with CSP -->
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #f8fafc;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .stats-box {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border-left: 4px solid;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 1rem;
+    }
+
+    .stats-box.pending { border-left-color: #ffc107; }
+    .stats-box.approved { border-left-color: #28a745; }
+    .stats-box.rejected { border-left-color: #dc3545; }
+
+    .cert-card {
+      background: white;
+      border: 1px solid #e9ecef;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .cert-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+
+    .cert-card.pending { border-left: 4px solid #ffc107; }
+    .cert-card.approved { border-left: 4px solid #28a745; }
+    .cert-card.rejected { border-left: 4px solid #dc3545; }
+
+    .badge-pending { background: #ffc107; color: #000; }
+    .badge-approved { background: #28a745; }
+    .badge-rejected { background: #dc3545; }
+
+    .cert-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: #f0f0f0;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .info-item {
+      padding: 0.75rem;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #667eea;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    .info-value {
+      color: #333;
+      margin-top: 0.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container py-4">
+  <!-- Header -->
+  <div class="page-header">
+    <h1><i class="fas fa-check-double me-2"></i>ตรวจสอบและอนุมัติเกียรติบัตร</h1>
+    <p class="mb-0">จัดการเกียรติบัตรที่อัปโหลดโดยผู้ใช้</p>
+  </div>
+
+  <!-- Statistics -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="stats-box pending">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div class="h4 mb-0"><%= pending_count || 0 %></div>
+            <small class="text-muted">รอตรวจสอบ</small>
+          </div>
+          <i class="fas fa-clock text-muted" style="font-size: 2.5rem; opacity: 0.3;"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-box approved">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div class="h4 mb-0"><%= approved_count || 0 %></div>
+            <small class="text-muted">อนุมัติแล้ว</small>
+          </div>
+          <i class="fas fa-check-circle text-muted" style="font-size: 2.5rem; opacity: 0.3;"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-box rejected">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div class="h4 mb-0"><%= rejected_count || 0 %></div>
+            <small class="text-muted">ปฏิเสธ</small>
+          </div>
+          <i class="fas fa-times-circle text-muted" style="font-size: 2.5rem; opacity: 0.3;"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link <% if(!activeTab || activeTab === 'pending') { %>active<% } %>" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending-content" type="button" role="tab">
+        <i class="fas fa-clock me-2"></i>รอตรวจสอบ (<%= pending_count || 0 %>)
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link <% if(activeTab === 'approved') { %>active<% } %>" id="approved-tab" data-bs-toggle="tab" data-bs-target="#approved-content" type="button" role="tab">
+        <i class="fas fa-check-circle me-2"></i>อนุมัติแล้ว (<%= approved_count || 0 %>)
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link <% if(activeTab === 'rejected') { %>active<% } %>" id="rejected-tab" data-bs-toggle="tab" data-bs-target="#rejected-content" type="button" role="tab">
+        <i class="fas fa-times-circle me-2"></i>ปฏิเสธ (<%= rejected_count || 0 %>)
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <!-- Pending Tab -->
+    <div class="tab-pane fade <% if(!activeTab || activeTab === 'pending') { %>show active<% } %>" id="pending-content" role="tabpanel">
+      <% if (pending_certificates && pending_certificates.length > 0) { %>
+        <% pending_certificates.forEach(cert => { %>
+          <div class="cert-card pending">
+            <div class="row g-0">
+              <!-- Image -->
+              <div class="col-md-3">
+                <% if (cert.file_path && cert.file_path.endsWith('.pdf')) { %>
+                  <div class="cert-image d-flex align-items-center justify-content-center">
+                    <div class="text-center">
+                      <i class="fas fa-file-pdf text-danger" style="font-size: 3rem;"></i>
+                      <p class="text-muted small mt-2">PDF</p>
+                    </div>
+                  </div>
+                <% } else { %>
+                  <img src="<%= cert.file_path ? (cert.file_path.startsWith('http') ? cert.file_path : baseUrl + cert.file_path) : baseUrl + '/images/default-certificate.png' %>" 
+                       alt="เกียรติบัตร" 
+                       class="cert-image"
+                       onerror="this.src='<%= baseUrl %>/images/default-certificate.png'">
+                <% } %>
+              </div>
+
+              <!-- Details -->
+              <div class="col-md-9">
+                <div class="p-4">
+                  <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                      <h5 class="mb-1"><%= cert.title || 'ไม่มีชื่อ' %></h5>
+                      <p class="text-muted mb-2">
+                        <i class="fas fa-user me-2"></i><%= cert.full_name || '-' %> 
+                        <% if(cert.school_name) { %> | <%= cert.school_name %><% } %>
+                      </p>
+                    </div>
+                    <span class="badge badge-pending">รอตรวจสอบ</span>
+                  </div>
+
+                  <!-- Info Grid -->
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <div class="info-label">🔢 หมายเลข</div>
+                      <div class="info-value"><strong><%= cert.certificate_number || 'ยังไม่ระบุ' %></strong></div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">🏢 หน่วยงาน</div>
+                      <div class="info-value"><%= cert.issuing_agency || 'ยังไม่ระบุ' %></div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">📅 วันที่ออก</div>
+                      <div class="info-value">
+                        <% if(cert.issue_date) { %>
+                          <%= new Date(cert.issue_date).toLocaleDateString('th-TH') %>
+                        <% } else { %>
+                          ยังไม่ระบุ
+                        <% } %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">📤 อัปโหลด</div>
+                      <div class="info-value"><%= new Date(cert.upload_date).toLocaleDateString('th-TH') %></div>
+                    </div>
+                  </div>
+
+                  <!-- Buttons -->
+                  <div class="d-flex gap-2 mt-3">
+                    <button class="btn btn-sm btn-success" onclick="approveCertificate(<%= cert.id %>)">
+                      <i class="fas fa-check me-1"></i>อนุมัติ
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="showRejectModal(<%= cert.id %>)">
+                      <i class="fas fa-times me-1"></i>ปฏิเสธ
+                    </button>
+                    <a href="<%= cert.file_path ? (cert.file_path.startsWith('http') ? cert.file_path : baseUrl + cert.file_path) : '#' %>" 
+                       target="_blank" class="btn btn-sm btn-outline-primary">
+                      <i class="fas fa-eye me-1"></i>ดูเต็ม
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <div class="alert alert-info text-center py-5">
+          <i class="fas fa-check-double" style="font-size: 3rem; opacity: 0.5;"></i>
+          <p class="mt-3 mb-0">ไม่มีเกียรติบัตรรอการตรวจสอบ</p>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Approved Tab -->
+    <div class="tab-pane fade <% if(activeTab === 'approved') { %>show active<% } %>" id="approved-content" role="tabpanel">
+      <% if (approved_certificates && approved_certificates.length > 0) { %>
+        <% approved_certificates.forEach(cert => { %>
+          <div class="cert-card approved">
+            <div class="p-3">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <h6 class="mb-1"><%= cert.title %></h6>
+                  <small class="text-muted"><%= cert.full_name %> | <%= cert.school_name %></small>
+                </div>
+                <span class="badge badge-approved">อนุมัติแล้ว</span>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <p class="text-muted">ไม่มีเกียรติบัตรที่อนุมัติแล้ว</p>
+      <% } %>
+    </div>
+
+    <!-- Rejected Tab -->
+    <div class="tab-pane fade <% if(activeTab === 'rejected') { %>show active<% } %>" id="rejected-content" role="tabpanel">
+      <% if (rejected_certificates && rejected_certificates.length > 0) { %>
+        <% rejected_certificates.forEach(cert => { %>
+          <div class="cert-card rejected">
+            <div class="p-3">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <h6 class="mb-1"><%= cert.title %></h6>
+                  <small class="text-muted"><%= cert.full_name %> | <%= cert.school_name %></small>
+                  <% if(cert.rejection_reason) { %>
+                    <p class="text-danger small mt-2"><strong>เหตุผล:</strong> <%= cert.rejection_reason %></p>
+                  <% } %>
+                </div>
+                <span class="badge badge-rejected">ปฏิเสธ</span>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <p class="text-muted">ไม่มีเกียรติบัตรที่ปฏิเสธ</p>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">ปฏิเสธเกียรติบัตร</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">เหตุผลในการปฏิเสธ</label>
+          <textarea class="form-control" id="rejectionReason" rows="4" 
+                    placeholder="เช่น: รูปภาพไม่ชัด, เนื้อหาไม่ใช่เกียรติบัตร, ฯลฯ"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn btn-danger" onclick="submitRejection()">ปฏิเสธ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let rejectCertId = null;
+const rejectModal = new bootstrap.Modal(document.getElementById('rejectModal'));
+
+function approveCertificate(certId) {
+  if (!confirm('ยืนยันการอนุมัติเกียรติบัตรนี้?')) return;
+
+  fetch('/api/certificates/approve/' + certId, { method: 'POST' })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert('อนุมัติสำเร็จ');
+        location.reload();
+      } else {
+        alert('❌ ' + data.message);
+      }
+    })
+    .catch(err => alert('เกิดข้อผิดพลาด: ' + err));
+}
+
+function showRejectModal(certId) {
+  rejectCertId = certId;
+  document.getElementById('rejectionReason').value = '';
+  rejectModal.show();
+}
+
+function submitRejection() {
+  const reason = document.getElementById('rejectionReason').value.trim();
+  if (!reason) {
+    alert('กรุณาระบุเหตุผล');
+    return;
+  }
+
+  fetch('/api/certificates/reject/' + rejectCertId, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reason })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert('ปฏิเสธสำเร็จ');
+      rejectModal.hide();
+      location.reload();
+    } else {
+      alert('❌ ' + data.message);
+    }
+  })
+  .catch(err => alert('เกิดข้อผิดพลาด: ' + err));
+}
+</script>
+
+</body>
+</html>

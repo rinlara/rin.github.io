@@ -1,0 +1,176 @@
+<!-- views/request-detail.ejs -->
+
+<% if (locals.error) { %>
+  <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    <%= locals.error %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<div class="card shadow-lg border-0">
+  <div class="card-header bg-gradient-primary text-white py-4">
+    <h4 class="mb-0 fw-bold">
+      <i class="fas fa-info-circle me-2"></i>รายละเอียดการอนุมัติคำขอ
+    </h4>
+  </div>
+  <div class="card-body p-4">
+    <div class="row">
+      <!-- ชื่อโครงการ -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold text-muted">
+          <i class="fas fa-book me-1"></i>ชื่อโครงการ/กิจกรรม
+        </label>
+        <p class="fs-5"><%= request.event_name %></p>
+      </div>
+      
+      <!-- วันที่ขอ -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold text-muted">
+          <i class="fas fa-calendar-alt me-1"></i>วันที่ขอ
+        </label>
+        <p class="fs-5">
+          <%= request.request_date ? new Date(request.request_date).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }) : '-' %>
+        </p>
+      </div>
+      
+      <!-- วันที่จัดกิจกรรม -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold text-muted">
+          <i class="fas fa-calendar-check me-1"></i>วันที่จัดกิจกรรม
+        </label>
+        <p class="fs-5">
+          <%= request.event_date ? new Date(request.event_date).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }) : '-' %>
+        </p>
+      </div>
+      
+      <!-- ชื่อคนขอ -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold text-muted">
+          <i class="fas fa-user me-1"></i>ชื่อคนขอ
+        </label>
+        <p class="fs-5"><%= request.requester_name || '-' %></p>
+      </div>
+      
+      <!-- ชื่อเจ้าของลายเซ็น -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold text-muted">
+          <i class="fas fa-signature me-1"></i>ชื่อเจ้าของลายเซ็น
+        </label>
+        <p class="fs-5"><%= request.signature_owner || '-' %></p>
+      </div>
+      
+      <!-- จำนวนหมายเลขที่ขอ -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold text-muted">
+          <i class="fas fa-hashtag me-1"></i>จำนวนหมายเลขที่ขอ
+        </label>
+        <p class="fs-5">
+          <span class="badge bg-primary fs-6">
+            <i class="fas fa-certificate me-1"></i>
+            <%= request.certificate_count %> หมายเลข
+          </span>
+        </p>
+      </div>
+      
+      <!-- สถานะ -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold text-muted">
+          <i class="fas fa-info me-1"></i>สถานะ
+        </label>
+        <p class="fs-5">
+          <% if (request.status === 'pending') { %>
+            <span class="badge bg-warning text-dark fs-6">
+              <i class="fas fa-clock me-1"></i>รอตรวจสอบ
+            </span>
+          <% } else if (request.status === 'approved') { %>
+            <span class="badge bg-success fs-6">
+              <i class="fas fa-check-circle me-1"></i>อนุมัติแล้ว
+            </span>
+          <% } else if (request.status === 'rejected') { %>
+            <span class="badge bg-danger fs-6">
+              <i class="fas fa-times-circle me-1"></i>ไม่อนุมัติ
+            </span>
+          <% } else if (request.status === 'completed') { %>
+            <span class="badge bg-info fs-6">
+              <i class="fas fa-check-double me-1"></i>เสร็จสิ้น
+            </span>
+          <% } %>
+        </p>
+      </div>
+      
+      <!-- รายละเอียดเพิ่มเติม -->
+      <div class="col-md-12 mb-3">
+        <label class="form-label fw-bold text-muted">
+          <i class="fas fa-sticky-note me-1"></i>รายละเอียดเพิ่มเติม
+        </label>
+        <p class="fs-5"><%= request.description || '-' %></p>
+      </div>
+      
+      <!-- วันที่ส่งคำขอ -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold text-muted">
+          <i class="fas fa-paper-plane me-1"></i>วันที่ส่งคำขอ
+        </label>
+        <p class="fs-5">
+          <%= new Date(request.created_at).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }) %> 
+          <small class="text-muted">
+            <i class="fas fa-clock me-1"></i>
+            <%= new Date(request.created_at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) %>
+          </small>
+        </p>
+      </div>
+      
+      <!-- วันที่อนุมัติ (ถ้ามี) -->
+      <% if (request.approved_at) { %>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold text-muted">
+            <i class="fas fa-check-circle me-1"></i>วันที่อนุมัติ
+          </label>
+          <p class="fs-5">
+            <%= new Date(request.approved_at).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }) %> 
+            <small class="text-muted">
+              <i class="fas fa-clock me-1"></i>
+              <%= new Date(request.approved_at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) %>
+            </small>
+          </p>
+        </div>
+      <% } %>
+    </div>
+    
+    <!-- ปุ่มกลับ -->
+    <div class="mt-4 text-center">
+      <a href="/request-certificate" class="btn btn-secondary btn-lg">
+        <i class="fas fa-arrow-left me-2"></i>กลับไปหน้าหลัก
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+  }
+  
+  .card {
+    border-radius: 12px !important;
+  }
+  
+  .badge {
+    padding: 0.6em 1em !important;
+  }
+  
+  .btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    border: none;
+  }
+  
+  .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+  }
+</style>

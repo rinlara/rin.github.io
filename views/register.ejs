@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ลงทะเบียนเข้าสู่ระบบ — สพป.ขอนแก่น เขต 2</title>
+  <!-- Google Font: Sarabun -->
+  <!-- Removed external Google Fonts to avoid CSP/font loading -->
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: linear-gradient(135deg, #eaf4ff 0%, #f3f8ff 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      color: #2d3748;
+    }
+    .container {
+      display: flex;
+      max-width: 880px;
+      width: 100%;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 12px 40px rgba(13, 74, 138, 0.14);
+      overflow: hidden;
+    }
+    .left-panel, .right-panel {
+      padding: 2.4rem 2rem;
+      flex: 1;
+    }
+    .left-panel {
+      background: linear-gradient(135deg, #0d4a8a, #1a6bb8);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 1rem;
+    }
+    .left-panel img {
+      width: 170px;
+      height: 170px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.45);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+      margin-bottom: 1.2rem;
+    }
+    .left-panel h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: 0.5px;
+    }
+    .left-panel p {
+      font-size: 0.95rem;
+      opacity: 0.92;
+      max-width: 280px;
+    }
+    .right-panel {
+      background: white;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: #0d4a8a;
+      margin-bottom: 1.8rem;
+      letter-spacing: 0.6px;
+    }
+    .alert {
+      padding: 0.8rem 1.1rem;
+      border-radius: 10px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 1.4rem;
+      border-left: 5px solid #c53030;
+      background: #fff5f5;
+      color: #c53030;
+      animation: fadeIn 0.4s ease;
+    }
+    .alert i {
+      margin-right: 0.6rem;
+    }
+    .field-group {
+      margin-bottom: 1.5rem;
+    }
+    .field-group label {
+      display: block;
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+      font-size: 0.98rem;
+      color: #2d3748;
+    }
+    .required {
+      color: #c53030;
+      margin-left: 0.3rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: 1px solid #cbd5e0;
+      border-radius: 10px;
+      font-size: 0.98rem;
+      background: #fafcff;
+      transition: all 0.25s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #0d4a8a;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(13, 74, 138, 0.12);
+    }
+    .profile-preview {
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 1.3rem;
+      border-radius: 50%;
+      border: 3px solid #e2e8f0;
+      background: #f0f5ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #a0aec0;
+      font-size: 2.8rem;
+      overflow: hidden;
+    }
+    .profile-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .upload-btn {
+      display: block;
+      width: fit-content;
+      margin: 0.7rem auto;
+      padding: 0.65rem 1.2rem;
+      background: #eef6ff;
+      color: #0d4a8a;
+      border: 1px solid #cbd5e0;
+      border-radius: 10px;
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .upload-btn:hover {
+      background: #e6f0ff;
+      border-color: #0d4a8a;
+      transform: translateY(-2px);
+    }
+    .role-group {
+      display: flex;
+      gap: 1.1rem;
+      margin: 1.2rem 0;
+    }
+    .role-option {
+      flex: 1;
+      padding: 1.1rem 0.8rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      background: #f8fafc;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .role-option:hover {
+      border-color: #0d4a8a;
+      background: #f0f7ff;
+    }
+    .role-option.selected {
+      border-color: #0d4a8a;
+      background: #e6f0ff;
+      font-weight: 700;
+      color: #0d4a8a;
+      box-shadow: 0 4px 10px rgba(13, 74, 138, 0.18);
+    }
+    .role-option i {
+      display: block;
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      color: #1a6bb8;
+    }
+    .role-option.selected i {
+      color: #0d4a8a;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .btn-register {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(100deg, #0d4a8a, #1a6bb8);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(13, 74, 138, 0.28);
+    }
+    .btn-register:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(13, 74, 138, 0.38);
+      background: linear-gradient(100deg, #1a5ea6, #2274c5);
+    }
+
+    .back-to-login {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #0d4a8a;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.6rem 0;
+      border-radius: 10px;
+      transition: all 0.25s;
+    }
+    .back-to-login:hover {
+      background: #f0f7ff;
+      color: #1a6bb8;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .left-panel, .right-panel {
+        padding: 2rem 1.6rem;
+      }
+      .left-panel img {
+        width: 90px;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      .role-option {
+        padding: 1rem 0.6rem;
+        font-size: 0.95rem;
+      }
+      .role-option i {
+        font-size: 1.6rem;
+      }
+      .back-to-login {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- ฝั่งซ้าย: โลโก้ + ข้อมูลหน่วยงาน -->
+    <div class="left-panel">
+      <img src="/images/logo องค์กรคุณภาพเเละธรรมาภิบาล.png" alt="สำนักงานคณะกรรมการการศึกษาขั้นพื้นฐาน (สพฐ.)">
+      <h2>สำนักงานเขตพื้นที่การศึกษา<br>ประถมศึกษาขอนแก่น เขต 2</h2>
+      <p>ระบบจัดเก็บเกียรติบัตรอิเล็กทรอนิกส์<br>เพื่อการเก็บรักษาและป้องกันการสูญหาย</p>
+    </div>
+
+    <!-- ฝั่งขวา: ฟอร์มลงทะเบียน -->
+    <div class="right-panel">
+      <h1><i class="fas fa-user-plus"></i> ลงทะเบียนเข้าสู่ระบบ</h1>
+
+      <% if (locals.error) { %>
+        <div class="alert">
+          <i class="fas fa-exclamation-circle"></i> <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/register" method="POST" id="registerForm" enctype="multipart/form-data">
+        <!-- เลือกบทบาท -->
+        <div class="field-group">
+          <label>คุณเป็น<span class="required">*</span></label>
+          <div class="role-group">
+            <div class="role-option selected" data-role="teacher" id="roleTeacher">
+              <i class="fas fa-chalkboard-teacher"></i> ครู
+            </div>
+            <div class="role-option" data-role="staff" id="roleStaff">
+              <i class="fas fa-building"></i> บุคลากร
+            </div>
+          </div>
+          <input type="hidden" name="role" id="roleInput" value="teacher" required>
+        </div>
+
+        <!-- รูปโปรไฟล์ -->
+        <div class="field-group">
+          <div id="profilePreview" class="profile-preview">
+            <i class="fas fa-user"></i>
+          </div>
+          <input type="file" name="profile_image" id="profileImage" accept="image/jpeg,image/png" style="display:none;">
+          <button type="button" class="upload-btn" onclick="document.getElementById('profileImage').click();">
+            <i class="fas fa-camera"></i> เลือกรูปโปรไฟล์ (ไม่บังคับ)
+          </button>
+        </div>
+
+        <div class="field-group">
+          <label>ชื่อ-สกุล (ภาษาไทย)<span class="required">*</span></label>
+          <input type="text" name="full_name" placeholder="เช่น สมชาย ใจดี" required>
+        </div>
+        
+        <div class="field-group">
+          <label>อีเมลหน่วยงาน<span class="required">*</span></label>
+          <input type="email" name="email" placeholder="เช่น somchai@kk2.go.th" required>
+        </div>
+        
+        <div class="field-group">
+          <label>เบอร์โทร (10 หลัก)<span class="required">*</span></label>
+          <input type="tel" name="phone" placeholder="0812345678" pattern="[0-9]{10}" required>
+        </div>
+        
+        <div class="field-group">
+          <label>ตั้งรหัสผ่าน (อย่างน้อย 8 ตัว)<span class="required">*</span></label>
+          <input type="password" name="password" minlength="8" required>
+        </div>
+        
+        <div class="field-group">
+          <label>ยืนยันรหัสผ่าน<span class="required">*</span></label>
+          <input type="password" name="confirm_password" minlength="8" required>
+        </div>
+
+        <!-- วิชาที่สอน (เฉพาะครู) -->
+        <div id="subjectField" class="field-group">
+          <label>วิชาที่สอน<span class="required" id="subjectRequired">*</span></label>
+          <select name="subject" id="subjectSelect">
+            <option value="">-- เลือกวิชา --</option>
+            <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+            <option value="วิทยาศาสตร์">วิทยาศาสตร์</option>
+            <option value="ภาษาไทย">ภาษาไทย</option>
+            <option value="ภาษาอังกฤษ">ภาษาอังกฤษ</option>
+            <option value="สังคมศึกษา">สังคมศึกษา</option>
+            <option value="พลศึกษา">พลศึกษา</option>
+            <option value="ศิลปะ">ศิลปะ</option>
+            <option value="คอมพิวเตอร์">คอมพิวเตอร์</option>
+            <option value="ดนตรี">ดนตรี</option>
+            <option value="การงานอาชีพ">การงานอาชีพ</option>
+            <option value="สุขศึกษา">สุขศึกษา</option>
+            <option value="นาฏศิลป์">นาฏศิลป์</option>
+          </select>
+        </div>
+
+        <!-- อำเภอ (เฉพาะครู) -->
+        <div id="districtField" class="field-group">
+          <label>อำเภอที่สังกัด<span class="required">*</span></label>
+          <select name="district" id="districtSelect" required>
+            <option value="">-- เลือกอำเภอ --</option>
+            <option value="โคกโพธิ์ไชย">โคกโพธิ์ไชย</option>
+            <option value="ชนบท">ชนบท</option>
+            <option value="บ้านไผ่">บ้านไผ่</option>
+            <option value="บ้านแฮด">บ้านแฮด</option>
+            <option value="เปือยน้อย">เปือยน้อย</option>
+            <option value="มัญจาคีรี">มัญจาคีรี</option>
+          </select>
+        </div>
+
+        <!-- โรงเรียน / หน่วยงาน -->
+        <div class="field-group">
+          <label>ชื่อโรงเรียน / หน่วยงาน<span class="required">*</span></label>
+          <input type="text" name="school_name" id="schoolInput" placeholder="กรอกชื่อโรงเรียนหรือหน่วยงาน" required>
+        </div>
+
+        <!-- ตำแหน่ง (ทั้งครูและบุคลากร) -->
+        <div class="field-group">
+          <label>ตำแหน่ง<span class="required">*</span></label>
+          <select name="position" id="positionSelect" required>
+            <!-- ตัวเลือกจะถูกโหลดโดย JavaScript -->
+          </select>
+        </div>
+
+        <button type="submit" class="btn-register">
+          <i class="fas fa-check-circle"></i> ลงทะเบียน
+        </button>
+      </form>
+
+      <!-- ปุ่มกลับไปยังหน้าล็อกอิน -->
+      <a href="/login" class="back-to-login">
+        <i class="fas fa-arrow-left"></i> กลับไปยังหน้าล็อกอิน
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // === JavaScript สำหรับจัดการฟอร์ม ===
+    const roleTeacher = document.getElementById('roleTeacher');
+    const roleStaff = document.getElementById('roleStaff');
+    const roleInput = document.getElementById('roleInput');
+    const subjectField = document.getElementById('subjectField');
+    const subjectRequired = document.getElementById('subjectRequired');
+    const subjectSelect = document.getElementById('subjectSelect');
+    const districtField = document.getElementById('districtField');
+    const districtSelect = document.getElementById('districtSelect');
+    const schoolInput = document.getElementById('schoolInput');
+    const positionSelect = document.getElementById('positionSelect');
+    const profileImage = document.getElementById('profileImage');
+    const profilePreview = document.getElementById('profilePreview');
+
+    profileImage.addEventListener('change', function(e) {
+      if (e.target.files?.[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          profilePreview.innerHTML = `<img src="${e.target.result}" alt="รูปโปรไฟล์">`;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      } else {
+        profilePreview.innerHTML = `<i class="fas fa-user"></i>`;
+      }
+    });
+
+    const TEACHER_POSITIONS = [
+      { value: '', text: '-- เลือกตำแหน่ง --' },
+      { value: 'ครูผู้ช่วย', text: 'ครูผู้ช่วย' },
+      { value: 'ครู', text: 'ครู' },
+      { value: 'ครูชำนาญการ', text: 'ครูชำนาญการ' },
+      { value: 'ครูชำนาญการพิเศษ', text: 'ครูชำนาญการพิเศษ' },
+      { value: 'ครูเชี่ยวชาญ', text: 'ครูเชี่ยวชาญ' },
+      { value: 'ครูเชี่ยวชาญพิเศษ', text: 'ครูเชี่ยวชาญพิเศษ' }
+    ];
+
+    const STAFF_POSITIONS = [
+      { value: '', text: '-- เลือกตำแหน่ง --' },
+      { value: 'นักวิชาการศึกษา (กลุ่มอำนวยการ)', text: 'นักวิชาการศึกษา (กลุ่มอำนวยการ)' },
+      { value: 'เจ้าพนักงานธุรการ', text: 'เจ้าพนักงานธุรการ' },
+      { value: 'นักจัดการงานทั่วไป', text: 'นักจัดการงานทั่วไป' },
+      { value: 'นักวิชาการเงินและบัญชี', text: 'นักวิชาการเงินและบัญชี' },
+      { value: 'เจ้าพนักงานการเงินและบัญชี', text: 'เจ้าพนักงานการเงินและบัญชี' },
+      { value: 'นักวิชาการพัสดุ', text: 'นักวิชาการพัสดุ' },
+      { value: 'เจ้าพนักงานพัสดุ', text: 'เจ้าพนักงานพัสดุ' },
+      { value: 'นักวิเคราะห์นโยบายและแผน', text: 'นักวิเคราะห์นโยบายและแผน' },
+      { value: 'นักวิชาการสถิติ', text: 'นักวิชาการสถิติ' },
+      { value: 'นักทรัพยากรบุคคล', text: 'นักทรัพยากรบุคคล' },
+      { value: 'นักวิชาการศึกษา (พัฒนาครู)', text: 'นักวิชาการศึกษา (พัฒนาครู)' },
+      { value: 'นักเทคโนโลยีการศึกษา', text: 'นักเทคโนโลยีการศึกษา' },
+      { value: 'นักวิชาการศึกษา (ส่งเสริม)', text: 'นักวิชาการศึกษา (ส่งเสริม)' },
+      { value: 'นักประชาสัมพันธ์', text: 'นักประชาสัมพันธ์' },
+      { value: 'นักเทคโนโลยีสารสนเทศ', text: 'นักเทคโนโลยีสารสนเทศ' },
+      { value: 'นักวิชาการคอมพิวเตอร์', text: 'นักวิชาการคอมพิวเตอร์' },
+      { value: 'เจ้าหน้าที่ระบบเครือข่าย', text: 'เจ้าหน้าที่ระบบเครือข่าย' },
+      { value: 'นิติกร', text: 'นิติกร' },
+      { value: 'เจ้าพนักงานกฎหมาย', text: 'เจ้าพนักงานกฎหมาย' },
+      { value: 'ศึกษานิเทศก์', text: 'ศึกษานิเทศก์' },
+      { value: 'นักวิชาการศึกษา (นิเทศ)', text: 'นักวิชาการศึกษา (นิเทศ)' },
+      { value: 'ผู้ตรวจสอบภายใน', text: 'ผู้ตรวจสอบภายใน' },
+      { value: 'นักวิชาการตรวจสอบ', text: 'นักวิชาการตรวจสอบ' },
+      { value: 'ลูกจ้างประจำ', text: 'ลูกจ้างประจำ' },
+      { value: 'พนักงานราชการ', text: 'พนักงานราชการ' },
+      { value: 'ลูกจ้างชั่วคราว', text: 'ลูกจ้างชั่วคราว' },
+      { value: 'พนักงานขับรถ', text: 'พนักงานขับรถ' },
+      { value: 'พนักงานธุรการ', text: 'พนักงานธุรการ' }
+    ];
+
+    function updatePositionOptions(options) {
+      positionSelect.innerHTML = '';
+      options.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt.value;
+        option.textContent = opt.text;
+        positionSelect.appendChild(option);
+      });
+    }
+
+    function updateRole(role) {
+      roleTeacher.classList.toggle('selected', role === 'teacher');
+      roleStaff.classList.toggle('selected', role === 'staff');
+      roleInput.value = role;
+
+      if (role === 'teacher') {
+        subjectField.classList.remove('hidden');
+        subjectSelect.setAttribute('required', 'required');
+        subjectRequired.classList.remove('hidden');
+        districtField.classList.remove('hidden');
+        districtSelect.setAttribute('required', 'required');
+        schoolInput.placeholder = 'เช่น โรงเรียนบ้านโคกโพธิ์ไชย';
+        schoolInput.readOnly = false;
+        if (schoolInput.value === 'สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2') {
+          schoolInput.value = '';
+        }
+        updatePositionOptions(TEACHER_POSITIONS);
+      } else {
+        subjectField.classList.add('hidden');
+        subjectSelect.removeAttribute('required');
+        subjectRequired.classList.add('hidden');
+        districtField.classList.add('hidden');
+        districtSelect.removeAttribute('required');
+        schoolInput.value = 'สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2';
+        schoolInput.placeholder = 'สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2';
+        schoolInput.readOnly = true;
+        updatePositionOptions(STAFF_POSITIONS);
+      }
+    }
+
+    updateRole('teacher');
+
+    roleTeacher.addEventListener('click', () => updateRole('teacher'));
+    roleStaff.addEventListener('click', () => updateRole('staff'));
+
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      const password = this.password.value;
+      const confirm = this.confirm_password.value;
+      const role = this.role.value;
+      const subject = this.subject?.value || '';
+      const district = this.district?.value || '';
+      const position = this.position.value;
+
+      if (password !== confirm) {
+        e.preventDefault();
+        alert('⚠️ รหัสผ่านไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง');
+        return;
+      }
+
+      if (role === 'teacher') {
+        if (!subject) { e.preventDefault(); alert('⚠️ กรุณาเลือกวิชาที่สอน'); return; }
+        if (!district) { e.preventDefault(); alert('⚠️ กรุณาเลือกอำเภอที่สังกัด'); return; }
+      }
+
+      if (!position || position === '') { 
+        e.preventDefault(); 
+        alert('⚠️ กรุณาเลือกตำแหน่ง'); 
+        return; 
+      }
+    });
+  </script>
+</body>
+</html>

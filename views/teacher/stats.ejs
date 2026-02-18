@@ -1,0 +1,12 @@
+<%- include('../layout') %>
+<style>
+  .stat-card { background: white; padding: 2rem; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
+  .stat-number { font-size: 3rem; font-weight: bold; color: #1e3a8a; margin: 1rem 0; }
+</style>
+
+<div class="stat-card">
+  <h2>สถิติส่วนตัว</h2>
+  <p>จำนวนเกียรติบัตรที่คุณอัปโหลดทั้งหมด</p>
+  <div class="stat-number"><%= count %></div>
+  <p>รายการ</p>
+</div>

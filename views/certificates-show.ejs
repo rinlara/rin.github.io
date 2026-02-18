@@ -1,0 +1,450 @@
+<!-- views/certificates/show.ejs -->
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>หมายเลขเกียรติบัตรของคุณ</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <style>
+    :root {
+      --official-blue: #0d4a6b;
+      --official-gold: #d4af37;
+      --gradient-primary: linear-gradient(135deg, #0d4a6b 0%, #1a5f7a 100%);
+      --gradient-gold: linear-gradient(135deg, #d4af37 0%, #f4e5c2 100%);
+      --gradient-success: linear-gradient(135deg, #198754 0%, #20c997 100%);
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+      font-family: 'Sarabun', 'TH Sarabun New', sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    
+    .certificate-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(13, 74, 107, 0.15);
+      border: none;
+      overflow: hidden;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .certificate-header {
+      background: var(--gradient-primary);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+    }
+    
+    .certificate-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-gold);
+    }
+    
+    .certificate-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .certificate-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .certificate-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin-bottom: 0;
+    }
+    
+    .certificate-body {
+      padding: 2rem;
+    }
+    
+    .request-info {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid var(--official-blue);
+    }
+    
+    .request-info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+    
+    .request-info-item:last-child {
+      border-bottom: none;
+    }
+    
+    .request-info-label {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+    
+    .request-info-value {
+      font-weight: 600;
+      color: #1e293b;
+      text-align: right;
+    }
+    
+    /* ✅ Certificate Range Display - สวยงาม */
+    .certificate-range-card {
+      background: var(--gradient-success);
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: center;
+      color: white;
+      margin: 1.5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .certificate-range-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: shimmer 3s ease-in-out infinite;
+    }
+    
+    @keyframes shimmer {
+      0%, 100% { transform: translate(-30%, -30%) rotate(0deg); }
+      50% { transform: translate(30%, 30%) rotate(180deg); }
+    }
+    
+    .certificate-range-label {
+      font-size: 0.9rem;
+      opacity: 0.95;
+      margin-bottom: 0.75rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .certificate-range {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .certificate-range-separator {
+      margin: 0 0.5rem;
+      opacity: 0.8;
+    }
+    
+    .certificate-count-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* ✅ Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-action.copy {
+      background: white;
+      color: var(--official-blue);
+      box-shadow: 0 4px 12px rgba(13, 74, 107, 0.15);
+    }
+    
+    .btn-action.copy:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(13, 74, 107, 0.25);
+    }
+    
+    .btn-action.print {
+      background: var(--official-blue);
+      color: white;
+    }
+    
+    .btn-action.print:hover {
+      background: #0a3a54;
+      transform: translateY(-2px);
+    }
+    
+    .btn-action:active {
+      transform: translateY(0);
+    }
+    
+    /* ✅ Toast Notification */
+    .toast-copy {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: #166534;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      z-index: 1000;
+      animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(150%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    
+    /* ✅ Footer */
+    .certificate-footer {
+      background: #f8fafc;
+      padding: 1.25rem 2rem;
+      text-align: center;
+      border-top: 1px solid #e2e8f0;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+    
+    /* ✅ Responsive */
+    @media (max-width: 576px) {
+      body { padding: 1rem; }
+      .certificate-header { padding: 1.5rem; }
+      .certificate-body { padding: 1.5rem; }
+      .certificate-range { font-size: 1.25rem; }
+      .btn-action { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+    }
+    
+    /* ✅ Print Styles */
+    @media print {
+      body { background: white; padding: 0; }
+      .certificate-card { box-shadow: none; max-width: 100%; }
+      .action-buttons, .certificate-footer { display: none; }
+      .certificate-range-card { 
+        background: white !important; 
+        color: #0d4a6b !important; 
+        border: 2px solid #0d4a6b;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="certificate-card">
+    <!-- Header -->
+    <div class="certificate-header">
+      <div class="certificate-icon">🏆</div>
+      <h1 class="certificate-title">หมายเลขเกียรติบัตรของคุณ</h1>
+      <p class="certificate-subtitle">สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2</p>
+    </div>
+    
+    <!-- Body -->
+    <div class="certificate-body">
+      
+      <!-- Request Info -->
+      <div class="request-info">
+        <div class="request-info-item">
+          <span class="request-info-label">📋 โครงการ/กิจกรรม</span>
+          <span class="request-info-value"><%= request.event_name %></span>
+        </div>
+        <div class="request-info-item">
+          <span class="request-info-label">📅 วันที่จัดกิจกรรม</span>
+          <span class="request-info-value"><%= new Date(request.event_date).toLocaleDateString('th-TH') %></span>
+        </div>
+        <div class="request-info-item">
+          <span class="request-info-label">✍️ ผู้ลงนาม</span>
+          <span class="request-info-value"><%= request.signature_owner %></span>
+        </div>
+        <div class="request-info-item">
+          <span class="request-info-label">📆 วันที่อนุมัติ</span>
+          <span class="request-info-value"><%= request.approved_at ? new Date(request.approved_at).toLocaleDateString('th-TH') : '-' %></span>
+        </div>
+      </div>
+      
+      <!-- ✅ Certificate Range Display (แบบช่วงตัวเลข) -->
+      <% 
+        // ดึงหมายเลขแรกและสุดท้ายจาก certificates array
+        const certNumbers = certificates.map(c => c.certificate_number).sort();
+        const firstNumber = certNumbers[0] || '';
+        const lastNumber = certNumbers[certNumbers.length - 1] || '';
+        const totalCount = certificates.length;
+      %>
+      
+      <div class="certificate-range-card">
+        <div class="certificate-range-label">
+          <i class="fas fa-hashtag me-1"></i>
+          หมายเลขเกียรติบัตรที่ได้รับ
+        </div>
+        <div class="certificate-range">
+          <%= firstNumber %>
+          <span class="certificate-range-separator">–</span>
+          <%= lastNumber %>
+        </div>
+        <div class="certificate-count-badge">
+          <i class="fas fa-certificate"></i>
+          รวมทั้งหมด <%= totalCount.toLocaleString('th-TH') %> หมายเลข
+        </div>
+      </div>
+      
+      <!-- ✅ Action Buttons (Copy / Print) -->
+      <div class="action-buttons">
+        <button class="btn-action copy" onclick="copyCertificateNumbers()">
+          <i class="fas fa-copy"></i>
+          คัดลอกหมายเลข
+        </button>
+        <button class="btn-action print" onclick="window.print()">
+          <i class="fas fa-print"></i>
+          พิมพ์เอกสาร
+        </button>
+      </div>
+      
+      <!-- Note -->
+      <div class="alert alert-light border-0 mt-4 mb-0">
+        <small class="text-muted d-flex align-items-start gap-2">
+          <i class="fas fa-info-circle mt-1"></i>
+          <span>
+            <strong>หมายเหตุ:</strong> หมายเลขเกียรติบัตรนี้สามารถใช้ได้กับกิจกรรมที่ระบุไว้ข้างต้นเท่านั้น 
+            กรุณาตรวจสอบความถูกต้องก่อนนำไปใช้งาน
+          </span>
+        </small>
+      </div>
+      
+    </div>
+    
+    <!-- Footer -->
+    <div class="certificate-footer">
+      <i class="fas fa-shield-check me-1"></i>
+      ระบบจัดการเกียรติบัตร สพป.ขอนแก่น เขต 2 • 
+      <%= new Date().getFullYear() %>
+    </div>
+  </div>
+
+  <!-- ✅ Copy Toast Notification (ซ่อนอยู่) -->
+  <div id="copyToast" class="toast-copy" style="display: none;">
+    <i class="fas fa-check-circle"></i>
+    <span>คัดลอกหมายเลขเกียรติบัตรเรียบร้อยแล้ว!</span>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // ✅ ฟังก์ชันคัดลอกหมายเลขเกียรติบัตร
+    function copyCertificateNumbers() {
+      const firstNumber = '<%= firstNumber %>';
+      const lastNumber = '<%= lastNumber %>';
+      const totalCount = <%= totalCount %>;
+      
+      // สร้างข้อความสำหรับคัดลอก
+      const textToCopy = `หมายเลขเกียรติบัตร: ${firstNumber} – ${lastNumber}\nรวมทั้งหมด: ${totalCount} หมายเลข\nโครงการ: <%= request.event_name %>`;
+      
+      // คัดลอกไปยัง Clipboard
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showToast();
+      }).catch(err => {
+        console.error('Copy failed:', err);
+        // Fallback สำหรับเบราว์เซอร์เก่า
+        fallbackCopy(textToCopy);
+      });
+    }
+    
+    // ✅ แสดง Toast Notification
+    function showToast() {
+      const toast = document.getElementById('copyToast');
+      toast.style.display = 'flex';
+      
+      // ซ่อน toast หลังจาก 3 วินาที
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+    
+    // ✅ Fallback Copy สำหรับเบราว์เซอร์ที่ไม่รองรับ Clipboard API
+    function fallbackCopy(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      
+      try {
+        document.execCommand('copy');
+        showToast();
+      } catch (err) {
+        alert('ไม่สามารถคัดลอกได้ กรุณาคัดลอกด้วยตนเอง');
+      }
+      
+      document.body.removeChild(textarea);
+    }
+    
+    // ✅ เพิ่ม animation เมื่อโหลดหน้า
+    document.addEventListener('DOMContentLoaded', function() {
+      const rangeCard = document.querySelector('.certificate-range-card');
+      if (rangeCard) {
+        rangeCard.style.opacity = '0';
+        rangeCard.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          rangeCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          rangeCard.style.opacity = '1';
+          rangeCard.style.transform = 'translateY(0)';
+        }, 300);
+      }
+    });
+  </script>
+  
+  <!-- Font Awesome (สำหรับ icon) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+</body>
+</html>

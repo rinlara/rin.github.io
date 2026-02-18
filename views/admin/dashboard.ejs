@@ -1,0 +1,369 @@
+<%
+// Helper: แปลงวันที่เป็น พ.ศ.
+const formatThaiDate = (dateStr) => {
+  if (!dateStr || dateStr === '0000-00-00') return '-';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '-';
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear() + 543;
+  return `${day}/${month}/${year}`;
+};
+
+const safeTopTeachers = Array.isArray(locals.topTeachers) ? locals.topTeachers : [];
+const safeTopStaffs = Array.isArray(locals.topStaffs) ? locals.topStaffs : [];
+const safeLatestCertificates = Array.isArray(locals.latestCertificates) ? locals.latestCertificates : [];
+%>
+
+<!-- โหลด Bootstrap Icons + ฟอนต์ Sarabun (เหมาะกับราชการไทย) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!-- Removed Google Fonts to avoid CSP/font loading issues -->
+
+<style>
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: #f8f9fa;
+  }
+  .gov-header {
+    background-color: #0d2c54; /* สีกรมท่าแบบราชการ */
+    color: white;
+    border-bottom: 4px solid #d4af37; /* สีทองสำหรับลูกเล่นราชการ */
+    padding: 2rem 0;
+    margin-bottom: 3rem;
+  }
+  .gov-card-header {
+    background-color: #0d2c54;
+    color: white;
+    border-bottom: 2px solid #d4af37;
+  }
+  .stat-card {
+    border: 1px solid #ced4da;
+    background-color: white;
+    border-radius: 6px;
+    transition: none;
+  }
+  .stat-card:hover {
+    box-shadow: none;
+    transform: none;
+  }
+  .btn-gov-primary {
+    background-color: #0d2c54;
+    border-color: #0d2c54;
+    color: white;
+  }
+  .btn-gov-primary:hover {
+    background-color: #123b70;
+    border-color: #123b70;
+  }
+  .btn-gov-info {
+    background-color: #1a5276;
+    border-color: #1a5276;
+    color: white;
+  }
+  .btn-gov-info:hover {
+    background-color: #1f638d;
+    border-color: #1f638d;
+  }
+  .btn-gov-success {
+    background-color: #27ae60;
+    border-color: #27ae60;
+    color: white;
+  }
+  .btn-gov-success:hover {
+    background-color: #229954;
+    border-color: #229954;
+  }
+  .btn-gov-warning {
+    background-color: #d4af37;
+    border-color: #d4af37;
+    color: #000;
+  }
+  .btn-gov-warning:hover {
+    background-color: #c19b2f;
+    border-color: #c19b2f;
+    color: #000;
+  }
+  .badge-role-teacher {
+    background-color: #0d2c54;
+    color: white;
+  }
+  .badge-role-staff {
+    background-color: #1a5276;
+    color: white;
+  }
+  .table th, .table td {
+    vertical-align: middle !important;
+    font-size: 0.95rem;
+  }
+  .table-light {
+    background-color: #e9ecef !important;
+  }
+</style>
+
+<!-- 🔹 ส่วนหัว Dashboard แบบราชการ -->
+<section class="gov-header text-center">
+  <h1 class="fw-bold mb-2 fs-3">แดชบอร์ดผู้ดูแลระบบ</h1>
+  <p class="mb-0">สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2</p>
+</section>
+
+<!-- ✅ เมนูจัดการหลัก -->
+<div class="container mb-4">
+  <div class="d-flex flex-wrap gap-3 justify-content-center">
+    <a href="/admin/teachers" class="btn btn-gov-primary btn-lg px-4">
+      <i class="bi bi-person-fill me-2"></i>จัดการครู
+    </a>
+    <a href="/admin/staffs" class="btn btn-gov-info btn-lg px-4">
+      <i class="bi bi-people-fill me-2"></i>จัดการบุคลากร
+    </a>
+    <a href="/admin/certificates" class="btn btn-gov-success btn-lg px-4">
+      <i class="bi bi-award me-2"></i>เกียรติบัตรทั้งหมด
+    </a>
+    <a href="/admin/guide" class="btn btn-gov-warning btn-lg px-4">
+      <i class="bi bi-book me-2"></i>คู่มือใช้งาน
+    </a>
+  </div>
+</div>
+
+<div class="container mb-5">
+  <!-- ✅ แสดงสถิติหลัก -->
+  <div class="row g-4 text-center mb-5">
+    <div class="col-6 col-md-3">
+      <div class="stat-card h-100 p-3">
+        <div class="text-primary mb-2"><i class="bi bi-person-check fs-2"></i></div>
+        <h6 class="fw-semibold mb-1">จำนวนครู</h6>
+        <h4 class="fw-bold text-primary mb-0"><%= typeof locals.teacherCount === 'number' ? locals.teacherCount : 0 %></h4>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card h-100 p-3">
+        <div class="text-info mb-2"><i class="bi bi-people fs-2"></i></div>
+        <h6 class="fw-semibold mb-1">จำนวนบุคลากร</h6>
+        <h4 class="fw-bold text-info mb-0"><%= typeof locals.staffCount === 'number' ? locals.staffCount : 0 %></h4>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card h-100 p-3">
+        <div class="text-success mb-2"><i class="bi bi-award fs-2"></i></div>
+        <h6 class="fw-semibold mb-1">เกียรติบัตรทั้งหมด</h6>
+        <h4 class="fw-bold text-success mb-0"><%= typeof locals.certificateCount === 'number' ? locals.certificateCount : 0 %></h4>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card h-100 p-3">
+        <div class="text-warning mb-2"><i class="bi bi-geo-alt fs-2"></i></div>
+        <h6 class="fw-semibold mb-1">อำเภอที่เข้าร่วม</h6>
+        <h4 class="fw-bold text-warning mb-0"><%= typeof locals.districtCount === 'number' ? locals.districtCount : 0 %></h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ ข้อมูลครู -->
+  <div class="mt-5">
+    <h4 class="text-primary mb-3"><i class="bi bi-person-fill me-2"></i>Top ครูที่ได้รับเกียรติบัตรมากที่สุด</h4>
+    <div class="card border">
+      <div class="card-header gov-card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-trophy me-2"></i>ครู</h5>
+        <button id="exportTopTeachers" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
+        </button>
+      </div>
+      <div class="card-body">
+        <% if (safeTopTeachers.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center">
+              <thead class="table-light">
+                <tr>
+                  <th>ลำดับ</th>
+                  <th>ชื่อครู</th>
+                  <th>โรงเรียน</th>
+                  <th>จำนวนเกียรติบัตร</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% safeTopTeachers.forEach((t, index) => { %>
+                  <tr>
+                    <td><%= index + 1 %></td>
+                    <td class="text-start"><%- t.full_name || '-' %></td>
+                    <td class="text-start"><%- t.school_name || '-' %></td>
+                    <td><%= typeof t.certificate_count === 'number' ? t.certificate_count : 0 %></td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="text-center py-3">
+            <i class="bi bi-inbox fs-1 text-muted mb-2 d-block"></i>
+            <p class="text-muted mb-0">ยังไม่มีข้อมูลครู</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ ข้อมูลบุคลากร -->
+  <div class="mt-5">
+    <h4 class="text-info mb-3"><i class="bi bi-people-fill me-2"></i>Top บุคลากรที่ได้รับเกียรติบัตรมากที่สุด</h4>
+    <div class="card border">
+      <div class="card-header gov-card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-trophy me-2"></i>บุคลากร</h5>
+        <button id="exportTopStaffs" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
+        </button>
+      </div>
+      <div class="card-body">
+        <% if (safeTopStaffs.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center">
+              <thead class="table-light">
+                <tr>
+                  <th>ลำดับ</th>
+                  <th>ชื่อบุคลากร</th>
+                  <th>โรงเรียน</th>
+                  <th>จำนวนเกียรติบัตร</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% safeTopStaffs.forEach((s, index) => { %>
+                  <tr>
+                    <td><%= index + 1 %></td>
+                    <td class="text-start"><%- s.full_name || '-' %></td>
+                    <td class="text-start"><%- s.school_name || '-' %></td>
+                    <td><%= typeof s.certificate_count === 'number' ? s.certificate_count : 0 %></td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="text-center py-3">
+            <i class="bi bi-inbox fs-1 text-muted mb-2 d-block"></i>
+            <p class="text-muted mb-0">ยังไม่มีข้อมูลบุคลากร</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ เกียรติบัตรล่าสุด -->
+  <div class="card mt-5 border">
+    <div class="card-header gov-card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>เกียรติบัตรล่าสุด</h5>
+      <a href="/admin/certificates" class="btn btn-outline-light btn-sm">
+        ดูทั้งหมด
+      </a>
+    </div>
+    <div class="card-body">
+      <% if (safeLatestCertificates.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle">
+            <thead class="table-light text-center">
+              <tr>
+                <th>ชื่อเกียรติบัตร</th>
+                <th>หน่วยงาน</th>
+                <th>ผู้อัปโหลด</th>
+                <th>บทบาท</th>
+                <th>วันที่อัปโหลด</th>
+                <th class="text-center">ดูไฟล์</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% safeLatestCertificates.forEach(cert => { %>
+                <tr>
+                  <td><%- cert.title || '-' %></td>
+                  <td><%- cert.issuing_agency || '-' %></td>
+                  <td><%- cert.full_name || '-' %></td>
+                  <td class="text-center">
+                    <% if (cert.role === 'teacher') { %>
+                      <span class="badge badge-role-teacher">ครู</span>
+                    <% } else if (cert.role === 'staff') { %>
+                      <span class="badge badge-role-staff">บุคลากร</span>
+                    <% } else { %>
+                      <span class="badge bg-secondary">-</span>
+                    <% } %>
+                  </td>
+                  <td class="text-center"><%= formatThaiDate(cert.upload_date) %></td>
+                  <td class="text-center">
+                    <% 
+                      const isValidFilePath = cert.file_path && 
+                        typeof cert.file_path === 'string' && 
+                        cert.file_path.startsWith('/uploads/') &&
+                        /\.(pdf|jpg|jpeg|png)$/i.test(cert.file_path);
+                    %>
+                    <% if (isValidFilePath) { %>
+                      <a href="<%= cert.file_path %>" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye me-1"></i> ดู
+                      </a>
+                    <% } else { %>
+                      <span class="text-muted">—</span>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="text-center py-3">
+          <i class="bi bi-inbox fs-1 text-muted mb-2 d-block"></i>
+          <p class="text-muted mb-0">ยังไม่มีเกียรติบัตรในระบบ</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Script (ไม่เปลี่ยน) -->
+<script>
+  function downloadCSV(rows, filename) {
+    const bom = '\uFEFF';
+    const csvContent = rows.map(row => 
+      row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(',')
+    ).join('\n');
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('exportTopTeachers')?.addEventListener('click', () => {
+    const rows = [['ลำดับ', 'ชื่อครู', 'โรงเรียน', 'จำนวนเกียรติบัตร']];
+    const table = document.querySelector('#topTeachersTable');
+    if (!table) {
+      const tRows = document.querySelectorAll('.card-body:nth-of-type(1) .table tbody tr');
+      tRows.forEach((row, idx) => {
+        const cols = Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim());
+        rows.push([idx + 1, ...cols.slice(1)]);
+      });
+    } else {
+      table.querySelectorAll('tbody tr').forEach(row => {
+        const cols = Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim());
+        rows.push(cols);
+      });
+    }
+    downloadCSV(rows, 'top_teachers_<%= new Date().toISOString().split('T')[0] %>.csv');
+  });
+
+  document.getElementById('exportTopStaffs')?.addEventListener('click', () => {
+    const rows = [['ลำดับ', 'ชื่อบุคลากร', 'โรงเรียน', 'จำนวนเกียรติบัตร']];
+    const table = document.querySelector('#topStaffsTable');
+    if (!table) {
+      const tRows = document.querySelectorAll('.card-body:nth-of-type(2) .table tbody tr');
+      tRows.forEach((row, idx) => {
+        const cols = Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim());
+        rows.push([idx + 1, ...cols.slice(1)]);
+      });
+    } else {
+      table.querySelectorAll('tbody tr').forEach(row => {
+        const cols = Array.from(row.querySelectorAll('td')).map(td => td.innerText.trim());
+        rows.push(cols);
+      });
+    }
+    downloadCSV(rows, 'top_staffs_<%= new Date().toISOString().split('T')[0] %>.csv');
+  });
+</script>

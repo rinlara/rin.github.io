@@ -1,0 +1,253 @@
+<% 
+// ไม่ต้องกำหนด locals.activePage — ให้ app.js จัดการ
+%>
+
+<div class="profile-container">
+  <!-- แสดงข้อความแจ้งเตือน -->
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+  
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <div class="row g-4">
+    <!-- ส่วนรูปภาพและข้อมูลพื้นฐาน -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body text-center">
+          <div class="profile-img-container mb-3">
+            <img src="<%= user && user.image_path ? user.image_path : '/images/default-staff.png' %>" 
+                 alt="รูปภาพบุคลากร" 
+                 class="profile-img rounded-circle"
+                 id="profileImage">
+          </div>
+          
+          <h5 class="card-title text-pink"><%= user && user.full_name ? user.full_name : 'ไม่ระบุชื่อ' %></h5>
+          <p class="text-muted mb-3"><%= user && user.position ? user.position : '-' %></p>
+          
+          <!-- ปุ่มเปลี่ยนรูป — ลบ modal ออกชั่วคราว (เพราะไม่มี route) -->
+          <!-- <button class="btn btn-outline-pink w-100 mb-3" data-bs-toggle="modal" data-bs-target="#uploadImageModal">
+            <i class="fas fa-camera"></i> เปลี่ยนรูปภาพ
+          </button> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ส่วนฟอร์มแก้ไขข้อมูล -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0">
+          <h3 class="card-title text-pink mb-0">
+            <i class="fas fa-user-edit"></i> แก้ไขข้อมูลส่วนตัว (บุคลากร)
+          </h3>
+        </div>
+        <div class="card-body">
+          <form id="profileForm" action="/staff/profile/update" method="POST">
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label class="form-label">ชื่อ-สกุล <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="full_name" value="<%= user && user.full_name ? user.full_name : '' %>" required>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">อีเมล <span class="text-danger">*</span></label>
+                <input type="email" class="form-control" name="email" value="<%= user && user.email ? user.email : '' %>" required>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">เบอร์โทรศัพท์ <span class="text-danger">*</span></label>
+                <input type="tel" class="form-control" name="phone" value="<%= user && user.phone ? user.phone : '' %>" required>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">ตำแหน่ง <span class="text-danger">*</span></label>
+                <select class="form-select" name="position" required>
+                  <option value="">เลือกตำแหน่ง</option>
+                  
+                  <optgroup label="กลุ่มอำนวยการ">
+                    <option value="นักวิชาการศึกษา (กลุ่มอำนวยการ)" <%= (user && user.position === 'นักวิชาการศึกษา (กลุ่มอำนวยการ)') ? 'selected' : '' %>>นักวิชาการศึกษา (กลุ่มอำนวยการ)</option>
+                    <option value="เจ้าพนักงานธุรการ" <%= (user && user.position === 'เจ้าพนักงานธุรการ') ? 'selected' : '' %>>เจ้าพนักงานธุรการ</option>
+                    <option value="นักจัดการงานทั่วไป" <%= (user && user.position === 'นักจัดการงานทั่วไป') ? 'selected' : '' %>>นักจัดการงานทั่วไป</option>
+                  </optgroup>
+
+                  <optgroup label="กลุ่มบริหารงานการเงินและสินทรัพย์">
+                    <option value="นักวิชาการเงินและบัญชี" <%= (user && user.position === 'นักวิชาการเงินและบัญชี') ? 'selected' : '' %>>นักวิชาการเงินและบัญชี</option>
+                    <option value="เจ้าพนักงานการเงินและบัญชี" <%= (user && user.position === 'เจ้าพนักงานการเงินและบัญชี') ? 'selected' : '' %>>เจ้าพนักงานการเงินและบัญชี</option>
+                    <option value="นักวิชาการพัสดุ" <%= (user && user.position === 'นักวิชาการพัสดุ') ? 'selected' : '' %>>นักวิชาการพัสดุ</option>
+                    <option value="เจ้าพนักงานพัสดุ" <%= (user && user.position === 'เจ้าพนักงานพัสดุ') ? 'selected' : '' %>>เจ้าพนักงานพัสดุ</option>
+                  </optgroup>
+
+                  <optgroup label="กลุ่มนโยบายและแผน">
+                    <option value="นักวิเคราะห์นโยบายและแผน" <%= (user && user.position === 'นักวิเคราะห์นโยบายและแผน') ? 'selected' : '' %>>นักวิเคราะห์นโยบายและแผน</option>
+                    <option value="นักวิชาการสถิติ" <%= (user && user.position === 'นักวิชาการสถิติ') ? 'selected' : '' %>>นักวิชาการสถิติ</option>
+                  </optgroup>
+
+                  <optgroup label="กลุ่มบริหารงานบุคคล">
+                    <option value="นักทรัพยากรบุคคล" <%= (user && user.position === 'นักทรัพยากรบุคคล') ? 'selected' : '' %>>นักทรัพยากรบุคคล</option>
+                  </optgroup>
+
+                  <optgroup label="กลุ่มพัฒนาครูและบุคลากรทางการศึกษา">
+                    <option value="นักวิชาการศึกษา (พัฒนาครู)" <%= (user && user.position === 'นักวิชาการศึกษา (พัฒนาครู)') ? 'selected' : '' %>>นักวิชาการศึกษา (พัฒนาครู)</option>
+                    <option value="นักเทคโนโลยีการศึกษา" <%= (user && user.position === 'นักเทคโนโลยีการศึกษา') ? 'selected' : '' %>>นักเทคโนโลยีการศึกษา</option>
+                  </optgroup>
+
+                  <optgroup label="กลุ่มส่งเสริมการจัดการศึกษา">
+                    <option value="นักวิชาการศึกษา (ส่งเสริม)" <%= (user && user.position === 'นักวิชาการศึกษา (ส่งเสริม)') ? 'selected' : '' %>>นักวิชาการศึกษา (ส่งเสริม)</option>
+                    <option value="นักประชาสัมพันธ์" <%= (user && user.position === 'นักประชาสัมพันธ์') ? 'selected' : '' %>>นักประชาสัมพันธ์</option>
+                  </optgroup>
+
+                  <optgroup label="กลุ่มส่งเสริมการศึกษาทางไกล / ICT">
+                    <option value="นักเทคโนโลยีสารสนเทศ" <%= (user && user.position === 'นักเทคโนโลยีสารสนเทศ') ? 'selected' : '' %>>นักเทคโนโลยีสารสนเทศ</option>
+                    <option value="นักวิชาการคอมพิวเตอร์" <%= (user && user.position === 'นักวิชาการคอมพิวเตอร์') ? 'selected' : '' %>>นักวิชาการคอมพิวเตอร์</option>
+                    <option value="เจ้าหน้าที่ระบบเครือข่าย" <%= (user && user.position === 'เจ้าหน้าที่ระบบเครือข่าย') ? 'selected' : '' %>>เจ้าหน้าที่ระบบเครือข่าย</option>
+                  </optgroup>
+
+                  <optgroup label="กลุ่มกฎหมายและคดี">
+                    <option value="นิติกร" <%= (user && user.position === 'นิติกร') ? 'selected' : '' %>>นิติกร</option>
+                    <option value="เจ้าพนักงานกฎหมาย" <%= (user && user.position === 'เจ้าพนักงานกฎหมาย') ? 'selected' : '' %>>เจ้าพนักงานกฎหมาย</option>
+                  </optgroup>
+
+                  <optgroup label="กลุ่มนิเทศ ติดตาม และประเมินผล">
+                    <option value="ศึกษานิเทศก์" <%= (user && user.position === 'ศึกษานิเทศก์') ? 'selected' : '' %>>ศึกษานิเทศก์</option>
+                    <option value="นักวิชาการศึกษา (นิเทศ)" <%= (user && user.position === 'นักวิชาการศึกษา (นิเทศ)') ? 'selected' : '' %>>นักวิชาการศึกษา (นิเทศ)</option>
+                  </optgroup>
+
+                  <optgroup label="หน่วยตรวจสอบภายใน">
+                    <option value="ผู้ตรวจสอบภายใน" <%= (user && user.position === 'ผู้ตรวจสอบภายใน') ? 'selected' : '' %>>ผู้ตรวจสอบภายใน</option>
+                    <option value="นักวิชาการตรวจสอบ" <%= (user && user.position === 'นักวิชาการตรวจสอบ') ? 'selected' : '' %>>นักวิชาการตรวจสอบ</option>
+                  </optgroup>
+
+                  <optgroup label="อื่น ๆ">
+                    <option value="ลูกจ้างประจำ" <%= (user && user.position === 'ลูกจ้างประจำ') ? 'selected' : '' %>>ลูกจ้างประจำ</option>
+                    <option value="พนักงานราชการ" <%= (user && user.position === 'พนักงานราชการ') ? 'selected' : '' %>>พนักงานราชการ</option>
+                    <option value="ลูกจ้างชั่วคราว" <%= (user && user.position === 'ลูกจ้างชั่วคราว') ? 'selected' : '' %>>ลูกจ้างชั่วคราว</option>
+                    <option value="พนักงานขับรถ" <%= (user && user.position === 'พนักงานขับรถ') ? 'selected' : '' %>>พนักงานขับรถ</option>
+                    <option value="พนักงานธุรการ" <%= (user && user.position === 'พนักงานธุรการ') ? 'selected' : '' %>>พนักงานธุรการ</option>
+                  </optgroup>
+                </select>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">หน่วยงาน <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="school_name" 
+                       value="<%= user && user.school_name ? user.school_name : 'สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2' %>" 
+                       required readonly>
+              </div>
+            </div>
+            
+            <div class="mt-4">
+              <button type="submit" class="btn btn-pink">
+                <i class="fas fa-save"></i> บันทึกการเปลี่ยนแปลง
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.profile-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  margin-bottom: 2rem;
+}
+
+.profile-img-container {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 3px solid #fde8f5;
+}
+
+.profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.form-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #1e293b;
+}
+
+.form-control, .form-select {
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #ec4899;
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+}
+
+/* สีสำหรับบุคลากร */
+:root {
+  --pink: #ec4899;
+  --pink-hover: #d946ef;
+}
+.text-pink { color: var(--pink); }
+.btn-pink {
+  background: var(--pink);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  color: white;
+}
+.btn-pink:hover {
+  background: var(--pink-hover);
+}
+.btn-outline-pink {
+  color: var(--pink);
+  border-color: var(--pink);
+}
+.btn-outline-pink:hover {
+  background: var(--pink);
+  color: white;
+}
+
+.card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.alert {
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // ซ่อน alert อัตโนมัติ
+  setTimeout(function() {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+      const bsAlert = new bootstrap.Alert(alert);
+      bsAlert.close();
+    });
+  }, 5000);
+});
+</script>

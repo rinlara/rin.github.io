@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600">
+  <defs>
+    <linearGradient id="newsGrad2" x1="0" x2="1">
+      <stop offset="0" stop-color="#004d40" />
+      <stop offset="1" stop-color="#00695c" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#newsGrad2)" />
+  <rect x="0" y="0" width="1200" height="6" fill="#d4af37" />
+  <rect x="0" y="594" width="1200" height="6" fill="#d4af37" />
+  <text x="60" y="90" font-family="Sarabun, Arial" font-size="44" font-weight="800" fill="#ffd700">📚 โครงการพัฒนาครูด้านดิจิทัล</text>
+  <text x="60" y="150" font-family="Sarabun, Arial" font-size="24" font-weight="600" fill="white">อบรมเชิงปฏิบัติการเพิ่มทักษะการสอน</text>
+  <text x="60" y="210" font-family="Sarabun, Arial" font-size="20" font-weight="500" fill="rgba(255,255,255,0.85)">จัดขึ้นเพื่อพัฒนาความสามารถด้านเทคโนโลยี</text>
+  <text x="60" y="260" font-family="Sarabun, Arial" font-size="20" font-weight="500" fill="rgba(255,255,255,0.85)">และการใช้เครื่องมือการศึกษาดิจิทัลให้กับครูทั้งเขต</text>
+  <rect x="60" y="320" width="240" height="70" rx="6" fill="rgba(255,255,255,0.15)" stroke="#ffd700" stroke-width="2"/>
+  <text x="180" y="350" text-anchor="middle" font-family="Sarabun, Arial" font-size="18" font-weight="700" fill="#ffd700">4-7 กุมภาพันธ์ 2569</text>
+  <text x="180" y="380" text-anchor="middle" font-family="Sarabun, Arial" font-size="14" font-weight="500" fill="white">08:30-16:30 น. | สำนักงาน</text>
+</svg>

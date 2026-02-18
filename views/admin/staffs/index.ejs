@@ -1,0 +1,210 @@
+<% locals.activePage = 'staffs'; %>
+
+<!-- โหลดฟอนต์ Sarabun + Bootstrap Icons (ถ้ายังไม่มีใน layout) -->
+<!-- Removed Google Fonts to avoid CSP/font blocking -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: #f8f9fa;
+  }
+  .gov-header {
+    background-color: #0d2c54;
+    color: white;
+    border-bottom: 4px solid #d4af37;
+    padding: 2rem 0;
+    margin-bottom: 2.5rem;
+  }
+  .gov-card {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    box-shadow: none;
+    background-color: white;
+  }
+  .table thead th {
+    background-color: #e9ecef;
+    font-weight: 600;
+    color: #333;
+  }
+  .btn-gov-primary {
+    background-color: #0d2c54;
+    border-color: #0d2c54;
+    color: white;
+  }
+  .btn-gov-primary:hover {
+    background-color: #123b70;
+    border-color: #123b70;
+  }
+  .btn-gov-info-outline {
+    color: #0d2c54;
+    border-color: #0d2c54;
+  }
+  .btn-gov-info-outline:hover {
+    background-color: #0d2c54;
+    color: white;
+  }
+  .btn-gov-warning-outline {
+    color: #d39e00;
+    border-color: #d39e00;
+  }
+  .btn-gov-warning-outline:hover {
+    background-color: #d39e00;
+    color: white;
+  }
+  .btn-gov-danger-outline {
+    color: #c82333;
+    border-color: #c82333;
+  }
+  .btn-gov-danger-outline:hover {
+    background-color: #c82333;
+    color: white;
+  }
+  .badge-info-gov {
+    background-color: #1a5276;
+    color: white;
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+    border-radius: 50rem;
+  }
+  .form-control, .form-select, .input-group-text {
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+  }
+  .input-group-text {
+    background-color: #f1f3f5;
+  }
+  .table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  .default-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #f1f3f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+  }
+</style>
+
+<!-- 🔹 ส่วนหัว — แบบราชการ (เต็มความกว้าง) -->
+<section class="gov-header">
+  <div class="container">
+    <div class="text-center">
+      <h1 class="fw-bold mb-1 fs-4">
+        <i class="bi bi-people-fill me-2"></i>จัดการบุคลากร
+      </h1>
+      <p class="mb-0">ทั้งหมด <%= locals.staffs ? staffs.length : 0 %> ราย</p>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <!-- 🔍 ช่องค้นหาแบบฟอร์ม -->
+  <form method="GET" class="mb-4">
+    <div class="input-group input-group-lg">
+      <span class="input-group-text">
+        <i class="bi bi-search text-muted"></i>
+      </span>
+      <input
+        type="text"
+        name="q"
+        class="form-control"
+        placeholder="ค้นหาจากชื่อ, อีเมล หรือโรงเรียน..."
+        value="<%= locals.q || '' %>"
+      >
+      <button class="btn btn-gov-primary" type="submit">
+        <i class="bi bi-search me-1"></i> ค้นหา
+      </button>
+    </div>
+  </form>
+
+  <!-- 👥 ตารางข้อมูลบุคลากร -->
+  <% if (locals.staffs && staffs.length > 0) { %>
+    <div class="card gov-card">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th class="px-4 py-3">ชื่อ-นามสกุล</th>
+                <th class="py-3">อีเมล</th>
+                <th class="py-3">เบอร์โทร</th>
+                <th class="py-3">ตำแหน่ง</th>
+                <th class="py-3">โรงเรียน</th>
+                <th class="py-3 text-center">เกียรติบัตร</th>
+                <th class="py-3 text-center">การจัดการ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% staffs.forEach(staff => { %>
+                <tr>
+                  <td class="px-4 py-3">
+                    <div class="d-flex align-items-center">
+                      <div class="flex-shrink-0 me-3">
+                        <div class="default-avatar">
+                          <i class="bi bi-person"></i>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="fw-semibold"><%= staff.full_name %></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-muted"><%= staff.email %></td>
+                  <td><%= staff.phone || '-' %></td>
+                  <td>
+                    <% if (staff.position && staff.position.trim() !== '') { %>
+                      <%= staff.position %>
+                    <% } else { %>
+                      <span class="text-muted">-</span>
+                    <% } %>
+                  </td>
+                  <td><%= staff.school_name || '-' %></td>
+                  <td class="text-center">
+                    <span class="badge badge-info-gov">
+                      <%= staff.certificate_count || 0 %>
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <div class="d-flex justify-content-center gap-1">
+                      <a href="/admin/staffs/show/<%= staff.id %>" class="btn btn-gov-info-outline btn-sm" title="ดูรายละเอียด">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                      <a href="/admin/staffs/edit/<%= staff.id %>" class="btn btn-gov-warning-outline btn-sm" title="แก้ไข">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                      <form action="/admin/staffs/delete/<%= staff.id %>" method="POST" style="display:inline;" onsubmit="return confirm('ยืนยันการลบบุคลากรนี้? ข้อมูลทั้งหมดจะถูกลบด้วย!')">
+                        <button type="submit" class="btn btn-gov-danger-outline btn-sm" title="ลบ">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="text-center py-5">
+      <div class="mb-3">
+        <i class="bi bi-people text-muted" style="font-size: 3rem;"></i>
+      </div>
+      <h5 class="text-muted fw-medium">ไม่พบบุคลากร</h5>
+      <p class="text-muted mb-0">
+        <% if (locals.q) { %>
+          ไม่พบผลลัพธ์สำหรับ "<%= locals.q %>"
+        <% } else { %>
+          ยังไม่มีบุคลากรในระบบ  
+          <br>
+          <small class="text-muted">บุคลากรสามารถลงทะเบียนเข้าระบบได้ด้วยตนเอง</small>
+        <% } %>
+      </p>
+    </div>
+  <% } %>
+</div>

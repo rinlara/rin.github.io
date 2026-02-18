@@ -1,0 +1,400 @@
+<%
+const user = locals.user || {};
+const certificates = locals.certificates || [];
+const certificatesCount = certificates.length;
+const userName = user.full_name || 'ผู้ใช้';
+const position = user.position || '-';
+const subject = user.subject || '-';
+const schoolName = user.school_name || '-';
+const district = user.district || '-';
+const phone = user.phone || '-';
+const email = user.email || '-';
+%>
+
+<style>
+  :root {
+    --primary-navy: #003d7a;
+    --primary-blue: #0052a3;
+    --secondary-gold: #d4af37;
+    --light-bg: #f5f7fa;
+    --border-color: #e2e8f0;
+    --text-dark: #1a202c;
+    --text-muted: #718096;
+  }
+
+  .dashboard-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, "Noto Sans Thai", 'Noto Sans', sans-serif;
+    padding: 2.5rem;
+    background: linear-gradient(135deg, var(--light-bg) 0%, #ecf0f5 100%);
+    min-height: 100vh;
+  }
+
+  /* 🔷 โปรไฟล์ครู */
+  .user-banner {
+    background: linear-gradient(90deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
+    border-radius: 16px;
+    padding: 2.2rem 2.5rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 8px 24px rgba(0, 61, 122, 0.2);
+    color: white;
+    border: 2px solid var(--secondary-gold);
+    margin-bottom: 2.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .user-banner:hover {
+    box-shadow: 0 12px 32px rgba(0, 61, 122, 0.25);
+    transform: translateY(-2px);
+  }
+
+  .user-avatar img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 5px solid var(--secondary-gold);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+  }
+
+  .user-details {
+    margin-left: 2rem;
+    flex: 1;
+  }
+
+  .user-details h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.3px;
+  }
+
+  .user-meta span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    opacity: 0.95;
+  }
+
+  .user-meta i {
+    color: var(--secondary-gold);
+    min-width: 18px;
+    text-align: center;
+  }
+
+  /* 🔷 กล่องสถิติ */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .stat-card {
+    background: white;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-navy), var(--secondary-gold));
+  }
+
+  .stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0, 61, 122, 0.15);
+    border-color: var(--secondary-gold);
+  }
+
+  .stat-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+    line-height: 1;
+  }
+
+  .stat-card > div:last-child {
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  /* 🔷 ส่วนแสดงเกียรติบัตร */
+  .certificates-section {
+    background: white;
+    border-radius: 14px;
+    padding: 2.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border-color);
+  }
+
+  .certificates-section h3 {
+    color: var(--primary-navy);
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 1.5rem;
+    letter-spacing: 0.3px;
+  }
+
+  .certificate-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 2rem;
+    justify-items: center;
+  }
+
+  .certificate-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 290px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .certificate-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 61, 122, 0.18);
+    border-color: var(--secondary-gold);
+  }
+
+  .certificate-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    background: linear-gradient(135deg, #f5f7fa 0%, #ecf0f5 100%);
+    padding: 12px;
+    border-bottom: 4px solid var(--primary-blue);
+  }
+
+  .certificate-info {
+    padding: 1.2rem;
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .certificate-info strong {
+    color: var(--primary-navy);
+    display: block;
+    margin-bottom: 0.8rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .certificate-info small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin: 0.4rem 0;
+    line-height: 1.4;
+  }
+
+  .certificate-link {
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-navy));
+    color: white;
+    padding: 0.65rem 1.2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 82, 163, 0.2);
+    font-size: 0.95rem;
+  }
+
+  .certificate-link:hover {
+    background: linear-gradient(90deg, var(--primary-navy), #00408a);
+    box-shadow: 0 6px 16px rgba(0, 61, 122, 0.3);
+    transform: translateY(-2px);
+    color: white;
+  }
+
+  .view-all-btn {
+    display: block;
+    margin: 2.5rem auto 0;
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-navy));
+    color: white;
+    padding: 0.85rem 2.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+    width: fit-content;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 82, 163, 0.2);
+  }
+
+  .view-all-btn:hover {
+    background: linear-gradient(90deg, var(--primary-navy), #00408a);
+    box-shadow: 0 6px 16px rgba(0, 61, 122, 0.3);
+    transform: translateY(-2px);
+    color: white;
+  }
+
+  .empty-card {
+    text-align: center;
+    background: white;
+    padding: 4rem 2rem;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 2px dashed var(--border-color);
+  }
+
+  .empty-card p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .upload-btn {
+    background: linear-gradient(90deg, var(--secondary-gold), #e8be27);
+    color: var(--primary-navy);
+    padding: 0.9rem 2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 1rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+  }
+
+  .upload-btn:hover {
+    background: linear-gradient(90deg, #e8be27, #d4af37);
+    box-shadow: 0 6px 16px rgba(212, 175, 55, 0.3);
+    transform: translateY(-2px);
+    color: var(--primary-navy);
+  }
+
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 1.5rem;
+    }
+
+    .user-banner {
+      flex-direction: column;
+      text-align: center;
+      padding: 1.8rem 1.5rem;
+    }
+
+    .user-details {
+      margin-left: 0;
+      margin-top: 1.5rem;
+    }
+
+    .user-details h3 {
+      font-size: 1.5rem;
+    }
+
+    .user-meta span {
+      justify-content: center;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .certificate-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .certificate-card img {
+      height: 150px;
+    }
+  }
+</style>
+
+<div class="dashboard-container">
+  <!-- 🔷 โปรไฟล์ครู — แสดงข้อมูลครบ -->
+  <div class="user-banner mb-4">
+    <div class="user-avatar">
+      <img src="<%= user.image_path || '/images/default-teacher.png' %>" alt="รูปภาพครู">
+    </div>
+    <div class="user-details">
+      <h3>ยินดีต้อนรับ ครู <%= userName %></h3>
+      <div class="user-meta">
+        <span><i class="fas fa-briefcase me-2"></i> ตำแหน่ง: <%= position %></span>
+        <span><i class="fas fa-graduation-cap me-2"></i> วิชา: <%= subject %></span>
+        <span><i class="fas fa-school me-2"></i> โรงเรียน: <%= schoolName %></span>
+        <span><i class="fas fa-map-marker-alt me-2"></i> อำเภอ: <%= district %></span>
+        <span><i class="fas fa-phone me-2"></i> เบอร์โทร: <%= phone %></span>
+        <span><i class="fas fa-envelope me-2"></i> อีเมล: <%= email %></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔷 สถิติ — ปรับให้แสดงครบ -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value"><%= certificatesCount %></div>
+      <div>จำนวนเกียรติบัตร</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value"><%= schoolName %></div>
+      <div>โรงเรียน</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value"><%= district %></div>
+      <div>อำเภอ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value"><%= subject %></div>
+      <div>วิชา</div>
+    </div>
+  </div>
+
+  <!-- 🔷 แสดงเกียรติบัตรทั้งหมด (ไม่จำกัด 10 รายการ) -->
+  <% if (certificates.length > 0) { %>
+    <div class="certificates-section">
+      <h3>🎓 เกียรติบัตรทั้งหมด (<%= certificatesCount %>)</h3>
+      <div class="certificate-grid">
+        <% certificates.forEach(cert => { %>
+          <div class="certificate-card">
+            <!-- ✅ ใช้ file_path เท่านั้น (ไม่มี image_path ในตาราง certificates) -->
+            <img src="<%= cert.file_path %>" alt="เกียรติบัตร <%= cert.title %>">
+            <div class="certificate-info">
+              <strong><%= cert.title %></strong>
+              <small>เลขที่: <%= cert.certificate_number || '-' %></small>
+              <small>หน่วยงาน: <%= cert.issuing_agency || '-' %></small>
+              <small>วันที่ออก: <%= (cert.issue_date && cert.issue_date !== '0000-00-00') ? new Date(cert.issue_date).toLocaleDateString('th-TH') : '-' %></small>
+              <small>อัปโหลด: <%= new Date(cert.upload_date).toLocaleDateString('th-TH') %></small>
+              <a href="<%= cert.file_path %>" target="_blank" class="certificate-link">📄 ดูเกียรติบัตร</a>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+      <!-- ไม่จำเป็นต้องมี "ดูทั้งหมด" เพราะแสดงทั้งหมดแล้ว -->
+    </div>
+  <% } else { %>
+    <div class="empty-card">
+      <p>ยังไม่มีเกียรติบัตร กรุณาอัปโหลด</p>
+      <a href="/teacher/upload" class="upload-btn">+ อัปโหลดเกียรติบัตร</a>
+    </div>
+  <% } %>
+</div>

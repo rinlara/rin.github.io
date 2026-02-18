@@ -1,0 +1,582 @@
+<!-- views/admin/certificate-requests.ejs -->
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการคำขอหมายเลขเกียรติบัตร</title>
+    <!-- ✅ แก้: ลบช่องว่างท้าย URL -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --official-blue: #0d4a6b;
+            --official-gold: #d4af37;
+        }
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Sarabun', 'TH Sarabun New', sans-serif;
+        }
+        /* ✅ เพิ่ม Gradient Colors */
+        .bg-gradient-primary { background: linear-gradient(135deg, var(--official-blue) 0%, #1a5f7a 100%); }
+        .bg-gradient-warning { background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%); }
+        .bg-gradient-success { background: linear-gradient(135deg, #198754 0%, #146c43 100%); }
+        .bg-gradient-danger { background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%); }
+        .text-official-primary { color: var(--official-blue) !important; }
+        .card { border-radius: 12px; border: none; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .table th { font-weight: 600; text-transform: uppercase; font-size: 0.8rem; color: #64748b; }
+        .badge { font-weight: 500; padding: 0.5em 0.8em; }
+        .nav-tabs .nav-link {
+            border: none; padding: 0.75rem 1.5rem; border-radius: 0;
+            margin-right: 0.5rem; font-weight: 500; color: #64748b;
+            border-bottom: 2px solid transparent; transition: all 0.2s ease;
+        }
+        .nav-tabs .nav-link:hover { color: var(--official-blue); border-bottom-color: #cbd5e1; }
+        .nav-tabs .nav-link.active {
+            color: var(--official-blue); border-bottom-color: var(--official-blue);
+            background-color: rgba(13, 74, 107, 0.05); font-weight: 600;
+        }
+        .tab-content {
+            padding: 1.5rem; background-color: #ffffff;
+            border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0;
+        }
+        code {
+            background-color: #f1f5f9; padding: 2px 6px;
+            border-radius: 4px; font-family: monospace; font-size: 0.9em;
+        }
+        .dropdown-menu { max-height: 200px; overflow-y: auto; font-size: 0.85rem; }
+        .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
+        @media (max-width: 768px) {
+            .tab-content { padding: 1rem; }
+            .nav-tabs .nav-link { padding: 0.5rem 1rem; font-size: 0.85rem; }
+            table th, table td { font-size: 0.85rem; padding: 0.5rem !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid py-4">
+
+    <!-- ✅ Alert Messages - ตรวจสอบตัวแปรก่อนใช้ -->
+    <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i><%= error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <% } %>
+    <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i class="fas fa-check-circle me-2"></i><%= success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <% } %>
+
+    <!-- Header -->
+    <div class="card shadow-lg mb-4 border-0">
+        <div class="card-header bg-gradient-primary text-white py-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h3 class="mb-0 fw-bold">
+                    <i class="fas fa-tasks me-2"></i><strong>ระบบจัดการคำขอหมายเลขเกียรติบัตร</strong>
+                </h3>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-light text-dark">
+                        <i class="fas fa-user me-1"></i>
+                        <%= typeof user !== 'undefined' && user ? user.full_name : 'ผู้ดูแลระบบ' %>
+                    </span>
+                    <span class="badge bg-warning text-dark">
+                        <i class="fas fa-clock me-1"></i>
+                        <%= new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card bg-gradient-warning text-dark shadow-sm border-0 h-100">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0 fw-bold"><i class="fas fa-clock me-2"></i>รอตรวจสอบ</h6>
+                            <h3 class="mb-0 fw-bold"><%= typeof stats !== 'undefined' && stats ? stats.pending_count : 0 %></h3>
+                            <small class="text-muted">รายการคำขอ</small>
+                        </div>
+                        <div class="bg-white p-2 rounded-circle">
+                            <i class="fas fa-hourglass-half fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card bg-gradient-success text-white shadow-sm border-0 h-100">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0 fw-bold"><i class="fas fa-check-circle me-2"></i>อนุมัติแล้ว</h6>
+                            <h3 class="mb-0 fw-bold"><%= typeof stats !== 'undefined' && stats ? stats.approved_count : 0 %></h3>
+                            <small class="text-white-50">รายการคำขอ</small>
+                        </div>
+                        <div class="bg-white p-2 rounded-circle">
+                            <i class="fas fa-check-double fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card bg-gradient-danger text-white shadow-sm border-0 h-100">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0 fw-bold"><i class="fas fa-times-circle me-2"></i>ปฏิเสธ</h6>
+                            <h3 class="mb-0 fw-bold"><%= typeof stats !== 'undefined' && stats ? stats.rejected_count : 0 %></h3>
+                            <small class="text-white-50">รายการคำขอ</small>
+                        </div>
+                        <div class="bg-white p-2 rounded-circle">
+                            <i class="fas fa-ban fa-2x text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="card bg-gradient-primary text-white shadow-sm border-0 h-100">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0 fw-bold"><i class="fas fa-certificate me-2"></i>หมายเลขทั้งหมด</h6>
+                            <h3 class="mb-0 fw-bold"><%= typeof stats !== 'undefined' && stats ? (stats.total_certificates || 0).toLocaleString() : '0' %></h3>
+                            <small class="text-white-50">หมายเลขเกียรติบัตร</small>
+                        </div>
+                        <div class="bg-white p-2 rounded-circle">
+                            <i class="fas fa-award fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs System -->
+    <div class="card shadow-lg mb-4 border-0">
+        <div class="card-header bg-white py-3">
+            <ul class="nav nav-tabs card-header-tabs border-bottom-0" id="requestTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-bold text-official-primary" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab" aria-controls="pending" aria-selected="true">
+                        <i class="fas fa-clock me-1"></i>รอการตรวจสอบ
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold text-muted" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+                        <i class="fas fa-history me-1"></i>ประวัติการขอทั้งหมด
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body p-0">
+            <div class="tab-content" id="requestTabContent">
+                
+                <!-- Pending Requests Tab -->
+                <div class="tab-pane fade show active" id="pending" role="tabpanel">
+                    <% 
+                        const pendingList = (typeof pendingRequests !== 'undefined' && Array.isArray(pendingRequests)) ? pendingRequests : [];
+                    %>
+                    <% if (pendingList.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">วันที่ขอ</th><th>ผู้ขอ</th><th>โครงการ/กิจกรรม</th>
+                                    <th class="text-center">จำนวน</th><th class="text-center">วันที่จัด</th>
+                                    <th class="text-center">บทบาท</th><th class="text-center">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <% pendingList.forEach(request => { %>
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold"><%= new Date(request.created_at).toLocaleDateString('th-TH') %></div>
+                                    <small class="text-muted"><%= new Date(request.created_at).toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'}) %></small>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-primary"><%= request.full_name || '-' %></div>
+                                    <small class="text-muted"><%= request.school_name || '-' %></small>
+                                </td>
+                                <td>
+                                    <div class="fw-bold"><%= request.event_name || '-' %></div>
+                                    <small class="text-muted"><%= request.signature_owner || '-' %></small>
+                                </td>
+                                <td class="text-center"><span class="badge bg-primary"><%= request.certificate_count || 0 %></span></td>
+                                <td class="text-center"><span class="badge bg-info text-dark"><%= new Date(request.event_date).toLocaleDateString('th-TH') %></span></td>
+                                <td class="text-center">
+                                    <%= request.user_type === 'teacher' 
+                                        ? '<span class="badge bg-success">ครู</span>' 
+                                        : '<span class="badge bg-secondary">บุคลากร</span>' %>
+                                    <div class="mt-1"><small class="text-muted"><%= request.position_or_subject || '-' %></small></div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex gap-1 justify-content-center flex-wrap">
+                                        <button class="btn btn-sm btn-info view-details-btn" 
+                                            data-id="<%= request.id %>"
+                                            data-name="<%= request.full_name %>"
+                                            data-school="<%= request.school_name %>"
+                                            data-event="<%= request.event_name %>"
+                                            data-signer="<%= request.signature_owner || '-' %>"
+                                            data-count="<%= request.certificate_count %>"
+                                            data-eventdate="<%= new Date(request.event_date).toLocaleDateString('th-TH') %>"
+                                            data-role="<%= request.user_type %>"
+                                            data-position="<%= request.position_or_subject %>"
+                                            data-created="<%= new Date(request.created_at).toLocaleDateString('th-TH') + ' ' + new Date(request.created_at).toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'}) %>"
+                                            data-status="pending"><i class="fas fa-info-circle"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success approve-btn" data-id="<%= request.id %>"><i class="fas fa-check"></i></button>
+                                        <button class="btn btn-sm btn-danger reject-btn" data-id="<%= request.id %>"><i class="fas fa-times"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } else { %>
+                    <div class="text-center py-5">
+                        <i class="fas fa-check-circle fa-5x text-success opacity-50 mb-4"></i>
+                        <h5 class="text-muted">ไม่มีคำขอที่รอการตรวจสอบ</h5>
+                        <p class="text-muted small">ทุกคำขอได้รับการดำเนินการเรียบร้อยแล้ว</p>
+                        <button class="btn btn-primary btn-sm" onclick="switchTab('history')">
+                            <i class="fas fa-history me-1"></i>ดูประวัติทั้งหมด
+                        </button>
+                    </div>
+                    <% } %>
+                </div>
+
+                <!-- History Tab -->
+                <div class="tab-pane fade" id="history" role="tabpanel">
+                    <div class="alert alert-info border-0 bg-light mb-4 small">
+                        <i class="fas fa-info-circle me-2"></i><strong>แสดงประวัติคำขอทั้งหมด</strong> รวมถึงอนุมัติ, ปฏิเสธ, และรอตรวจสอบ
+                    </div>
+                    <% 
+                        const historyList = (typeof allRequests !== 'undefined' && Array.isArray(allRequests)) ? allRequests : [];
+                    %>
+                    <% if (historyList.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">วันที่ขอ</th><th>ผู้ขอ</th><th>โครงการ</th>
+                                    <th class="text-center">จำนวน</th><th class="text-center">วันที่จัด</th>
+                                    <th class="text-center">สถานะ</th><th class="text-center">หมายเลข</th><th class="text-center">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <% historyList.forEach(request => { 
+                                // ✅ แก้: ใช้ JSON.stringify + escape single quote สำหรับ data attribute
+                                const certNums = (request.certificate_numbers && Array.isArray(request.certificate_numbers)) 
+                                    ? JSON.stringify(request.certificate_numbers).replace(/'/g, "&apos;") 
+                                    : '[]';
+                            %>
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold"><%= new Date(request.created_at).toLocaleDateString('th-TH') %></div>
+                                    <small class="text-muted"><%= new Date(request.created_at).toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'}) %></small>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-primary"><%= request.full_name || '-' %></div>
+                                    <small class="text-muted"><%= request.school_name || '-' %></small>
+                                </td>
+                                <td><div class="fw-bold"><%= request.event_name || '-' %></div></td>
+                                <td class="text-center"><span class="badge bg-primary"><%= request.certificate_count || 0 %></span></td>
+                                <td class="text-center"><small><%= new Date(request.event_date).toLocaleDateString('th-TH') %></small></td>
+                                <td class="text-center">
+                                    <% if (request.status === 'approved') { %>
+                                        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>อนุมัติ</span>
+                                    <% } else if (request.status === 'rejected') { %>
+                                        <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i>ปฏิเสธ</span>
+                                    <% } else { %>
+                                        <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>รอตรวจ</span>
+                                    <% } %>
+                                </td>
+                                <td class="text-center">
+                                    <% if (request.status === 'approved' && request.certificate_numbers && request.certificate_numbers.length > 0) { %>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            <i class="fas fa-list-ol"></i> <%= request.certificate_numbers.length %>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <% request.certificate_numbers.forEach(num => { %>
+                                            <li><a class="dropdown-item small" href="#"><code><%= num %></code></a></li>
+                                            <% }); %>
+                                        </ul>
+                                    </div>
+                                    <% } else { %><span class="text-muted small">-</span><% } %>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-info view-details-btn" 
+                                        data-id="<%= request.id %>"
+                                        data-name="<%= request.full_name %>"
+                                        data-school="<%= request.school_name %>"
+                                        data-event="<%= request.event_name %>"
+                                        data-signer="<%= request.signature_owner || '-' %>"
+                                        data-count="<%= request.certificate_count %>"
+                                        data-eventdate="<%= new Date(request.event_date).toLocaleDateString('th-TH') %>"
+                                        data-role="<%= request.user_type %>"
+                                        data-position="<%= request.position_or_subject %>"
+                                        data-created="<%= new Date(request.created_at).toLocaleDateString('th-TH') + ' ' + new Date(request.created_at).toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'}) %>"
+                                        data-status="<%= request.status %>"
+                                        data-reason="<%= (request.rejection_reason || '').replace(/"/g, '&quot;') %>"
+                                        data-certs='<%= certNums %>'><i class="fas fa-info-circle"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <% if (typeof pagination !== 'undefined' && pagination && pagination.totalPages > 1) { %>
+                    <nav class="mt-3"><ul class="pagination justify-content-center pagination-sm mb-0">
+                        <li class="page-item <%= pagination.currentPage === 1 ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= pagination.currentPage - 1 %>&tab=history">ก่อนหน้า</a>
+                        </li>
+                        <% for (let i = Math.max(1, pagination.currentPage-2); i <= Math.min(pagination.totalPages, pagination.currentPage+2); i++) { %>
+                        <li class="page-item <%= i === pagination.currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>&tab=history"><%= i %></a>
+                        </li>
+                        <% } %>
+                        <li class="page-item <%= pagination.currentPage === pagination.totalPages ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= pagination.currentPage + 1 %>&tab=history">ถัดไป</a>
+                        </li>
+                    </ul></nav>
+                    <% } %>
+                    <% } else { %>
+                    <div class="text-center py-5">
+                        <i class="fas fa-history fa-5x text-muted opacity-50 mb-4"></i>
+                        <h5 class="text-muted">ยังไม่มีประวัติการขอ</h5>
+                        <button class="btn btn-primary btn-sm" onclick="switchTab('pending')">
+                            <i class="fas fa-arrow-left me-1"></i>ดูคำขอรอตรวจสอบ
+                        </button>
+                    </div>
+                    <% } %>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Note -->
+    <div class="alert alert-info mt-4 mb-0 border-0 shadow-sm small">
+        <div class="d-flex align-items-start">
+            <i class="fas fa-info-circle fa-lg me-3 text-info mt-1"></i>
+            <div>
+                <strong>คำแนะนำ:</strong>
+                <ul class="mb-0 ps-3 mt-1">
+                    <li>แท็บ <strong>"รอการตรวจสอบ"</strong>: จัดการคำขอใหม่</li>
+                    <li>แท็บ <strong>"ประวัติ"</strong>: ดูคำขอทั้งหมด พร้อมหมายเลขเกียรติบัตร</li>
+                    <li>คลิก <i class="fas fa-info-circle"></i> เพื่อดูรายละเอียดคำขอ</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="requestDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg"><div class="modal-content">
+        <div class="modal-header bg-gradient-primary text-white">
+            <h5 class="modal-title"><i class="fas fa-file-alt me-2"></i>รายละเอียดคำขอ</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+            <div class="row mb-4 pb-3 border-bottom">
+                <div class="col-md-4 mb-3"><div class="small text-muted mb-1">วันที่ขอ</div><div class="h6" id="m-created"></div></div>
+                <div class="col-md-4 mb-3"><div class="small text-muted mb-1">สถานะ</div><div id="m-status"></div></div>
+                <div class="col-md-4 mb-3"><div class="small text-muted mb-1">จำนวน</div><div class="h6"><span class="badge bg-primary" id="m-count"></span></div></div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+                        <div class="fw-bold text-official-primary mb-3"><i class="fas fa-user me-2"></i>ผู้ขอ</div>
+                        <div><strong>ชื่อ:</strong> <span id="m-name" class="text-primary"></span></div>
+                        <div><strong>สังกัด:</strong> <span id="m-school" class="text-muted"></span></div>
+                        <div><strong>บทบาท:</strong> <span id="m-role"></span></div>
+                        <div><strong>ตำแหน่ง/วิชา:</strong> <span id="m-position" class="text-muted"></span></div>
+                    </div></div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 border-0 shadow-sm"><div class="card-body">
+                        <div class="fw-bold text-official-primary mb-3"><i class="fas fa-calendar me-2"></i>กิจกรรม</div>
+                        <div><strong>ชื่อโครงการ:</strong> <span id="m-event" class="fw-bold"></span></div>
+                        <div><strong>ผู้ลงนาม:</strong> <span id="m-signer" class="text-info"></span></div>
+                        <div><strong>วันที่จัด:</strong> <span id="m-eventdate" class="badge bg-info text-dark"></span></div>
+                    </div></div>
+                </div>
+            </div>
+            <div id="m-certs-section" class="mb-3" style="display:none;">
+                <div class="fw-bold text-official-primary mb-2"><i class="fas fa-certificate me-2"></i>หมายเลขเกียรติบัตร</div>
+                <div class="bg-light p-3 rounded border small" id="m-certs-list"></div>
+            </div>
+            <div class="alert alert-light border mb-0 small">
+                <i class="fas fa-info-circle me-2 text-info"></i><span id="m-note"></span>
+            </div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-secondary btn-sm" data-bs-dismiss="modal"><i class="fas fa-times me-1"></i>ปิด</button></div>
+    </div></div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// ✅ ฟังก์ชันสลับแท็บ
+function switchTab(tabName) {
+    const tabEl = document.querySelector(`[data-bs-target="#${tabName}"]`);
+    if (tabEl) {
+        new bootstrap.Tab(tabEl).show();
+        history.pushState({}, '', `?tab=${tabName}`);
+    }
+}
+
+// ✅ ตั้งค่าแท็บจาก URL เมื่อโหลดหน้า
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'history') {
+        switchTab('history');
+    }
+});
+
+// ✅ แสดง Modal รายละเอียด
+function showDetails(btn) {
+    const d = {
+        created: btn.dataset.created,
+        name: btn.dataset.name,
+        school: btn.dataset.school,
+        event: btn.dataset.event,
+        signer: btn.dataset.signer,
+        count: btn.dataset.count,
+        eventdate: btn.dataset.eventdate,
+        role: btn.dataset.role,
+        position: btn.dataset.position,
+        status: btn.dataset.status || 'pending',
+        reason: btn.dataset.reason || '',
+        certs: btn.dataset.certs ? JSON.parse(btn.dataset.certs.replace(/&apos;/g, "'")) : []
+    };
+    
+    document.getElementById('m-created').textContent = d.created;
+    document.getElementById('m-name').textContent = d.name;
+    document.getElementById('m-school').textContent = d.school;
+    document.getElementById('m-event').textContent = d.event;
+    document.getElementById('m-signer').textContent = d.signer;
+    document.getElementById('m-count').textContent = d.count;
+    document.getElementById('m-eventdate').textContent = d.eventdate;
+    document.getElementById('m-position').textContent = d.position;
+    
+    // Role badge
+    document.getElementById('m-role').innerHTML = d.role === 'teacher' 
+        ? '<span class="badge bg-success">ครู</span>' 
+        : '<span class="badge bg-secondary">บุคลากร</span>';
+    
+    // Status & Note
+    const statusEl = document.getElementById('m-status');
+    const noteEl = document.getElementById('m-note');
+    const certsSec = document.getElementById('m-certs-section');
+    const certsList = document.getElementById('m-certs-list');
+    
+    certsSec.style.display = 'none';
+    certsList.innerHTML = '';
+    
+    if (d.status === 'approved') {
+        statusEl.innerHTML = '<span class="badge bg-success">อนุมัติแล้ว</span>';
+        noteEl.textContent = 'คำขอนี้ได้รับการอนุมัติแล้ว ระบบสร้างหมายเลขเกียรติบัตรเรียบร้อย';
+        if (d.certs.length > 0) {
+            certsSec.style.display = 'block';
+            certsList.innerHTML = d.certs.map((c,i) => `<div><code>${c}</code> <small class="text-muted">#${i+1}</small></div>`).join('');
+        }
+    } else if (d.status === 'rejected') {
+        statusEl.innerHTML = '<span class="badge bg-danger">ปฏิเสธ</span>';
+        noteEl.textContent = d.reason ? `ปฏิเสธ: ${d.reason}` : 'คำขอนี้ถูกปฏิเสธ';
+    } else {
+        statusEl.innerHTML = '<span class="badge bg-warning text-dark">รอตรวจสอบ</span>';
+        noteEl.textContent = 'คำขอนี้ยังรอการตรวจสอบจากเจ้าหน้าที่';
+    }
+    
+    new bootstrap.Modal(document.getElementById('requestDetailsModal')).show();
+}
+
+// ✅ อนุมัติคำขอ
+function approve(id) {
+    Swal.fire({
+        title: 'ยืนยันการอนุมัติ?',
+        html: '<p class="text-start small">ระบบจะสร้างหมายเลขเกียรติบัตรอัตโนมัติ<br><code>12345/2569</code></p>',
+        icon: 'question', showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-check me-1"></i>อนุมัติ',
+        cancelButtonText: '<i class="fas fa-times me-1"></i>ยกเลิก',
+        confirmButtonColor: '#166534'
+    }).then(r => {
+        if (r.isConfirmed) {
+            Swal.fire({title: 'กำลังประมวลผล...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+            fetch(`/admin/approve-request/${id}`, {method: 'POST', headers: {'Content-Type': 'application/json'}})
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({icon: 'success', title: 'อนุมัติเรียบร้อย!', text: data.message, timer: 2500, showConfirmButton: false})
+                    .then(() => location.reload());
+                } else {
+                    Swal.fire({icon: 'error', title: 'เกิดข้อผิดพลาด', text: data.message});
+                }
+            })
+            .catch(err => Swal.fire({icon: 'error', title: 'Error', text: err.message}));
+        }
+    });
+}
+
+// ✅ ปฏิเสธคำขอ
+function reject(id) {
+    Swal.fire({
+        title: 'ยืนยันการปฏิเสธ?',
+        input: 'textarea', inputPlaceholder: 'เหตุผล (ถ้ามี)...', inputAttributes: {rows: 3},
+        icon: 'warning', showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-times me-1"></i>ปฏิเสธ',
+        cancelButtonText: '<i class="fas fa-ban me-1"></i>ยกเลิก',
+        confirmButtonColor: '#b91c1c'
+    }).then(r => {
+        if (r.isConfirmed) {
+            Swal.fire({title: 'กำลังประมวลผล...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+            fetch(`/admin/reject-request/${id}`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({reason: r.value || 'ไม่ระบุเหตุผล'})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({icon: 'success', title: 'ปฏิเสธเรียบร้อย', timer: 2000, showConfirmButton: false})
+                    .then(() => location.reload());
+                } else {
+                    Swal.fire({icon: 'error', title: 'เกิดข้อผิดพลาด', text: data.message});
+                }
+            })
+            .catch(err => Swal.fire({icon: 'error', title: 'Error', text: err.message}));
+        }
+    });
+}
+
+// ✅ Event Listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // View details
+    document.querySelectorAll('.view-details-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => { e.preventDefault(); showDetails(e.currentTarget); });
+    });
+    // Approve
+    document.querySelectorAll('.approve-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => { e.preventDefault(); approve(btn.dataset.id); });
+    });
+    // Reject
+    document.querySelectorAll('.reject-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => { e.preventDefault(); reject(btn.dataset.id); });
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600">
+  <defs>
+    <linearGradient id="heroGrad" x1="0" x2="1">
+      <stop offset="0" stop-color="#003d7a" />
+      <stop offset="0.5" stop-color="#004fa0" />
+      <stop offset="1" stop-color="#005fa3" />
+    </linearGradient>
+    <pattern id="dots" patternUnits="userSpaceOnUse" width="40" height="40">
+      <circle cx="2" cy="2" r="1" fill="#fff" opacity="0.05"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="600" fill="url(#heroGrad)" />
+  <rect width="1200" height="600" fill="url(#dots)" />
+  <rect x="0" y="0" width="1200" height="8" fill="#d4af37" />
+  <rect x="0" y="592" width="1200" height="8" fill="#d4af37" />
+  <circle cx="150" cy="80" r="50" fill="rgba(255,255,255,0.15)" stroke="#ffd700" stroke-width="2"/>
+  <text x="150" y="85" text-anchor="middle" font-family="Sarabun, Arial" font-size="20" font-weight="700" fill="#ffd700">สพฐ</text>
+  <text x="600" y="150" text-anchor="middle" font-family="Sarabun, Arial" font-size="52" font-weight="800" fill="white" letter-spacing="1">สำนักงานเขตพื้นที่การศึกษา</text>
+  <text x="600" y="210" text-anchor="middle" font-family="Sarabun, Arial" font-size="44" font-weight="800" fill="#ffd700" letter-spacing="0.5">ขอนแก่น เขต 2</text>
+  <text x="600" y="290" text-anchor="middle" font-family="Sarabun, Arial" font-size="28" font-weight="600" fill="white">ระบบ E-Certificate</text>
+  <text x="600" y="330" text-anchor="middle" font-family="Sarabun, Arial" font-size="20" font-weight="500" fill="rgba(255,255,255,0.9)">ระบบจัดการเกียรติบัตรและใบประกาศอย่างเป็นระบบ</text>
+  <rect x="450" y="420" width="300" height="80" rx="8" fill="rgba(255,255,255,0.12)" stroke="#ffd700" stroke-width="2"/>
+  <text x="600" y="455" text-anchor="middle" font-family="Sarabun, Arial" font-size="18" font-weight="700" fill="#ffd700">เปิดใช้งาน 1 ธันวาคม 2568</text>
+  <text x="600" y="485" text-anchor="middle" font-family="Sarabun, Arial" font-size="16" font-weight="500" fill="white">สำหรับครูและบุคลากรทางการศึกษา</text>
+</svg>

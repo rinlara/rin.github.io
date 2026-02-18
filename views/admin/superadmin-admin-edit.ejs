@@ -1,0 +1,212 @@
+<%
+const admin = locals.admin || {};
+%>
+
+<style>
+  :root {
+    --primary-navy: #003d7a;
+    --primary-blue: #0052a3;
+    --secondary-gold: #d4af37;
+    --light-bg: #f5f7fa;
+    --border-color: #e2e8f0;
+    --text-dark: #1a202c;
+    --text-muted: #718096;
+  }
+
+  .container-fluid {
+    padding: 2.5rem;
+    background: linear-gradient(135deg, var(--light-bg) 0%, #ecf0f5 100%);
+  }
+
+  .page-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .page-header h1 {
+    color: var(--primary-navy);
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.5rem;
+  }
+
+  .breadcrumb {
+    background: transparent;
+    padding: 0;
+  }
+
+  .breadcrumb-item.active {
+    color: var(--secondary-gold);
+    font-weight: 600;
+  }
+
+  .card {
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0, 61, 122, 0.08);
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
+    color: white;
+    border: none;
+    border-bottom: 4px solid var(--secondary-gold);
+    padding: 1.5rem;
+  }
+
+  .card-header h4 {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .card-body {
+    padding: 2rem;
+  }
+
+  .form-label {
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.2px;
+  }
+
+  .form-control {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.7rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 82, 163, 0.1);
+    outline: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-navy)) !important;
+    border: none !important;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 82, 163, 0.2);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(90deg, var(--primary-navy), #00408a) !important;
+    box-shadow: 0 6px 16px rgba(0, 61, 122, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background: #6c757d !important;
+    border: none !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secondary:hover {
+    background: #5a6268 !important;
+    transform: translateY(-2px);
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .password-note {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+</style>
+
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="page-header">
+    <h1><i class="fas fa-edit me-2" style="color: var(--secondary-gold);"></i>แก้ไขแอดมิน</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/superadmin/dashboard" style="color: var(--primary-blue);">Super Admin</a></li>
+        <li class="breadcrumb-item"><a href="/superadmin/admins" style="color: var(--primary-blue);">จัดการแอดมิน</a></li>
+        <li class="breadcrumb-item active">แก้ไข</li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h4 class="mb-0">✏️ แก้ไขข้อมูลแอดมิน</h4>
+    </div>
+    <div class="card-body">
+      <form action="/superadmin/admins/<%= admin.id %>/update" method="POST">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label class="form-label">ชื่อเต็ม <span style="color: #ef4444;">*</span></label>
+              <input type="text" class="form-control" name="full_name" value="<%= admin.full_name %>" required>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label class="form-label">อีเมล <span style="color: #ef4444;">*</span></label>
+              <input type="email" class="form-control" name="email" value="<%= admin.email %>" required>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label class="form-label">โทรศัพท์</label>
+              <input type="tel" class="form-control" name="phone" value="<%= admin.phone || '' %>">
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label class="form-label">โรงเรียน</label>
+              <input type="text" class="form-control" name="school_name" value="<%= admin.school_name || '' %>">
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label class="form-label">บทบาท <span style="color: #ef4444;">*</span></label>
+              <select class="form-control" name="role" required>
+                <option value="admin" <% if (admin.role === 'admin') { %>selected<% } %>>Admin</option>
+                <option value="super_admin" <% if (admin.role === 'super_admin') { %>selected<% } %>>Super Admin</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label class="form-label"></label>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label class="form-label">รหัสผ่านใหม่</label>
+              <input type="password" class="form-control" name="password" placeholder="ปล่อยว่างหากไม่ต้องการเปลี่ยน">
+              <div class="password-note">
+                💡 ปล่อยว่างหากยังใช้รหัสผ่านเดิม
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label class="form-label"></label>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-save me-2"></i>บันทึกการเปลี่ยนแปลง
+          </button>
+          <a href="/superadmin/admins" class="btn btn-secondary btn-lg">
+            <i class="fas fa-arrow-left me-2"></i>ย้อนกลับ
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

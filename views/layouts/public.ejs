@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title || "ระบบ E-Certificate สพป.ขอนแก่น เขต 2" %></title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+
+  <!-- Use local / system font stack (avoid Google Fonts for CSP/privacy issues) -->
+
+  <!-- Animate CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
+
+  <style>
+    :root {
+      --primary-navy: #003d7a;
+      --primary-blue: #0052a3;
+      --secondary-gold: #d4af37;
+      --light-bg: #f5f5f5;
+      --text-dark: #1a1a1a;
+      --text-muted: #666666;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, "Noto Sans Thai", 'Noto Sans', sans-serif;
+      background-color: var(--light-bg);
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      line-height: 1.6;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(90deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1050;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid var(--secondary-gold);
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .navbar-logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      border: 2px solid var(--secondary-gold);
+    }
+
+    .navbar-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .navbar-actions {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .btn-login {
+      background: transparent;
+      border: 2px solid white;
+      color: white;
+      padding: 0.6rem 1.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-login:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--secondary-gold);
+      color: var(--secondary-gold);
+    }
+
+    .btn-register {
+      background: var(--secondary-gold);
+      color: var(--primary-navy);
+      border: none;
+      padding: 0.6rem 1.6rem;
+      border-radius: 4px;
+      font-weight: 700;
+      box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-register:hover {
+      background: #e8be27;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+    }
+
+    /* MAIN CONTENT */
+    main {
+      flex: 1;
+      margin-top: 76px;
+    }
+
+    /* FOOTER */
+    footer {
+      background: linear-gradient(135deg, var(--primary-navy), var(--primary-blue));
+      color: white;
+      text-align: center;
+      padding: 2.5rem 0;
+      border-top: 4px solid var(--secondary-gold);
+      margin-top: auto;
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    /* ALERTS */
+    .alert {
+      margin: 1.5rem;
+      border-radius: 8px;
+      border: none;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0.8rem 1.3rem;
+      }
+      .navbar-logo {
+        width: 50px;
+        height: 50px;
+      }
+      .navbar-title {
+        font-size: 1.15rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .navbar-title {
+        font-size: 1rem;
+      }
+      .btn-login, .btn-register {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/" class="navbar-brand">
+      <img src="/images/logo องค์กรคุณภาพเเละธรรมาภิบาล.png" 
+           alt="สพป.ขอนแก่น เขต 2" 
+           class="navbar-logo">
+      <span class="navbar-title">ระบบ E-Certificate สพป.ขอนแก่น เขต 2</span>
+    </a>
+
+    <div class="navbar-actions">
+      <% if (!locals.user) { %>
+        <a href="/login" class="btn-login">
+          <i class="fas fa-sign-in-alt me-1"></i> เข้าสู่ระบบ
+        </a>
+        <a href="/register" class="btn-register">
+          <i class="fas fa-user-plus me-1"></i> ลงทะเบียน
+        </a>
+      <% } else { %>
+        <a href="/logout" class="btn-login">
+          <i class="fas fa-sign-out-alt me-1"></i> ออกจากระบบ
+        </a>
+      <% } %>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+    <!-- ALERTS -->
+    <% if (locals.success) { %>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= locals.success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+    
+    <% if (locals.error) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= locals.error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+
+    <%- body %>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2 | พัฒนาโดยฝ่ายเทคโนโลยีสารสนเทศ</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

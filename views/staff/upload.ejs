@@ -1,0 +1,313 @@
+
+<% /* ใช้ jsDelivr แทน cdnjs เพื่อไม่ฝ่า CSP */ %>
+
+<div class="upload-container shadow-lg">
+  <div class="page-header text-center mb-4">
+    <h1 class="page-title"><i class="fas fa-award text-primary me-2"></i> อัปโหลดเกียรติบัตร</h1>
+    <p class="page-subtitle text-muted">ระบบจัดเก็บและแสดงผลเกียรติบัตร | สพป.ขอนแก่น เขต 2</p>
+  </div>
+
+  <!-- ✅ ข้อความแจ้งเตือน -->
+  <% if (locals.success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle me-2"></i> <%= success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <% if (locals.error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-triangle me-2"></i> <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <!-- ✅ คำเตือนสำคัญ -->
+  <div class="alert alert-warning fade-in mb-4">
+    <i class="fas fa-info-circle me-2"></i> 
+    <strong>กรุณาอัปโหลดเฉพาะไฟล์เกียรติบัตรจริงเท่านั้น</strong><br>
+    <small class="text-muted">ระบบไม่สามารถตรวจสอบเนื้อหาไฟล์ได้โดยอัตโนมัติ ผู้ดูแลระบบจะตรวจสอบย้อนหลัง หากอัปโหลดไม่ตรงตามวัตถุประสงค์ อาจถูกลบออกโดยไม่แจ้งให้ทราบล่วงหน้า</small>
+  </div>
+
+  <!-- ✅ ฟอร์มอัปโหลด -->
+  <form method="POST" action="/staff/upload" enctype="multipart/form-data" id="uploadForm">
+    
+    <!-- 🔹 หมายเลขเกียรติบัตร -->
+<div class="form-group mb-4">
+  <label for="certificate_number" class="form-label d-flex align-items-center">
+    <i class="fas fa-hashtag text-primary me-2"></i> หมายเลขเกียรติบัตร <span class="text-danger">*</span>
+  </label>
+  <input 
+    type="text" 
+    id="certificate_number" 
+    name="certificate_number" 
+    class="form-control form-control-lg"
+    required 
+    placeholder="ตัวอย่าง: 10437/2568 หรือ ๑๐๔๓๗/๒๕๖๘"
+    maxlength="30"
+    autocomplete="off"
+    pattern="[0-9๐-๙\/\-]+"
+    title="กรุณาใส่เฉพาะตัวเลข (ไทยหรืออาหรับ), / หรือ - เท่านั้น"
+  >
+  <div class="form-text text-muted mt-2">
+    <strong>รูปแบบตัวอย่าง:</strong> <code>10437/2568</code>, <code>๑๐๔๓๗/๒๕๖๘</code><br>
+    - ใส่ได้ทั้ง <strong>เลขอาหรับ (0-9)</strong> และ <strong>เลขไทย (๐-๙)</strong><br>
+    - ใช้เครื่องหมาย <code>/</code> หรือ <code>-</code> คั่นได้
+  </div>
+</div>
+    <!-- 🔹 ชื่อเกียรติบัตร -->
+    <div class="form-group mb-4">
+      <label for="title" class="form-label d-flex align-items-center">
+        <i class="fas fa-file-alt text-primary me-2"></i> ชื่อเกียรติบัตร <span class="text-danger">*</span>
+      </label>
+      <input 
+        type="text" 
+        id="title" 
+        name="title" 
+        class="form-control form-control-lg" 
+        required 
+        placeholder="เช่น เกียรติบัตรครูดีเด่น ปีการศึกษา 2568"
+        maxlength="150"
+      >
+    </div>
+
+    <!-- 🔹 หน่วยงานผู้ออก -->
+    <div class="form-group mb-4">
+      <label for="issuing_agency" class="form-label d-flex align-items-center">
+        <i class="fas fa-building text-primary me-2"></i> หน่วยงานผู้ออกเกียรติบัตร <span class="text-danger">*</span>
+      </label>
+      <input 
+        type="text" 
+        id="issuing_agency" 
+        name="issuing_agency" 
+        class="form-control form-control-lg" 
+        required 
+        placeholder="เช่น สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2"
+        maxlength="200"
+      >
+    </div>
+
+    <!-- 🔹 คำอธิบาย -->
+    <div class="form-group mb-4">
+      <label for="description" class="form-label d-flex align-items-center">
+        <i class="fas fa-sticky-note text-primary me-2"></i> คำอธิบายเพิ่มเติม
+      </label>
+      <textarea 
+        id="description" 
+        name="description" 
+        class="form-control" 
+        rows="3" 
+        placeholder="เช่น รับรางวัลครูดีเด่น ระดับเขตพื้นที่"
+        maxlength="500"
+      ></textarea>
+    </div>
+
+    <!-- 🔹 อัปโหลดไฟล์ (simple input, removed dashed box) -->
+    <div class="form-group mb-4">
+      <label for="file" class="form-label d-flex align-items-center">
+        <i class="fas fa-cloud-upload-alt text-primary me-2"></i> เลือกไฟล์เกียรติบัตร
+      </label>
+      <input
+        type="file"
+        id="file"
+        name="certificate"
+        required
+        accept=".pdf,.jpg,.jpeg,.png"
+        class="form-control"
+      />
+      <div class="form-text text-muted mt-2">
+        รองรับ: <strong>.pdf, .jpg, .jpeg, .png</strong> | สูงสุด <strong>10 MB</strong>
+      </div>
+      <div id="fileName" class="mt-2 fw-semibold text-dark"></div>
+        <div id="ocrStatus" class="mt-3" style="display:none;"></div>
+    </div>
+
+    <!-- 🔹 วันที่ออก -->
+    <div class="form-group mb-4">
+      <label for="issue_date" class="form-label d-flex align-items-center">
+        <i class="fas fa-calendar-day text-primary me-2"></i> วันที่ออกเกียรติบัตร
+      </label>
+      <input 
+        type="date" 
+        id="issue_date" 
+        name="issue_date" 
+        class="form-control form-control-lg"
+      >
+      <div class="form-text text-muted mt-1">
+        เลือกวันที่ที่ปรากฏในเกียรติบัตรจริง
+      </div>
+    </div>
+
+    <!-- 🔹 ปุ่มส่ง -->
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-primary btn-lg px-5 py-2 rounded-pill shadow-sm">
+        <i class="fas fa-cloud-upload-alt me-2"></i> อัปโหลดเกียรติบัตร
+      </button>
+    </div>
+  </form>
+
+  <footer class="footer mt-5 pt-3 border-top text-center text-muted">
+    © <%= new Date().getFullYear() %> สพป.ขอนแก่น เขต 2
+  </footer>
+</div>
+
+<style>
+.upload-container {
+  max-width: 680px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #0d6efd;
+}
+
+.page-subtitle {
+  font-size: 1.05rem;
+  margin-top: 5px;
+  color: #6c757d;
+}
+
+.form-label {
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+}
+
+.form-control, .form-select {
+  padding: 0.75rem 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  font-size: 1.05rem;
+}
+
+.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13,110,253,0.15);
+}
+
+.upload-area {
+  background: #f8f9ff;
+  border: 2px dashed #0d6efd;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.upload-area:hover {
+  background: #eef5ff;
+}
+
+.alert {
+  border-radius: 12px;
+}
+
+.alert i {
+  font-size: 1.1rem;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.footer {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+@media (max-width: 576px) {
+  .upload-container {
+    padding: 25px;
+    margin: 20px auto;
+  }
+  .page-title {
+    font-size: 1.5rem;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const fileInput = document.getElementById('file');
+  const fileName = document.getElementById('fileName');
+  const triggerFile = document.getElementById('triggerFile');
+  const uploadForm = document.getElementById('uploadForm');
+
+  triggerFile.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+      fileName.textContent = "📁 " + fileInput.files[0].name;
+    } else {
+      fileName.textContent = "";
+    }
+  });
+
+  uploadForm.addEventListener('submit', function(e) {
+    const file = fileInput.files[0];
+    const certNum = document.getElementById('certificate_number').value.trim();
+    const issueDateInput = document.getElementById('issue_date').value;
+
+    if (!file) {
+      alert("กรุณาเลือกไฟล์เกียรติบัตร");
+      e.preventDefault();
+      return;
+    }
+
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      alert("กรุณาอัปโหลดเฉพาะไฟล์ .pdf, .jpg, .jpeg หรือ .png เท่านั้น!");
+      e.preventDefault();
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("ขนาดไฟล์ต้องไม่เกิน 10 MB");
+      e.preventDefault();
+      return;
+    }
+
+    if (!certNum) {
+      alert("กรุณากรอกหมายเลขเกียรติบัตร");
+      e.preventDefault();
+      return;
+    }
+
+    const pattern = /^[0-9๐-๙]+[\/\-][0-9๐-๙]+$/;
+    if (!pattern.test(certNum)) {
+      alert("รูปแบบหมายเลขไม่ถูกต้อง!\nตัวอย่างที่ถูกต้อง:\n- 10437/2568\n- ๑๐๔๓๗/๒๕๖๘");
+      e.preventDefault();
+      return;
+    }
+
+    if (issueDateInput) {
+      const issueDate = new Date(issueDateInput);
+      const today = new Date();
+      const minDate = new Date();
+      minDate.setFullYear(today.getFullYear() - 5);
+
+      if (issueDate > today) {
+        alert("วันที่ออกไม่สามารถเป็นอนาคตได้");
+        e.preventDefault();
+        return;
+      }
+      if (issueDate < minDate) {
+        alert("วันที่ออกต้องไม่เกิน 5 ปีย้อนหลัง");
+        e.preventDefault();
+        return;
+      }
+    }
+  });
+});
+</script>

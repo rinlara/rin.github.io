@@ -1,0 +1,341 @@
+<%
+// ให้ app.js จัดการ activePage — ไม่เซ็ตใน view
+%>
+
+<!-- โหลดฟอนต์ Sarabun + Bootstrap Icons -->
+<!-- Removed Google Fonts to avoid CSP/font loading issues -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: #f8f9fa;
+  }
+  .gov-header {
+    background-color: #0d2c54;
+    color: white;
+    border-bottom: 4px solid #d4af37;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+  }
+  .gov-card {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    box-shadow: none;
+    background-color: white;
+  }
+  .btn-gov-primary {
+    background-color: #0d2c54;
+    border-color: #0d2c54;
+    color: white;
+  }
+  .btn-gov-primary:hover {
+    background-color: #123b70;
+    border-color: #123b70;
+  }
+  .btn-gov-success {
+    background-color: #155724;
+    border-color: #155724;
+    color: white;
+  }
+  .btn-gov-success:hover {
+    background-color: #1e7e34;
+    border-color: #1e7e34;
+  }
+  .btn-outline-gov-success {
+    color: #155722;
+    border-color: #155722;
+  }
+  .btn-outline-gov-success:hover {
+    background-color: #155722;
+    color: white;
+  }
+  .form-control, .form-select {
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+  }
+  .badge-primary-gov {
+    background-color: #0d2c54;
+    color: white;
+    padding: 0.4em 0.8em;
+    border-radius: 50rem;
+  }
+  .badge-success-gov {
+    background-color: #155722;
+    color: white;
+    padding: 0.4em 0.8em;
+    border-radius: 50rem;
+  }
+  .district-card {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background-color: white;
+  }
+  .district-card .icon-bg {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #e0f2fe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+  }
+  .district-card .icon-bg i {
+    color: #2e81ed;
+    font-size: 1.5rem;
+  }
+  .pagination .page-item.active .page-link {
+    background-color: #327ad8;
+    border-color: #3f8aec;
+  }
+</style>
+
+<!-- 🔹 ส่วนหัว — แบบราชการ (เต็มความกว้าง) -->
+<section class="gov-header">
+  <div class="container">
+    <div class="text-center">
+      <h1 class="fw-bold mb-1 fs-4">
+        <i class="bi bi-geo-alt-fill me-2"></i>อำเภอที่เข้าร่วมระบบ
+      </h1>
+      <p class="mb-0">
+        ทั้งหมด <%= (districts?.length || 0) %> อำเภอ |
+        รวม <%= totalSchools || 0 %> โรงเรียน |
+        <%= totalTeachers || 0 %> ครู
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <!-- 🎯 ฟิลเตอร์ + ปุ่ม -->
+  <div class="card gov-card mb-4">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label fw-medium">🔍 ค้นหาอำเภอ</label>
+          <input type="text" id="searchInput" class="form-control" placeholder="พิมพ์ชื่ออำเภอ...">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-medium">📊 เรียงลำดับตาม</label>
+          <select id="sortSelect" class="form-select">
+            <option value="name">ชื่ออำเภอ (ก-ฮ)</option>
+            <option value="schools">จำนวนโรงเรียน</option>
+            <option value="teachers">จำนวนครู</option>
+          </select>
+        </div>
+        <div class="col-md-2 d-grid">
+          <button id="sortBtn" class="btn btn-gov-primary">
+            <i class="bi bi-arrow-down-up me-1"></i> เรียง
+          </button>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button id="exportCSV" class="btn btn-gov-success flex-fill">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> CSV
+          </button>
+          <button id="exportExcel" class="btn btn-outline-gov-success flex-fill">
+            <i class="bi bi-file-earmark-excel me-1"></i> Excel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📈 แผนภูมิ -->
+  <% if (districts && districts.length > 0) { %>
+    <div class="card gov-card mb-4">
+      <div class="card-body">
+        <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-bar-chart-line me-1"></i> Top 5 อำเภอที่มีครูมากที่สุด</h5>
+        <canvas id="districtChart" height="150"></canvas>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- 🗺️ รายการอำเภอ -->
+  <% if (districts && districts.length > 0) { %>
+    <div id="districtsContainer" class="row g-4">
+      <% districts.forEach((d) => { 
+        const name = d.name || '-';
+        const schools = d.schoolCount || 0;
+        const teachers = d.teacherCount || 0;
+      %>
+        <div class="col-md-6 col-lg-4"
+             data-name="<%= name.toLowerCase() %>"
+             data-schools="<%= schools %>"
+             data-teachers="<%= teachers %>">
+          <div class="district-card h-100">
+            <div class="card-body text-center p-4">
+              <div class="icon-bg">
+                <i class="bi bi-geo-alt"></i>
+              </div>
+              <h5 class="fw-bold mb-3"><%= name %></h5>
+              <div class="d-flex justify-content-center gap-3 mb-3">
+                <div>
+                  <span class="badge badge-primary-gov">
+                    <i class="bi bi-building me-1"></i> <%= schools %>
+                  </span>
+                  <small class="text-muted d-block mt-1">โรงเรียน</small>
+                </div>
+                <div>
+                  <span class="badge badge-success-gov">
+                    <i class="bi bi-person-fill me-1"></i> <%= teachers %>
+                  </span>
+                  <small class="text-muted d-block mt-1">ครู</small>
+                </div>
+              </div>
+              <a href="/admin/districts/<%= encodeURIComponent(name) %>" 
+                 class="btn btn-gov-primary btn-sm rounded-pill px-3">
+                <i class="bi bi-eye me-1"></i> ดูรายละเอียด
+              </a>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+
+    <!-- 📄 Pagination -->
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center" id="pagination"></ul>
+    </nav>
+
+  <% } else { %>
+    <div class="text-center py-5">
+      <i class="bi bi-geo-alt fs-1 text-muted mb-3"></i>
+      <h5 class="text-muted fw-medium">ยังไม่มีอำเภอที่ลงทะเบียน</h5>
+    </div>
+  <% } %>
+</div>
+
+<!-- 📊 Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('districtsContainer');
+  const searchInput = document.getElementById('searchInput');
+  const sortBtn = document.getElementById('sortBtn');
+  const sortSelect = document.getElementById('sortSelect');
+  const paginationEl = document.getElementById('pagination');
+
+  if (!container) return;
+  const allCards = Array.from(container.children);
+  let currentPage = 1;
+  const itemsPerPage = 6;
+
+  function renderPage(page) {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    allCards.forEach((c, i) => {
+      c.style.display = i >= start && i < end ? '' : 'none';
+    });
+
+    paginationEl.innerHTML = '';
+    const totalPages = Math.ceil(allCards.length / itemsPerPage);
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement('li');
+      li.className = `page-item ${i === page ? 'active' : ''}`;
+      li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+      li.addEventListener('click', e => {
+        e.preventDefault();
+        currentPage = i;
+        renderPage(currentPage);
+      });
+      paginationEl.appendChild(li);
+    }
+  }
+  renderPage(currentPage);
+
+  searchInput?.addEventListener('input', e => {
+    const term = e.target.value.toLowerCase().trim();
+    allCards.forEach(card => {
+      const name = card.dataset.name || '';
+      card.style.display = name.includes(term) ? '' : 'none';
+    });
+    renderPage(1); // รีเซ็ตไปหน้า 1
+  });
+
+  sortBtn?.addEventListener('click', () => {
+    const sortBy = sortSelect.value;
+    allCards.sort((a, b) => {
+      const aVal = sortBy === 'name' ? a.dataset.name : parseFloat(a.dataset[sortBy]);
+      const bVal = sortBy === 'name' ? b.dataset.name : parseFloat(b.dataset[sortBy]);
+      return sortBy === 'name' 
+        ? aVal.localeCompare(bVal, 'th') 
+        : bVal - aVal;
+    });
+    allCards.forEach(card => container.appendChild(card));
+    renderPage(1);
+  });
+
+  // Export CSV
+  document.getElementById('exportCSV')?.addEventListener('click', () => {
+    const rows = [['อำเภอ', 'จำนวนโรงเรียน', 'จำนวนครู']];
+    allCards.forEach(card => {
+      if (card.style.display !== 'none') {
+        rows.push([card.dataset.name, card.dataset.schools, card.dataset.teachers]);
+      }
+    });
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + rows.map(r => r.join(',')).join("\n")], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ข้อมูลอำเภอ.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Export Excel
+  document.getElementById('exportExcel')?.addEventListener('click', () => {
+    const data = [['อำเภอ', 'จำนวนโรงเรียน', 'จำนวนครู']];
+    allCards.forEach(card => {
+      if (card.style.display !== 'none') {
+        data.push([card.dataset.name, card.dataset.schools, card.dataset.teachers]);
+      }
+    });
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "อำเภอ");
+    XLSX.writeFile(wb, "ข้อมูลอำเภอ.xlsx");
+  });
+
+  // Chart
+  <% if (districts && districts.length > 0) { %>
+    const chartData = <%- JSON.stringify(
+      districts
+        .filter(d => d.teacherCount > 0)
+        .sort((a, b) => b.teacherCount - a.teacherCount)
+        .slice(0, 5)
+        .map(d => ({ name: d.name || 'ไม่ระบุ', teachers: d.teacherCount }))
+    ) %>;
+    
+    new Chart(document.getElementById('districtChart'), {
+      type: 'bar',
+      data: {
+        labels: chartData.map(d => d.name),
+        datasets: [{
+          label: 'จำนวนครู',
+          data: chartData.map(d => d.teachers),
+          backgroundColor: '#0d2c54',
+          borderRadius: 4,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { 
+          y: { 
+            beginAtZero: true,
+            ticks: { precision: 0, font: { family: 'Sarabun' } }
+          },
+          x: {
+            ticks: { font: { family: 'Sarabun' } }
+          }
+        }
+      }
+    });
+  <% } %>
+});
+</script>

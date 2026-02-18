@@ -1,0 +1,232 @@
+<%
+const recentApprovals = locals.recentApprovals || [];
+%>
+
+<style>
+  :root {
+    --primary-navy: #003d7a;
+    --primary-blue: #0052a3;
+    --secondary-gold: #d4af37;
+    --light-bg: #f5f7fa;
+    --border-color: #e2e8f0;
+    --text-dark: #1a202c;
+    --text-muted: #718096;
+  }
+
+  .container-fluid {
+    padding: 2.5rem;
+    background: linear-gradient(135deg, var(--light-bg) 0%, #ecf0f5 100%);
+  }
+
+  .page-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .page-header h1 {
+    color: var(--primary-navy);
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.5rem;
+  }
+
+  .breadcrumb {
+    background: transparent;
+    padding: 0;
+  }
+
+  .breadcrumb-item.active {
+    color: var(--secondary-gold);
+    font-weight: 600;
+  }
+
+  .card {
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0, 61, 122, 0.08);
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
+    color: white;
+    border: none;
+    border-bottom: 4px solid var(--secondary-gold);
+    padding: 1.5rem;
+  }
+
+  .card-header h4 {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .card-body {
+    padding: 2rem;
+  }
+
+  .table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+  }
+
+  .table {
+    margin-bottom: 0;
+  }
+
+  .table thead th {
+    background: linear-gradient(90deg, var(--primary-navy), var(--primary-blue));
+    color: white;
+    border: none;
+    font-weight: 700;
+    padding: 1rem;
+    letter-spacing: 0.2px;
+  }
+
+  .table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+  }
+
+  .table tbody tr:hover {
+    background-color: #f5f7fa;
+    box-shadow: inset 4px 0 0 var(--secondary-gold);
+  }
+
+  .table tbody td {
+    padding: 1rem;
+    color: var(--text-dark);
+    vertical-align: middle;
+  }
+
+  .badge {
+    font-weight: 700;
+    padding: 0.5em 0.95em;
+  }
+
+  .badge-approved {
+    background: linear-gradient(90deg, #10b981, #059669);
+    color: white;
+  }
+
+  .badge-rejected {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+    color: white;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .audit-details {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+  }
+</style>
+
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="page-header">
+    <h1><i class="fas fa-audit me-2" style="color: var(--secondary-gold);"></i>บันทึกการตรวจสอบและการอนุมัติ</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/superadmin/dashboard" style="color: var(--primary-blue);">Super Admin</a></li>
+        <li class="breadcrumb-item active">บันทึกการตรวจสอบ</li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h4 class="mb-0">📊 ประวัติการอนุมัติและปฏิเสธคำขอ</h4>
+    </div>
+    <div class="card-body">
+      <% if (recentApprovals && recentApprovals.length > 0) { %>
+        <div style="overflow-x: auto;">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>โครงการ/กิจกรรม</th>
+                <th>ผู้ขอ</th>
+                <th>สถานะ</th>
+                <th>ผู้จัดการ</th>
+                <th>วันที่</th>
+                <th>หมายเหตุ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% recentApprovals.forEach(audit => { %>
+                <tr>
+                  <td>
+                    <strong><%= audit.event_name %></strong>
+                  </td>
+                  <td>
+                    <small><%= audit.requester_name || '-' %></small>
+                  </td>
+                  <td>
+                    <% if (audit.status === 'approved') { %>
+                      <span class="badge badge-approved">✅ อนุมัติแล้ว</span>
+                    <% } else if (audit.status === 'rejected') { %>
+                      <span class="badge badge-rejected">❌ ไม่อนุมัติ</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <small>
+                      <% if (audit.status === 'approved') { %>
+                        <%= audit.approved_by_name || '-' %>
+                        <div class="audit-details">
+                          <%= new Date(audit.approved_at).toLocaleString('th-TH') %>
+                        </div>
+                      <% } else if (audit.status === 'rejected') { %>
+                        <%= audit.rejected_by_name || '-' %>
+                        <div class="audit-details">
+                          <%= new Date(audit.rejected_at).toLocaleString('th-TH') %>
+                        </div>
+                      <% } %>
+                    </small>
+                  </td>
+                  <td>
+                    <small class="text-muted">
+                      <% if (audit.status === 'approved') { %>
+                        <%= new Date(audit.approved_at).toLocaleDateString('th-TH') %>
+                      <% } else if (audit.status === 'rejected') { %>
+                        <%= new Date(audit.rejected_at).toLocaleDateString('th-TH') %>
+                      <% } %>
+                    </small>
+                  </td>
+                  <td>
+                    <small>
+                      <% if (audit.status === 'rejected' && audit.rejection_reason) { %>
+                        <span title="<%= audit.rejection_reason %>">
+                          <%= audit.rejection_reason.substring(0, 30) %>...
+                        </span>
+                      <% } else { %>
+                        -
+                      <% } %>
+                    </small>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <div class="empty-state-icon">📊</div>
+          <p>ยังไม่มีบันทึกการอนุมัติหรือปฏิเสธ</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

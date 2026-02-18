@@ -1,0 +1,186 @@
+<% 
+  // ดึงชื่อ-นามสกุลจาก session
+  const fullName = locals.user?.full_name || 'ผู้ใช้งาน';
+  const role = locals.user?.role || 'user';
+%>
+
+<div class="guide-container">
+  <div class="text-center mb-5">
+    <div class="guide-icon mb-3">
+      <i class="fas fa-book-open fa-2x text-primary"></i>
+    </div>
+    <h1 class="display-5 fw-bold text-primary">📘 คู่มือการใช้งานระบบ</h1>
+    <p class="lead text-muted">ระบบจัดเก็บและแสดงผลเกียรติบัตร สพป.ขอนแก่น เขต 2</p>
+  </div>
+
+  <div class="steps-container">
+    <!-- ขั้นตอนที่ 1 -->
+    <div class="step-card card mb-4">
+      <div class="card-body">
+        <div class="step-header">
+          <div class="step-number bg-primary text-white">1</div>
+          <h4 class="step-title text-primary mb-0">เข้าสู่ระบบ</h4>
+        </div>
+        <div class="step-content mt-3">
+          <ul class="step-list">
+            <li>ไปที่หน้าเข้าสู่ระบบของเว็บไซต์</li>
+            <li>กรอก <strong>อีเมล</strong> และ <strong>รหัสผ่าน</strong> ที่ได้รับ</li>
+            <li>หากลืมรหัสผ่าน ให้ใช้เมนู <strong>“ลืมรหัสผ่าน”</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ขั้นตอนที่ 2 -->
+    <div class="step-card card mb-4">
+      <div class="card-body">
+        <div class="step-header">
+          <div class="step-number bg-success text-white">2</div>
+          <h4 class="step-title text-success mb-0">อัปโหลดเกียรติบัตร</h4>
+        </div>
+        <div class="step-content mt-3">
+          <ul class="step-list">
+            <li>คลิกเมนู <strong>“อัปโหลด”</strong> จากแถบด้านซ้าย</li>
+            <li>เลือกไฟล์เกียรติบัตร (รองรับ PDF, JPG, PNG ไม่เกิน 10 MB)</li>
+            <li>กรอกข้อมูล: เลขที่เกียรติบัตร, ชื่อเรื่อง, หน่วยงานผู้มอบ</li>
+            <li>คลิกปุ่ม <strong>“อัปโหลดเกียรติบัตร”</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ขั้นตอนที่ 3 -->
+    <div class="step-card card mb-4">
+      <div class="card-body">
+        <div class="step-header">
+          <div class="step-number bg-info text-white">3</div>
+          <h4 class="step-title text-info mb-0">จัดการเกียรติบัตร</h4>
+        </div>
+        <div class="step-content mt-3">
+          <ul class="step-list">
+            <li>ไปที่เมนู <strong>“เกียรติบัตร”</strong></li>
+            <li>สามารถ <strong>ดู, แก้ไข, ลบ</strong> ได้ทันที</li>
+            <li>ระบบจะบันทึกวันที่อัปโหลดและผู้อัปโหลดโดยอัตโนมัติ</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ขั้นตอนที่ 4 -->
+    <div class="step-card card mb-4">
+      <div class="card-body">
+        <div class="step-header">
+          <div class="step-number bg-warning text-white">4</div>
+          <h4 class="step-title text-warning mb-0">ออกจากระบบ</h4>
+        </div>
+        <div class="step-content mt-3">
+          <ul class="step-list">
+            <li>เมื่อใช้งานเสร็จ ให้คลิกปุ่ม <strong>“ออกจากระบบ”</strong> ด้านขวาบน</li>
+            <li>เพื่อความปลอดภัยของข้อมูลส่วนตัว</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- เคล็ดลับ -->
+  <div class="tips-section mt-5">
+    <div class="card border-primary">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-lightbulb"></i> เคล็ดลับเพิ่มเติม</h5>
+      </div>
+      <div class="card-body">
+        <ul class="mb-0">
+          <li>ใช้ชื่อไฟล์ที่สื่อความหมาย เช่น `อบรม_นวัตกรรมการสอน_2568.pdf`</li>
+          <li>อัปโหลดทันทีหลังได้รับเกียรติบัตร</li>
+          <li>ตรวจสอบให้ครบถ้วนก่อนส่งประเมินวิทยฐานะหรือ PA</li>
+          <li>ติดต่อเจ้าหน้าที่หากมีปัญหา: 0-4322-2345 ต่อ 101</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- คำถามที่พบบ่อย -->
+  <div class="faq-section mt-4">
+    <div class="card border-info">
+      <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="fas fa-question-circle"></i> คำถามที่พบบ่อย</h5>
+      </div>
+      <div class="card-body">
+        <div class="faq-item mb-3">
+          <h6 class="text-primary fw-bold">Q: ระบบรองรับไฟล์ประเภทใด?</h6>
+          <p class="mb-0">A: รองรับ PDF, JPG, PNG เท่านั้น (ขนาดไม่เกิน 10 MB)</p>
+        </div>
+        <div class="faq-item mb-3">
+          <h6 class="text-primary fw-bold">Q: สามารถอัปโหลดหลายไฟล์พร้อมกันได้ไหม?</h6>
+          <p class="mb-0">A: ปัจจุบันรองรับทีละไฟล์เท่านั้น</p>
+        </div>
+        <div class="faq-item">
+          <h6 class="text-primary fw-bold">Q: ติดต่อผู้ดูแลระบบได้อย่างไร?</h6>
+          <p class="mb-0">A: โทร 0-4322-2345 ต่อ 101 หรืออีเมล info@kkn2.go.th</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.guide-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+  margin-bottom: 2rem;
+}
+.guide-icon {
+  width: 80px;
+  height: 80px;
+  background: #e0f2fe;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+.step-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+.step-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.step-list {
+  padding-left: 1.5rem;
+}
+.step-list li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+.tips-section .card-header,
+.faq-section .card-header {
+  font-weight: 600;
+}
+.faq-item {
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+.faq-item:last-child {
+  border-bottom: none;
+}
+</style>

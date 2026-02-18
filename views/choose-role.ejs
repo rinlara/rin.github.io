@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>เลือกบทบาท</title>
+  <!-- Removed Google Fonts to avoid CSP/font loading issues -->
+  <style>
+    body { 
+      font-family: 'Sarabun', sans-serif; 
+      background: #f0f4f8; 
+      margin: 0; 
+      padding: 0; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 500px;
+      padding: 2.5rem;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h2 { 
+      color: #004aad; 
+      margin-bottom: 2rem; 
+      font-weight: 700;
+    }
+    .role-btn {
+      display: block;
+      width: 100%;
+      padding: 1.2rem;
+      margin: 0.8rem 0;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-teacher {
+      background: linear-gradient(135deg, #004aad, #007bff);
+      color: white;
+    }
+    .btn-staff {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+    }
+    .role-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      color: #004aad;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><i class="fas fa-user-tag"></i> เลือกบทบาทของคุณ</h2>
+    
+    <a href="/register/teacher" class="role-btn btn-teacher">
+      <i class="fas fa-chalkboard-teacher"></i> ลงทะเบียนสำหรับครู
+    </a>
+    
+    <a href="/register/staff" class="role-btn btn-staff">
+      <i class="fas fa-user-tie"></i> ลงทะเบียนสำหรับบุคลากร
+    </a>
+    
+    <a href="/login" class="back-link">
+      <i class="fas fa-arrow-left"></i> มีบัญชีแล้ว? เข้าสู่ระบบ
+    </a>
+  </div>
+</body>
+</html>

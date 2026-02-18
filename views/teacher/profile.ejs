@@ -1,0 +1,312 @@
+<% 
+// ไม่ต้องกำหนด locals.activePage ใน EJS — ให้ app.js จัดการแทน
+// locals.activePage = 'profile'; 
+%>
+
+<div class="profile-container">
+  <!-- แสดงข้อความแจ้งเตือน -->
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+  
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <div class="row g-4">
+    <!-- ส่วนรูปภาพและข้อมูลพื้นฐาน -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body text-center">
+          <!-- แสดงรูปภาพปัจจุบัน -->
+          <div class="profile-img-container mb-3">
+            <img src="<%= user && user.image_path ? user.image_path : 'https://via.placeholder.com/150/004aad/FFFFFF?text=รูปครู' %>" 
+                 alt="รูปภาพครู" 
+                 class="profile-img rounded-circle"
+                 id="profileImage">
+          </div>
+          
+          <h5 class="card-title text-primary"><%= user && user.full_name ? user.full_name : 'ไม่ระบุชื่อ' %></h5>
+          <p class="text-muted mb-3"><%= user && user.position ? user.position : '-' %></p>
+          
+          <!-- ปุ่มอัปโหลดรูปภาพ -->
+          <button class="btn btn-outline-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#uploadImageModal">
+            <i class="fas fa-camera"></i> เปลี่ยนรูปภาพ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ส่วนฟอร์มแก้ไขข้อมูล -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0">
+          <h3 class="card-title text-primary mb-0">
+            <i class="fas fa-user-edit"></i> แก้ไขข้อมูลส่วนตัว
+          </h3>
+        </div>
+        <div class="card-body">
+          <form id="profileForm" action="/teacher/profile/update" method="POST">
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label class="form-label">ชื่อ-สกุล <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="full_name" value="<%= user && user.full_name ? user.full_name : '' %>" required>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">อีเมล <span class="text-danger">*</span></label>
+                <input type="email" class="form-control" name="email" value="<%= user && user.email ? user.email : '' %>" required>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">เบอร์โทรศัพท์ <span class="text-danger">*</span></label>
+                <input type="tel" class="form-control" name="phone" value="<%= user && user.phone ? user.phone : '' %>" required>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">ตำแหน่ง <span class="text-danger">*</span></label>
+                <select class="form-select" name="position" required>
+                  <option value="">เลือกตำแหน่ง</option>
+                  <option value="ครูผู้ช่วย" <%= (user && user.position === 'ครูผู้ช่วย') ? 'selected' : '' %>>ครูผู้ช่วย</option>
+                  <option value="ครู" <%= (user && user.position === 'ครู') ? 'selected' : '' %>>ครู</option>
+                  <option value="ครูชำนาญการ" <%= (user && user.position === 'ครูชำนาญการ') ? 'selected' : '' %>>ครูชำนาญการ</option>
+                  <option value="ครูชำนาญการพิเศษ" <%= (user && user.position === 'ครูชำนาญการพิเศษ') ? 'selected' : '' %>>ครูชำนาญการพิเศษ</option>
+                  <option value="ครูเชี่ยวชาญ" <%= (user && user.position === 'ครูเชี่ยวชาญ') ? 'selected' : '' %>>ครูเชี่ยวชาญ</option>
+                  <option value="ครูเชี่ยวชาญพิเศษ" <%= (user && user.position === 'ครูเชี่ยวชาญพิเศษ') ? 'selected' : '' %>>ครูเชี่ยวชาญพิเศษ</option>
+                </select>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">กลุ่มสาระวิชา <span class="text-danger">*</span></label>
+                <select class="form-select" name="subject" required>
+                  <option value="">เลือกวิชา</option>
+                  <option value="คณิตศาสตร์" <%= (user && user.subject === 'คณิตศาสตร์') ? 'selected' : '' %>>คณิตศาสตร์</option>
+                  <option value="วิทยาศาสตร์" <%= (user && user.subject === 'วิทยาศาสตร์') ? 'selected' : '' %>>วิทยาศาสตร์</option>
+                  <option value="ภาษาไทย" <%= (user && user.subject === 'ภาษาไทย') ? 'selected' : '' %>>ภาษาไทย</option>
+                  <option value="ภาษาอังกฤษ" <%= (user && user.subject === 'ภาษาอังกฤษ') ? 'selected' : '' %>>ภาษาอังกฤษ</option>
+                  <option value="สังคมศึกษา" <%= (user && user.subject === 'สังคมศึกษา') ? 'selected' : '' %>>สังคมศึกษา</option>
+                  <option value="พลศึกษา" <%= (user && user.subject === 'พลศึกษา') ? 'selected' : '' %>>พลศึกษา</option>
+                  <option value="ศิลปะ" <%= (user && user.subject === 'ศิลปะ') ? 'selected' : '' %>>ศิลปะ</option>
+                  <option value="คอมพิวเตอร์" <%= (user && user.subject === 'คอมพิวเตอร์') ? 'selected' : '' %>>คอมพิวเตอร์</option>
+                  <option value="ดนตรี" <%= (user && user.subject === 'ดนตรี') ? 'selected' : '' %>>ดนตรี</option>
+                  <option value="การงานอาชีพ" <%= (user && user.subject === 'การงานอาชีพ') ? 'selected' : '' %>>การงานอาชีพ</option>
+                  <option value="สุขศึกษา" <%= (user && user.subject === 'สุขศึกษา') ? 'selected' : '' %>>สุขศึกษา</option>
+                  <option value="นาฏศิลป์" <%= (user && user.subject === 'นาฏศิลป์') ? 'selected' : '' %>>นาฏศิลป์</option>
+                </select>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">อำเภอ <span class="text-danger">*</span></label>
+                <select class="form-select" name="district" required>
+                  <option value="">เลือกอำเภอ</option>
+                  <option value="โคกโพธิ์ไชย" <%= (user && user.district === 'โคกโพธิ์ไชย') ? 'selected' : '' %>>โคกโพธิ์ไชย</option>
+                  <option value="ชนบท" <%= (user && user.district === 'ชนบท') ? 'selected' : '' %>>ชนบท</option>
+                  <option value="บ้านไผ่" <%= (user && user.district === 'บ้านไผ่') ? 'selected' : '' %>>บ้านไผ่</option>
+                  <option value="บ้านแฮด" <%= (user && user.district === 'บ้านแฮด') ? 'selected' : '' %>>บ้านแฮด</option>
+                  <option value="เปือยน้อย" <%= (user && user.district === 'เปือยน้อย') ? 'selected' : '' %>>เปือยน้อย</option>
+                  <option value="มัญจาคีรี" <%= (user && user.district === 'มัญจาคีรี') ? 'selected' : '' %>>มัญจาคีรี</option>
+                </select>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">โรงเรียน <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="school_name" value="<%= user && user.school_name ? user.school_name : '' %>" required>
+              </div>
+            </div>
+            
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> บันทึกการเปลี่ยนแปลง
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal อัปโหลดรูปภาพ -->
+<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">อัปโหลดรูปภาพ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="imageUploadForm">
+          <div class="mb-3">
+            <label for="imageFile" class="form-label">เลือกรูปภาพ (JPG, PNG)</label>
+            <input class="form-control" type="file" id="imageFile" name="profile_image" accept="image/jpeg,image/png" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100" id="uploadBtn">
+            <i class="fas fa-upload"></i> อัปโหลดรูปภาพ
+          </button>
+        </form>
+        <div id="uploadMessage" class="mt-2" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.profile-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  margin-bottom: 2rem;
+}
+
+.profile-img-container {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 3px solid #e2e8f0;
+}
+
+.profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.form-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #1e293b;
+}
+
+.form-control, .form-select {
+  padding: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn-primary {
+  background: #004aad;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: #003a8a;
+}
+
+.card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.alert {
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // ซ่อน alert อัตโนมัติ
+  setTimeout(function() {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+      const bsAlert = new bootstrap.Alert(alert);
+      bsAlert.close();
+    });
+  }, 5000);
+
+  // จัดการอัปโหลดรูปภาพ
+  const uploadForm = document.getElementById('imageUploadForm');
+  if (uploadForm) {
+    uploadForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const fileInput = document.getElementById('imageFile');
+      const file = fileInput.files[0];
+      const uploadBtn = document.getElementById('uploadBtn');
+      const uploadMessage = document.getElementById('uploadMessage');
+      const profileImg = document.getElementById('profileImage');
+
+      if (!file) {
+        showMessage('กรุณาเลือกไฟล์รูปภาพ', 'danger');
+        return;
+      }
+
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        showMessage('เฉพาะไฟล์ .jpeg, .jpg, .png เท่านั้น', 'danger');
+        return;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        showMessage('ขนาดไฟล์ต้องไม่เกิน 2 MB', 'danger');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('profile_image', file);
+
+      uploadBtn.disabled = true;
+      uploadBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> กำลังอัปโหลด...';
+
+      try {
+        const response = await fetch('/teacher/profile/upload-image', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          profileImg.src = result.imagePath + '?t=' + new Date().getTime();
+          showMessage('อัปโหลดรูปภาพสำเร็จ!', 'success');
+          setTimeout(() => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('uploadImageModal'));
+            modal.hide();
+          }, 1500);
+        } else {
+          showMessage(result.error || 'อัปโหลดไม่สำเร็จ', 'danger');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showMessage('เกิดข้อผิดพลาด กรุณาลองใหม่', 'danger');
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = '<i class="fas fa-upload"></i> อัปโหลดรูปภาพ';
+      }
+    });
+  }
+
+  function showMessage(text, type) {
+    const uploadMessage = document.getElementById('uploadMessage');
+    uploadMessage.style.display = 'block';
+    uploadMessage.className = `alert alert-${type} mt-2`;
+    uploadMessage.textContent = text;
+    setTimeout(() => {
+      uploadMessage.style.display = 'none';
+    }, 3000);
+  }
+});
+</script>

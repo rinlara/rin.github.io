@@ -1,0 +1,32 @@
+{
+  "name": "certificate-system",
+  "version": "1.0.0",
+  "description": "ระบบจัดเก็บเกียรติบัตรสำหรับครูและแอดมิน",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "csrf-csrf": "^4.0.3",
+    "dotenv": "^16.6.1",
+    "ejs": "^3.1.10",
+    "ejs-layouts": "^0.0.1",
+    "express": "^4.21.2",
+    "express-ejs-layouts": "^2.5.1",
+    "express-rate-limit": "^8.2.1",
+    "express-session": "^1.18.0",
+    "express-slow-down": "^3.0.1",
+    "helmet": "^8.1.0",
+    "method-override": "^3.0.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.15.3",
+    "nodemailer": "^7.0.10",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

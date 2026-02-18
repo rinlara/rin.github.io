@@ -1,0 +1,169 @@
+<%
+// ไม่ต้องใช้ locals.activePage — app.js จัดการแทน
+const user = locals.user || {};
+%>
+
+<div class="upload-container shadow-lg">
+  <style>
+    .upload-container { max-width: 760px; margin: 36px auto; padding: 36px; border-radius: 14px; background: #fff; }
+    .page-header .page-title { font-size: 1.6rem; font-weight: 700; color: #0d4a6b; }
+    .page-header .page-subtitle { font-size: 1rem; color: #64748b; }
+    .form-label { font-weight: 500; color: #334155; }
+    .form-label i { font-size: 1.05rem; }
+    .form-control.form-control-lg { 
+      border-radius: 10px; 
+      border: 2px solid #e2e8f0; 
+      transition: border-color 0.2s;
+    }
+    .form-control.form-control-lg:focus { 
+      border-color: #0d4a6b; 
+      box-shadow: 0 0 0 0.2rem rgba(13,74,107,0.15); 
+    }
+    .btn-primary { 
+      background: linear-gradient(135deg, #0d4a6b 0%, #1a5f7a 100%); 
+      border: none; 
+      box-shadow: 0 6px 18px rgba(13,110,253,0.12);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 8px 24px rgba(13,110,253,0.18); 
+    }
+    .fade-in { animation: fadeIn 0.3s ease-in; }
+    @keyframes fadeIn { 
+      from { opacity: 0; transform: translateY(-10px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+  </style>
+  
+  <div class="page-header text-center mb-4">
+    <h1 class="page-title"><i class="fas fa-award text-primary me-2"></i> อัปโหลดเกียรติบัตร</h1>
+    <p class="page-subtitle text-muted">ระบบจัดเก็บและแสดงผลเกียรติบัตร | สพป.ขอนแก่น เขต 2</p>
+  </div>
+
+  <!-- ✅ ข้อความแจ้งเตือน -->
+  <% if (locals.success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle me-2"></i> <%= success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+  <% if (locals.error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-triangle me-2"></i> <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <!-- ✅ คำเตือนสำคัญ -->
+  <div class="alert alert-warning fade-in mb-4">
+    <i class="fas fa-info-circle me-2"></i>
+    <strong>กรุณาอัปโหลดเฉพาะไฟล์เกียรติบัตรจริงเท่านั้น</strong><br>
+    <small class="text-muted">ระบบไม่สามารถตรวจสอบเนื้อหาไฟล์ได้โดยอัตโนมัติ ผู้ดูแลระบบจะตรวจสอบย้อนหลัง หากอัปโหลดไม่ตรงตามวัตถุประสงค์ อาจถูกลบออกโดยไม่แจ้งให้ทราบล่วงหน้า</small>
+  </div>
+
+  <!-- 🔹 ฟอร์มอัปโหลด -->
+  <form method="POST" action="/teacher/upload" enctype="multipart/form-data" id="uploadForm">
+
+    <!-- หมายเลขเกียรติบัตร -->
+    <div class="form-group mb-4">
+      <label for="certificate_number" class="form-label d-flex align-items-center">
+        <i class="fas fa-hashtag text-primary me-2"></i> หมายเลขเกียรติบัตร <span class="text-danger">*</span>
+      </label>
+      <input type="text" id="certificate_number" name="certificate_number" class="form-control form-control-lg" required placeholder="ตัวอย่าง: 10437/2568" maxlength="30" autocomplete="off">
+    </div>
+
+    <!-- ชื่อเกียรติบัตร -->
+    <div class="form-group mb-4">
+      <label for="title" class="form-label d-flex align-items-center">
+        <i class="fas fa-file-alt text-primary me-2"></i> ชื่อเกียรติบัตร <span class="text-danger">*</span>
+      </label>
+      <input type="text" id="title" name="title" class="form-control form-control-lg" required placeholder="ชื่อเกียรติบัตร">
+    </div>
+
+    <!-- หน่วยงาน -->
+    <div class="form-group mb-4">
+      <label for="issuing_agency" class="form-label d-flex align-items-center">
+        <i class="fas fa-building text-primary me-2"></i> หน่วยงานผู้ออก
+      </label>
+      <input type="text" id="issuing_agency" name="issuing_agency" class="form-control form-control-lg" placeholder="หน่วยงานผู้ออก">
+    </div>
+
+    <!-- คำอธิบาย -->
+    <div class="form-group mb-4">
+      <label for="description" class="form-label d-flex align-items-center">
+        <i class="fas fa-sticky-note text-primary me-2"></i> คำอธิบายเพิ่มเติม
+      </label>
+      <textarea id="description" name="description" class="form-control" rows="3" placeholder="คำอธิบายเพิ่มเติม"></textarea>
+    </div>
+
+    <!-- อัปโหลดไฟล์ -->
+    <div class="form-group mb-4">
+      <label for="file" class="form-label d-flex align-items-center">
+        <i class="fas fa-cloud-upload-alt text-primary me-2"></i> เลือกไฟล์เกียรติบัตร <span class="text-danger">*</span>
+      </label>
+      <input type="file" id="file" name="certificate" required accept=".pdf,.jpg,.jpeg,.png" class="form-control" />
+      <div class="form-text text-muted mt-2">
+        รองรับ: <strong>.pdf, .jpg, .jpeg, .png</strong> | สูงสุด <strong>10 MB</strong>
+      </div>
+      <div id="fileName" class="mt-2 fw-semibold text-dark"></div>
+    </div>
+
+    <!-- วันที่ออก -->
+    <div class="form-group mb-4">
+      <label for="issue_date" class="form-label d-flex align-items-center">
+        <i class="fas fa-calendar-day text-primary me-2"></i> วันที่ออกเกียรติบัตร
+      </label>
+      <input type="date" id="issue_date" name="issue_date" class="form-control form-control-lg" />
+    </div>
+
+    <!-- ✅ ปุ่มส่งฟอร์ม (เรียงเป็นแถวเดียว) -->
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-primary btn-lg px-5 py-2 rounded-pill">
+        <i class="fas fa-cloud-upload-alt me-2"></i> อัปโหลดเกียรติบัตร
+      </button>
+    </div>
+
+  </form>
+
+  <footer class="footer mt-5 pt-3 border-top text-center text-muted">
+    © <%= new Date().getFullYear() %> สพป.ขอนแก่น เขต 2
+  </footer>
+
+  <!-- ✅ CDN Libraries -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+  
+  <!-- ✅ Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- ✅ Script เล็กน้อยสำหรับ UX -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const fileInput = document.getElementById('file');
+      const fileNameEl = document.getElementById('fileName');
+      const uploadForm = document.getElementById('uploadForm');
+      
+      // แสดงชื่อไฟล์เมื่อเลือก
+      if (fileInput && fileNameEl) {
+        fileInput.addEventListener('change', function(e) {
+          if (e.target.files[0]) {
+            const f = e.target.files[0];
+            fileNameEl.textContent = `📁 ${f.name} (${(f.size/1024/1024).toFixed(2)} MB)`;
+          }
+        });
+      }
+      
+      // ป้องกันการส่งฟอร์มถ้ายังไม่มีไฟล์
+      if (uploadForm && fileInput) {
+        uploadForm.addEventListener('submit', function(e) {
+          if (!fileInput.files[0]) {
+            e.preventDefault();
+            alert('กรุณาเลือกไฟล์เกียรติบัตรก่อนอัปโหลด');
+            fileInput.focus();
+          }
+        });
+      }
+    });
+  </script>
+</div>

@@ -1,0 +1,151 @@
+<% locals.activePage = 'teachers'; %>
+
+<div class="container py-4">
+  <!-- 🔙 ปุ่มกลับ -->
+  <div class="mb-4">
+    <a href="/admin/teachers" class="btn btn-outline-secondary rounded-pill px-3">
+      <i class="bi bi-arrow-left me-1"></i> กลับรายการครู
+    </a>
+  </div>
+
+  <!-- 👤 ข้อมูลพื้นฐาน -->
+  <div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card-body">
+      <div class="d-flex flex-column flex-md-row gap-4 align-items-center">
+        <!-- ✅ ไม่มี onerror -->
+        <img 
+          src="<%= teacher.image_path && teacher.image_path.startsWith('/') ? teacher.image_path : '/images/default-teacher.png' %>" 
+          alt="รูป <%= teacher.full_name %>"
+          class="rounded-circle border border-3 border-white shadow teacher-image"
+          width="120" height="120"
+          loading="lazy"
+        >
+        <div class="text-center text-md-start">
+          <h2 class="mb-2 fw-bold text-primary"><%= teacher.full_name %></h2>
+          <p class="text-muted mb-1">
+            <%= teacher.position ? teacher.position : 'ไม่ระบุตำแหน่ง' %> 
+            <% if (teacher.subject) { %> | <%= teacher.subject %><% } %>
+          </p>
+          <p class="text-muted mb-0">
+            <i class="bi bi-geo-alt-fill me-1"></i> 
+            <%= teacher.district ? teacher.district : 'ไม่ระบุอำเภอ' %> –
+            <%= teacher.school_name ? teacher.school_name : 'ไม่ระบุโรงเรียน' %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📞 ข้อมูลติดต่อ -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm border-0 rounded-4">
+        <div class="card-body">
+          <h5 class="fw-bold text-secondary mb-3"><i class="bi bi-envelope me-2"></i> ข้อมูลติดต่อ</h5>
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2"><strong>อีเมล:</strong> <%= teacher.email || '–' %></li>
+            <li><strong>เบอร์โทรศัพท์:</strong> <%= teacher.phone || '–' %></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm border-0 rounded-4">
+        <div class="card-body">
+          <h5 class="fw-bold text-secondary mb-3"><i class="bi bi-award me-2"></i> สรุปเกียรติบัตร</h5>
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2"><strong>จำนวนทั้งหมด:</strong> <span class="badge bg-primary rounded-pill px-3 py-2"><%= certificates.length %></span></li>
+            <li><strong>อัปโหลดล่าสุด:</strong> 
+              <%= certificates.length > 0 ? certificates[0].upload_date : '–' %>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🏆 รายการเกียรติบัตร -->
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white border-0 pb-0">
+      <h4 class="fw-bold text-dark mb-3"><i class="bi bi-collection me-2"></i> เกียรติบัตรทั้งหมด (<%= certificates.length %>)</h4>
+    </div>
+    <div class="card-body">
+      <% if (certificates.length > 0) { %>
+        <div class="row g-3">
+          <% certificates.forEach(cert => { %>
+            <div class="col-12">
+              <div class="d-flex gap-3 p-3 border rounded-3">
+                <div class="flex-shrink-0 text-center">
+                  <% if (cert.file_path && cert.file_path.endsWith('.pdf')) { %>
+                    <i class="bi bi-file-earmark-pdf fs-1 text-danger"></i>
+                  <% } else if (cert.file_path) { %>
+                    <img 
+                      src="<%= cert.file_path.startsWith('/') ? cert.file_path : '/' + cert.file_path %>" 
+                      alt="เกียรติบัตร"
+                      class="rounded border certificate-image"
+                      width="80" height="80"
+                      loading="lazy"
+                    >
+                  <% } else { %>
+                    <i class="bi bi-file-earmark fs-1 text-muted"></i>
+                  <% } %>
+                </div>
+                <div class="flex-grow-1">
+                  <h6 class="fw-bold mb-1"><%= cert.title %></h6>
+                  <p class="text-muted small mb-1">
+                    ออกโดย: <%= cert.issuing_agency %><br>
+                    เลขที่: <%= cert.certificate_number || '–' %>
+                    <% if (cert.issue_date !== '–') { %>
+                      | วันที่ออก: <%= cert.issue_date %>
+                    <% } %>
+                  </p>
+                  <p class="text-muted small mb-2"><%= cert.description || '–' %></p>
+                  <% if (cert.file_path) { %>
+                    <a href="<%= cert.file_path.startsWith('/') ? cert.file_path : '/' + cert.file_path %>" 
+                       target="_blank" 
+                       rel="noopener"
+                       class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-eye me-1"></i> ดูไฟล์
+                    </a>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div class="text-center py-4">
+          <i class="bi bi-award fs-1 text-muted mb-2"></i>
+          <p class="text-muted">ครูรายนี้ยังไม่มีเกียรติบัตร</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<style>
+.card-header {
+  border-bottom: 1px solid #eee;
+}
+</style>
+
+<!-- ✅ JavaScript ปลอดภัย (ไม่มี inline handler) -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // จัดการภาพโปรไฟล์ครู
+    const teacherImg = document.querySelector('.teacher-image');
+    if (teacherImg) {
+      teacherImg.addEventListener('error', function() {
+        this.src = '/images/default-teacher.png';
+      });
+    }
+
+    // จัดการภาพเกียรติบัตร
+    const certImgs = document.querySelectorAll('.certificate-image');
+    certImgs.forEach(img => {
+      img.addEventListener('error', function() {
+        this.style.display = 'none';
+      });
+    });
+  });
+</script>

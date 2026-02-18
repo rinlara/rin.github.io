@@ -1,0 +1,929 @@
+<%
+const total = certificates ? certificates.length : 0;
+const baseUrl = locals.baseUrl || '';
+%>
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>รายการเกียรติบัตรของฉัน — สพป.ขอนแก่น เขต 2</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+  <!-- Google Fonts: Sarabun -->
+  <!-- Removed Google Fonts to avoid CSP/font loading issues -->
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+    }
+
+    .hover-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .pdf-badge {
+      z-index: 2;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .preview {
+      height: 160px;
+      overflow: hidden;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pdf-preview {
+      height: 100%;
+      width: 100%;
+      background-color: #f8f9fa;
+    }
+
+    /* ========== สไตล์สำหรับพิมพ์รายงาน ========== */
+    .print-report {
+      font-family: "Sarabun", "TH Sarabun New", "Tahoma", sans-serif;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 12mm 15mm;
+      margin: 0 auto;
+      background: white;
+      line-height: 1.5;
+    }
+
+    /* ========== สไตล์สำหรับปริ้นใบเกียรติบัตร ========== */
+    .certificate-print {
+      font-family: "Sarabun", "TH Sarabun New", "Tahoma", sans-serif;
+      width: 297mm;
+      height: 210mm;
+      padding: 0;
+      margin: 0;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      page-break-after: always;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .certificate-print:last-child {
+      page-break-after: avoid;
+    }
+
+    .certificate-print-image {
+      max-width: 100%;
+      max-height: 100%;
+      height: auto;
+      width: auto;
+      object-fit: contain;
+      transform-origin: center;
+    }
+
+    .certificate-print-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .certificate-placeholder {
+      width: 100%;
+      height: 200mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      border-radius: 8px;
+      border: 2px dashed #999;
+      color: #666;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .print-zoom-controls {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: white;
+      border: 2px solid #dee2e6;
+      border-radius: 50px;
+      padding: 8px 16px;
+      display: none;
+      gap: 12px;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .print-zoom-controls.show {
+      display: flex;
+    }
+
+    .print-zoom-controls button {
+      border: none;
+      background: #007bff;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+
+    .print-zoom-controls button:hover {
+      background: #0056b3;
+    }
+
+    .print-zoom-controls .zoom-value {
+      font-weight: bold;
+      min-width: 60px;
+      text-align: center;
+      color: #333;
+    }
+
+    @media print {
+      body * { visibility: hidden; }
+      .print-report *, #printReportContent *, 
+      #printCertificateContent *, .certificate-print * { visibility: visible; }
+      
+      #printReportContent {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 297mm;
+        height: auto;
+        margin: 0;
+        padding: 12mm 15mm;
+        box-sizing: border-box;
+        background: white;
+        font-size: 11pt;
+      }
+
+      #printCertificateContent {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        background: white;
+      }
+
+      .print-zoom-controls { display: none !important; }
+      .certificate-print { page-break-after: always; }
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    /* ========== Toast ========== */
+    .toast {
+      min-width: 280px;
+      max-width: 400px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .toast .toast-body {
+      padding: 12px 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.success .toast-body {
+      background: #ecfdf5;
+      color: #065f46;
+    }
+
+    .toast.danger .toast-body {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    @media (max-width: 768px) {
+      .preview { height: 140px; }
+      .card-title { font-size: 1.1rem; }
+      .toast { width: 90vw; min-width: unset; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;"></div>
+
+<% if (typeof success !== 'undefined' && success) { %>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      showToast('<%= success %>', 'success');
+    });
+  </script>
+<% } %>
+
+<% if (typeof error !== 'undefined' && error) { %>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      showToast('<%= error %>', 'danger');
+    });
+  </script>
+<% } %>
+
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary fw-bold mb-0">
+      🎓 รายการเกียรติบัตรของฉัน (<%= total %>)
+    </h2>
+    <div class="d-flex gap-2">
+      <button id="printReportBtn" class="btn btn-success btn-md px-4 py-2 rounded-pill shadow-sm">
+        <i class="fas fa-print me-2"></i> พิมพ์รายงาน
+      </button>
+      <button id="printCertificateBtn" class="btn btn-info btn-md px-4 py-2 rounded-pill shadow-sm" title="เลือกใบเกียรติบัตรแต่ละใบเพื่อปริ้น">
+        <i class="fas fa-certificate me-2"></i> ปริ้นใบเกียรติบัตร
+      </button>
+    </div>
+  </div>
+
+  <% if (certificates && certificates.length > 0) { %>
+    <div class="row g-4">
+      <% certificates.forEach(cert => { %>
+        <div class="col-xl-3 col-lg-4 col-md-6">
+          <div class="card h-100 border-0 shadow-sm rounded-3 hover-card">
+            <% if (cert.file_path && cert.file_path.endsWith('.pdf')) { %>
+              <div class="pdf-badge position-absolute top-0 end-0 bg-danger text-white px-2 py-1 rounded-start">
+                <i class="fas fa-file-pdf"></i> PDF
+              </div>
+            <% } %>
+            <div class="card-body d-flex flex-column">
+              <div class="preview mb-3">
+                <% if (cert.file_path && cert.file_path.endsWith('.pdf')) { %>
+                  <div class="pdf-preview d-flex align-items-center justify-content-center">
+                    <i class="fas fa-file-pdf text-danger fs-1"></i>
+                  </div>
+                <% } else { %>
+                  <img src="<%= cert.file_path || '/images/default-certificate.png' %>" 
+                       alt="เกียรติบัตร" 
+                       class="img-fluid rounded"
+                       onerror="this.src='/images/default-certificate.png'">
+                <% } %>
+              </div>
+
+              <h5 class="card-title fw-bold text-primary mb-2">
+                🏅 <%= cert.title || 'ไม่มีชื่อ' %>
+              </h5>
+
+              <p class="card-text text-muted small mb-2">
+                <%= cert.description?.substring(0, 80) + (cert.description?.length > 80 ? '...' : '') || 'ไม่มีคำอธิบาย' %>
+              </p>
+
+              <div class="mt-auto">
+                <div class="small text-muted">
+                  <p class="mb-1"><i class="fas fa-building me-2"></i><strong>หน่วยงาน:</strong> <%= cert.issuing_agency || '–' %></p>
+                  <p class="mb-1"><i class="fas fa-hashtag me-2"></i><strong>เลขที่:</strong> <%= cert.certificate_number || '–' %></p>
+                  <p class="mb-1"><i class="fas fa-calendar-day me-2"></i><strong>วันที่ออก:</strong> 
+                    <%= cert.issue_date && cert.issue_date !== '0000-00-00' 
+                      ? new Date(cert.issue_date).toLocaleDateString('th-TH') 
+                      : '–' %>
+                  </p>
+                  <p class="mb-0"><i class="fas fa-clock me-2"></i><strong>อัปโหลด:</strong> 
+                    <%= new Date(cert.upload_date).toLocaleDateString('th-TH') %>
+                  </p>
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                  <a href="<%= cert.file_path?.startsWith('http') ? cert.file_path : (baseUrl + cert.file_path) %>" target="_blank" class="btn btn-sm btn-outline-primary flex-fill">
+                    <i class="fas fa-eye"></i> ดู
+                  </a>
+                  <a href="/staff/certificates/edit/<%= cert.id %>" class="btn btn-sm btn-outline-warning flex-fill">
+                    <i class="fas fa-edit"></i> แก้ไข
+                  </a>
+                  <form action="/staff/certificates/delete/<%= cert.id %>" method="POST" class="flex-fill">
+                    <button type="submit" class="btn btn-sm btn-outline-danger w-100" 
+                            onclick="return confirm('⚠️ ยืนยันการลบเกียรติบัตรนี้หรือไม่?')">
+                      <i class="fas fa-trash-alt"></i> ลบ
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="card shadow-sm border-0 rounded-4 p-5 text-center">
+      <div class="mb-4">
+        <i class="fas fa-award text-muted" style="font-size: 4rem; opacity: 0.4;"></i>
+      </div>
+      <h4 class="text-muted mb-3">ยังไม่มีเกียรติบัตร</h4>
+      <p class="text-secondary mb-4">คุณยังไม่ได้อัปโหลดเกียรติบัตรใดๆ</p>
+      <a href="/staff/certificates/new" class="btn btn-success btn-lg rounded-pill px-4">
+        <i class="fas fa-cloud-upload-alt me-2"></i> อัปโหลดเกียรติบัตร
+      </a>
+    </div>
+  <% } %>
+
+  <div class="text-center mt-5">
+    <a href="/staff" class="btn btn-outline-secondary px-4 py-2 rounded-pill">
+      <i class="fas fa-arrow-left me-1"></i> กลับแดชบอร์ด
+    </a>
+  </div>
+</div>
+
+<!-- ✅ รายงานสำหรับพิมพ์ (ตารางข้อมูล) -->
+<div id="printReportContent" style="display: none;">
+  <div class="print-report">
+    <div style="margin-bottom: 20px;">
+      <div style="text-align: center; margin-bottom: 12px;">
+        <img src="<%= baseUrl %>/images/logo สพฐ.png" alt="สพป.ขอนแก่น เขต 2" style="height: 50px; margin-bottom: 6px;">
+        <h2 style="font-size: 18pt; font-weight: bold; margin: 2px 0 6px;">รายงานสรุปเกียรติบัตร</h2>
+        <p style="font-size: 11pt; color: #00308F; margin: 0;">สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2</p>
+      </div>
+    </div>
+
+    <!-- ข้อมูลผู้ได้รับเกียรติบัตร -->
+    <div style="margin-bottom: 16px; padding: 0 10mm;">
+      <table style="width: 100%; font-size: 11pt;">
+        <tr>
+          <td style="width: 20%; padding: 4px 0;"><strong>ชื่อ-สกุล:</strong></td>
+          <td style="padding: 4px 0;"><%= user?.full_name || '–' %></td>
+          <td style="width: 25%; padding: 4px 0 4px 20px;"><strong>ตำแหน่ง:</strong></td>
+          <td style="padding: 4px 0;"><%= user?.position || '–' %></td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 0;"><strong>โรงเรียน:</strong></td>
+          <td style="padding: 4px 0;"><%= user?.school_name || '–' %></td>
+          <td style="padding: 4px 0 4px 20px;"><strong>อำเภอ:</strong></td>
+          <td style="padding: 4px 0;"><%= user?.district || '–' %></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- รายการเกียรติบัตร -->
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 10pt;">
+      <thead>
+        <tr>
+          <th style="width: 6%; border: 1px solid #000; padding: 6px; background-color: #f0f0f0; font-weight: bold; text-align: center;">ที่</th>
+          <th style="width: 28%; border: 1px solid #000; padding: 6px; background-color: #f0f0f0; font-weight: bold;">ชื่อเกียรติบัตร</th>
+          <th style="width: 22%; border: 1px solid #000; padding: 6px; background-color: #f0f0f0; font-weight: bold;">หน่วยงานผู้มอบ</th>
+          <th style="width: 14%; border: 1px solid #000; padding: 6px; background-color: #f0f0f0; font-weight: bold; text-align: center;">เลขที่</th>
+          <th style="width: 16%; border: 1px solid #000; padding: 6px; background-color: #f0f0f0; font-weight: bold; text-align: center;">วันที่ออก</th>
+          <th style="width: 14%; border: 1px solid #000; padding: 6px; background-color: #f0f0f0; font-weight: bold; text-align: center;">ป้อมชี่</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (certificates && certificates.length > 0) { %>
+          <% certificates.forEach((cert, index) => { %>
+            <tr>
+              <td style="border: 1px solid #000; padding: 6px; text-align: center;"><%= index + 1 %></td>
+              <td style="border: 1px solid #000; padding: 6px;"><%= cert.title || '–' %></td>
+              <td style="border: 1px solid #000; padding: 6px;"><%= cert.issuing_agency || '–' %></td>
+              <td style="border: 1px solid #000; padding: 6px; text-align: center;"><%= cert.certificate_number || '–' %></td>
+              <td style="border: 1px solid #000; padding: 6px; text-align: center;">
+                <%= cert.issue_date && cert.issue_date !== '0000-00-00' 
+                  ? new Date(cert.issue_date).toLocaleDateString('th-TH', { year: 'numeric', month: '2-digit', day: '2-digit' }) 
+                  : '–' %>
+              </td>
+              <td style="border: 1px solid #000; padding: 6px; text-align: center;">
+                <% 
+                  if (cert.file_path) {
+                    const isPdf = cert.file_path.endsWith('.pdf');
+                    const ext = isPdf ? 'PDF' : 'รูป';
+                %>
+                  <span style="font-size: 9pt;"><%= ext %></span>
+                <% } else { %>
+                  –
+                <% } %>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="6" style="border: 1px solid #000; padding: 20px; text-align: center;">ไม่มีข้อมูลเกียรติบัตร</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+    <!-- สรุปข้อมูล -->
+    <div style="font-size: 10pt; padding: 0 10mm; margin-top: 16px;">
+      <p style="margin: 4px 0;"><strong>จำนวนเกียรติบัตรทั้งหมด:</strong> <%= total %> ใบ</p>
+      <p style="margin: 4px 0;">
+        <strong>วันที่พิมพ์:</strong> 
+        <% 
+          const now = new Date();
+          const year = now.getFullYear() + 543;
+          const monthNames = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+          const month = monthNames[now.getMonth()];
+          const day = ('0' + now.getDate()).slice(-2);
+          const hour = ('0' + now.getHours()).slice(-2);
+          const minute = ('0' + now.getMinutes()).slice(-2);
+          const second = ('0' + now.getSeconds()).slice(-2);
+        %>
+        <%= `${day} ${month} ${year} เวลา ${hour}:${minute}:${second} น.` %>
+      </p>
+    </div>
+
+    <!-- ลายเซ็นผู้อำนวยการ -->
+    <div style="text-align: center; margin-top: 30px;">
+      <p style="font-weight: bold; font-size: 11pt; margin-bottom: 12px;">ผู้รับรอง</p>
+      <div style="display: inline-block; text-align: center;">
+        <img src="<%= baseUrl %>/images/LINE_ALBUM_ลายเซ็น ท่าน ผอ.เขต_อภิชัย250903_1.jpg" 
+             alt="ลายเซ็นผู้อำนวยการ" 
+             style="max-height: 60px; height: auto;">
+        <p style="font-size: 11pt; margin: 8px 0 4px 0; font-weight: bold; line-height: 1.3;">
+          นายอภิชัย เสนาโยธี
+        </p>
+        <p style="font-size: 9pt; margin: 0; color: #000; line-height: 1.3;">
+          ผู้อำนวยการ<br>สพป.ขอนแก่น เขต 2
+        </p>
+      </div>
+    </div>
+
+    <!-- ท้ายเพจ -->
+    <div style="margin-top: 20px; padding-top: 8px; border-top: 1px solid #999; text-align: center;">
+      <p style="font-size: 9pt; color: #666; margin: 0;">
+        www.kkn2.moe.go.th | โทรศัพท์ 043-262-1411
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ✅ เนื้อหาสำหรับปริ้นใบเกียรติบัตร -->
+<div id="printCertificateContent" style="display: none;">
+  <!-- จะเติมด้วย JavaScript -->
+</div>
+
+<!-- ✅ Modal สำหรับเลือกใบเกียรติบัตร -->
+<div id="selectCertificateModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-certificate me-2"></i>เลือกใบเกียรติบัตรเพื่อปริ้น</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="certificateSelectList" style="max-height: 500px; overflow-y: auto;">
+          <!-- จะเติมด้วย JavaScript -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button type="button" class="btn btn-primary" id="printSelectedBtn">
+          <i class="fas fa-print me-2"></i>ปริ้นที่เลือก
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Modal สำหรับดูตัวอย่าง และปรับขนาด -->
+<div id="printPreviewModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-eye me-2"></i>ตัวอย่างใบเกียรติบัตร (A4 Landscape)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="max-height: 600px; overflow-y: auto; background: #f5f5f5; padding: 20px;">
+        <div id="previewContainer" style="
+          background: white;
+          border: 2px solid #dee2e6;
+          border-radius: 8px;
+          padding: 10px;
+          width: 297mm;
+          height: 210mm;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto;
+          transform: scale(0.5);
+          transform-origin: top center;
+        ">
+          <!-- Preview content -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+        <button type="button" class="btn btn-success" onclick="window.print()">
+          <i class="fas fa-print me-2"></i>พิมพ์เลย
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ ควบคุมการซูม -->
+<div class="print-zoom-controls" id="zoomControls">
+  <button id="zoomOutBtn" title="ย่อลง">−</button>
+  <span class="zoom-value"><span id="zoomValue">50</span>%</span>
+  <button id="zoomInBtn" title="ขยายขึ้น">+</button>
+  <button id="resetZoomBtn" title="รีเซ็ต" style="background: #6c757d;">⟲</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// === Toast ===
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type} align-items-center border-0`;
+  toast.setAttribute('role', 'alert');
+  toast.setAttribute('aria-live', 'assertive');
+  toast.setAttribute('aria-atomic', 'true');
+
+  const icon = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+  toast.innerHTML = `
+    <div class="toast-body">
+      <i class="${icon}"></i> ${message}
+    </div>
+  `;
+  container.appendChild(toast);
+
+  const bsToast = new bootstrap.Toast(toast, { autohide: true, delay: 3000 });
+  bsToast.show();
+
+  toast.addEventListener('hidden.bs.toast', () => toast.remove());
+}
+
+// === ข้อมูลเกียรติบัตร ===
+let certificatesData = [];
+try {
+  certificatesData = <%- JSON.stringify(certificates || []) %>;
+  if (!Array.isArray(certificatesData)) {
+    certificatesData = [];
+  }
+} catch (e) {
+  console.error('Error parsing certificates:', e);
+  certificatesData = [];
+}
+
+// === เก็บรักษา ID ของเกียรติบัตรที่เลือก ===
+const selectedCertificates = new Set();
+
+// === พิมพ์รายงาน ===
+function printReport() {
+  const reportContent = document.getElementById('printReportContent');
+  if (!reportContent) {
+    showToast('⚠️ ไม่พบเนื้อหารายงาน', 'danger');
+    return;
+  }
+  reportContent.style.display = 'block';
+  setTimeout(() => {
+    window.print();
+    reportContent.style.display = 'none';
+  }, 500);
+}
+
+// === เปิด Modal เลือกใบเกียรติบัตร ===
+function showSelectCertificateModal() {
+  if (certificatesData.length === 0) {
+    showToast('⚠️ ไม่มีเกียรติบัตรในระบบ', 'danger');
+    return;
+  }
+
+  const selectList = document.getElementById('certificateSelectList');
+  if (!selectList) {
+    showToast('⚠️ ไม่พบฟอร์มเลือก', 'danger');
+    return;
+  }
+
+  selectList.innerHTML = '';
+
+  certificatesData.forEach((cert, index) => {
+    const div = document.createElement('div');
+    div.className = 'certificate-select-item p-3 border rounded mb-2';
+    div.style.cursor = 'pointer';
+    div.style.transition = 'all 0.3s';
+    div.style.borderColor = '#dee2e6';
+    div.style.backgroundColor = 'white';
+    
+    const isSelected = selectedCertificates.has(cert.id);
+    if (isSelected) {
+      div.style.backgroundColor = '#e7f3ff';
+      div.style.borderColor = '#0056b3';
+    }
+
+    const issueDate = cert.issue_date && cert.issue_date !== '0000-00-00'
+      ? new Date(cert.issue_date).toLocaleDateString('th-TH')
+      : '–';
+
+    const certTitle = cert.title ? String(cert.title).replace(/"/g, '&quot;') : 'ไม่มีชื่อ';
+    const certNumber = cert.certificate_number ? String(cert.certificate_number).replace(/"/g, '&quot;') : '–';
+    const certAgency = cert.issuing_agency ? String(cert.issuing_agency).replace(/"/g, '&quot;') : '–';
+
+    div.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <input type="checkbox" class="form-check-input cert-checkbox" 
+               data-cert-id="${cert.id}" 
+               data-cert-index="${index}"
+               ${isSelected ? 'checked' : ''}>
+        <div style="flex: 1;">
+          <strong>${certTitle}</strong><br>
+          <small class="text-muted">
+            เลขที่: ${certNumber} | 
+            หน่วยงาน: ${certAgency} | 
+            วันออก: ${issueDate}
+          </small>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-primary preview-btn" 
+                data-cert-index="${index}" title="ดูตัวอย่าง">
+          <i class="fas fa-eye"></i> ดู
+        </button>
+      </div>
+    `;
+
+    div.addEventListener('click', function(e) {
+      if (e.target.tagName !== 'BUTTON' && !e.target.classList.contains('form-check-input')) {
+        const checkbox = div.querySelector('.cert-checkbox');
+        checkbox.checked = !checkbox.checked;
+        updateCertificateSelection();
+      }
+    });
+
+    div.addEventListener('mouseenter', () => {
+      if (!isSelected) {
+        div.style.backgroundColor = '#f8f9fa';
+      }
+    });
+
+    div.addEventListener('mouseleave', () => {
+      if (!isSelected) {
+        div.style.backgroundColor = 'white';
+      }
+    });
+
+    selectList.appendChild(div);
+  });
+
+  // เพิ่มเหตุการณ์ให้กับ checkbox
+  document.querySelectorAll('.cert-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', updateCertificateSelection);
+  });
+
+  // เพิ่มเหตุการณ์ให้กับปุ่มดูตัวอย่าง
+  document.querySelectorAll('.preview-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const certIndex = parseInt(btn.dataset.certIndex);
+      previewCertificate(certIndex);
+    });
+  });
+
+  const modal = new bootstrap.Modal(document.getElementById('selectCertificateModal'));
+  modal.show();
+}
+
+// === อัปเดตการเลือก ===
+function updateCertificateSelection() {
+  selectedCertificates.clear();
+  document.querySelectorAll('.cert-checkbox:checked').forEach(checkbox => {
+    selectedCertificates.add(parseInt(checkbox.dataset.certId));
+  });
+
+  // อัปเดตสีพื้นหลัง
+  document.querySelectorAll('.certificate-select-item').forEach(item => {
+    const checkbox = item.querySelector('.cert-checkbox');
+    if (checkbox && checkbox.checked) {
+      item.style.backgroundColor = '#e7f3ff';
+      item.style.borderColor = '#0056b3';
+    } else {
+      item.style.backgroundColor = 'white';
+      item.style.borderColor = '#dee2e6';
+    }
+  });
+}
+
+// === ดูตัวอย่างใบเกียรติบัตร ===
+function previewCertificate(certIndex) {
+  const cert = certificatesData[certIndex];
+  if (!cert) {
+    showToast('⚠️ ไม่พบเกียรติบัตร', 'danger');
+    return;
+  }
+
+  const container = document.getElementById('previewContainer');
+  if (!container) {
+    showToast('⚠️ ไม่พบคอนเทนเนอร์', 'danger');
+    return;
+  }
+  
+  let content = '';
+  if (cert.file_path) {
+    if (String(cert.file_path).endsWith('.pdf')) {
+      content = `
+        <div style="text-align: center; color: #999;">
+          <i class="fas fa-file-pdf text-danger" style="font-size: 80px; margin-bottom: 20px; display: block;"></i>
+          <p style="font-size: 16px; margin-bottom: 10px;">ไฟล์ PDF</p>
+          <p style="font-size: 12px;">${String(cert.title || 'ไม่มีชื่อ').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+        </div>
+      `;
+    } else {
+      const baseUrl = '<%= baseUrl %>';
+      const filePath = String(cert.file_path).startsWith('http') ? String(cert.file_path) : (baseUrl + String(cert.file_path));
+      content = '<img src="' + filePath.replace(/"/g, '&quot;') + '" alt="' + String(cert.title || 'เกียรติบัตร').replace(/"/g, '&quot;') + '" style="max-width: 100%; max-height: 100%; object-fit: contain;">';
+    }
+  } else {
+    content = `
+      <div style="text-align: center; color: #999;">
+        <i class="fas fa-award" style="font-size: 80px; margin-bottom: 20px; display: block;"></i>
+        <p style="font-size: 16px;">ไม่มีไฟล์ใบเกียรติบัตร</p>
+      </div>
+    `;
+  }
+
+  container.innerHTML = content;
+
+  // แสดง modal
+  const modal = new bootstrap.Modal(document.getElementById('printPreviewModal'));
+  modal.show();
+  
+  // แสดงควบคุมการซูม
+  const zoomControls = document.getElementById('zoomControls');
+  if (zoomControls) {
+    zoomControls.classList.add('show');
+  }
+  currentZoom = 50;
+  const zoomValue = document.getElementById('zoomValue');
+  if (zoomValue) {
+    zoomValue.textContent = currentZoom;
+  }
+}
+
+// === ปริ้นเกียรติบัตรที่เลือก ===
+function printSelectedCertificates() {
+  if (selectedCertificates.size === 0) {
+    showToast('⚠️ กรุณาเลือกใบเกียรติบัตรอย่างน้อย 1 ใบ', 'danger');
+    return;
+  }
+
+  const printContent = document.getElementById('printCertificateContent');
+  if (!printContent) {
+    showToast('⚠️ ไม่พบเนื้อหาสำหรับปริ้น', 'danger');
+    return;
+  }
+
+  const baseUrl = '<%= baseUrl %>';
+  let html = '';
+
+  certificatesData.forEach((cert, index) => {
+    if (selectedCertificates.has(cert.id)) {
+      let certHTML = '<div class="certificate-print">';
+
+      if (cert.file_path) {
+        if (String(cert.file_path).endsWith('.pdf')) {
+          const certTitle = String(cert.title || 'ไม่มีชื่อ').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          certHTML += `
+            <div class="certificate-placeholder">
+              <i class="fas fa-file-pdf text-danger" style="font-size: 80px; margin-bottom: 20px;"></i>
+              <p style="font-size: 16px; margin-bottom: 10px;">ไฟล์ PDF</p>
+              <p style="font-size: 12px; color: #999;">` + certTitle + `</p>
+              <p style="font-size: 12px; color: #999;">โปรดดูไฟล์ PDF ต้นฉบับสำหรับการปริ้น</p>
+            </div>
+          `;
+        } else {
+          const filePath = String(cert.file_path).startsWith('http') ? String(cert.file_path) : (baseUrl + String(cert.file_path));
+          const certTitle = String(cert.title || 'เกียรติบัตร').replace(/"/g, '&quot;');
+          certHTML += '<img src="' + filePath.replace(/"/g, '&quot;') + '" alt="' + certTitle + '" class="certificate-print" onerror="this.parentElement.innerHTML=\'<div class=&quot;certificate-placeholder&quot;><i class=&quot;fas fa-exclamation-triangle text-warning&quot; style=&quot;font-size: 60px;&quot;></i><p>ไม่สามารถโหลดรูปภาพ</p></div>\'">';
+        }
+      } else {
+        const certTitle = String(cert.title || 'ไม่มีชื่อ').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        certHTML += `
+          <div class="certificate-placeholder">
+            <i class="fas fa-award text-muted" style="font-size: 80px; margin-bottom: 20px;"></i>
+            <p style="font-size: 16px; margin-bottom: 10px;">ไม่มีไฟล์ใบเกียรติบัตร</p>
+            <p style="font-size: 12px; color: #999;">` + certTitle + `</p>
+          </div>
+        `;
+      }
+
+      certHTML += '</div>';
+      html += certHTML;
+    }
+  });
+
+  printContent.innerHTML = html;
+  printContent.style.display = 'block';
+  
+  // ปิด Modal
+  const modal = bootstrap.Modal.getInstance(document.getElementById('selectCertificateModal'));
+  if (modal) {
+    modal.hide();
+  }
+  
+  // ปริ้น
+  setTimeout(() => {
+    window.print();
+    printContent.style.display = 'none';
+  }, 500);
+}
+
+// === ควบคุมการซูม ===
+let currentZoom = 50;
+const previewContainer = document.getElementById('previewContainer');
+
+function updateZoom() {
+  if (previewContainer) {
+    previewContainer.style.transform = `scale(${currentZoom / 100})`;
+  }
+  const zoomValue = document.getElementById('zoomValue');
+  if (zoomValue) {
+    zoomValue.textContent = currentZoom;
+  }
+}
+
+const zoomInBtn = document.getElementById('zoomInBtn');
+if (zoomInBtn) {
+  zoomInBtn.addEventListener('click', () => {
+    if (currentZoom < 200) {
+      currentZoom += 10;
+      updateZoom();
+    }
+  });
+}
+
+const zoomOutBtn = document.getElementById('zoomOutBtn');
+if (zoomOutBtn) {
+  zoomOutBtn.addEventListener('click', () => {
+    if (currentZoom > 30) {
+      currentZoom -= 10;
+      updateZoom();
+    }
+  });
+}
+
+const resetZoomBtn = document.getElementById('resetZoomBtn');
+if (resetZoomBtn) {
+  resetZoomBtn.addEventListener('click', () => {
+    currentZoom = 50;
+    updateZoom();
+  });
+}
+
+// === ซ่อนควบคุมการซูมเมื่อปิด Modal ===
+const printPreviewModal = document.getElementById('printPreviewModal');
+if (printPreviewModal) {
+  printPreviewModal.addEventListener('hidden.bs.modal', () => {
+    const zoomControls = document.getElementById('zoomControls');
+    if (zoomControls) {
+      zoomControls.classList.remove('show');
+    }
+  });
+}
+
+// === เหตุการณ์ปุ่ม ===
+document.addEventListener('DOMContentLoaded', function() {
+  const printReportBtn = document.getElementById('printReportBtn');
+  if (printReportBtn) {
+    printReportBtn.addEventListener('click', printReport);
+  }
+
+  const printCertificateBtn = document.getElementById('printCertificateBtn');
+  if (printCertificateBtn) {
+    printCertificateBtn.addEventListener('click', showSelectCertificateModal);
+  }
+
+  const printSelectedBtn = document.getElementById('printSelectedBtn');
+  if (printSelectedBtn) {
+    printSelectedBtn.addEventListener('click', printSelectedCertificates);
+  }
+});
+
+// === ซ่อนควบคุมการซูมเมื่อปริ้น ===
+window.addEventListener('beforeprint', () => {
+  const zoomControls = document.getElementById('zoomControls');
+  if (zoomControls) {
+    zoomControls.classList.remove('show');
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,298 @@
+<% locals.activePage = 'teachers'; %>
+
+<!-- โหลดฟอนต์ Sarabun + Bootstrap Icons (ถ้ายังไม่โหลดใน layout) -->
+<!-- Removed Google Fonts to avoid CSP/font blocking -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: #f8f9fa;
+  }
+ .gov-header {
+  background-color: #0d2c54;
+  color: white;
+  border-bottom: 4px solid #d4af37;
+  padding: 2rem 0; /* เฉพาะบน-ล่าง */
+  margin-bottom: 3rem;
+  /* ไม่ต้องกำหนด width, margin, padding ซ้าย-ขวา */
+  /* เพราะ block element ปกติจะเต็มความกว้างอยู่แล้ว */
+}
+  .gov-card {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    box-shadow: none;
+    background-color: white;
+  }
+  .table thead th {
+    background-color: #e9ecef;
+    font-weight: 600;
+    color: #333;
+  }
+  .btn-gov-primary {
+    background-color: #0d2c54;
+    border-color: #0d2c54;
+    color: white;
+  }
+  .btn-gov-primary:hover {
+    background-color: #123b70;
+    border-color: #123b70;
+  }
+  .btn-gov-info-outline {
+    color: #0d2c54;
+    border-color: #0d2c54;
+  }
+  .btn-gov-info-outline:hover {
+    background-color: #0d2c54;
+    color: white;
+  }
+  .btn-gov-warning-outline {
+    color: #d39e00;
+    border-color: #d39e00;
+  }
+  .btn-gov-warning-outline:hover {
+    background-color: #d39e00;
+    color: white;
+  }
+  .btn-gov-danger-outline {
+    color: #c82333;
+    border-color: #c82333;
+  }
+  .btn-gov-danger-outline:hover {
+    background-color: #c82333;
+    color: white;
+  }
+  .badge-primary-gov {
+    background-color: #0d2c54;
+    color: white;
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+    border-radius: 50rem;
+  }
+  .form-control, .form-select {
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+  }
+  .table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  .teacher-img {
+    border: 1px solid #dee2e6;
+    object-fit: cover;
+  }
+  /* Modal */
+  .modal-content {
+    border: none;
+    border-radius: 6px;
+  }
+  .modal-header {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+</style>
+
+<!-- 🔹 ส่วนหัว — วางนอก container เพื่อให้เต็มความกว้าง -->
+<section class="gov-header">
+  <div class="container">
+    <div class="text-center">
+      <h1 class="fw-bold mb-1 fs-4">
+        <i class="bi bi-people-fill me-2"></i>จัดการบัญชีครู
+      </h1>
+      <p class="mb-0">ทั้งหมด <%= teachers?.length || 0 %> ราย</p>
+    </div>
+    <% if (!teachers || teachers.length === 0) { %>
+      <div class="text-center mt-3">
+        <a href="/admin/teachers/new" class="btn btn-gov-primary rounded-pill px-3">
+          <i class="bi bi-plus-circle me-1"></i>เพิ่มครูใหม่
+        </a>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+
+<div class="container">
+  <!-- 🔍 แถบค้นหาและตัวกรอง -->
+  <div class="card gov-card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label fw-medium">ค้นหาชื่อครู</label>
+          <input type="text" id="searchInput" class="form-control" placeholder="พิมพ์ชื่อ-สกุล...">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-medium">อำเภอ</label>
+          <select id="districtFilter" class="form-select">
+            <option value="">ทั้งหมด</option>
+            <% const districts = [...new Set(teachers?.map(t => t.district).filter(d => d))].sort(); %>
+            <% districts.forEach(d => { %>
+              <option value="<%= d %>"><%= d %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-medium">โรงเรียน</label>
+          <input type="text" id="schoolFilter" class="form-control" placeholder="ชื่อโรงเรียน...">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 👥 ตารางข้อมูลครู -->
+  <% if (teachers && teachers.length > 0) { %>
+    <div class="card gov-card">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0" id="teachersTable">
+            <thead>
+              <tr>
+                <th width="70">รูปภาพ</th>
+                <th>ชื่อ-สกุล</th>
+                <th>อีเมล</th>
+                <th>วิชา</th>
+                <th>อำเภอ</th>
+                <th>โรงเรียน</th>
+                <th class="text-center">เกียรติบัตร</th>
+                <th width="160" class="text-center">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% teachers.forEach(teacher => { %>
+                <tr 
+                  data-name="<%= (teacher.full_name || '').toLowerCase() %>" 
+                  data-district="<%= (teacher.district || '').toLowerCase() %>"
+                  data-school="<%= (teacher.school_name || '').toLowerCase() %>">
+                  <td class="text-center">
+                    <img 
+                      src="<%= teacher.image_path || '/images/default-teacher.png' %>" 
+                      class="rounded-circle teacher-img"
+                      width="36" height="36"
+                      loading="lazy"
+                    >
+                  </td>
+                  <td><%= teacher.full_name %></td>
+                  <td><%= teacher.email %></td>
+                  <td><%= teacher.subject %></td>
+                  <td><%= teacher.district %></td>
+                  <td><%= teacher.school_name %></td>
+                  <td class="text-center">
+                    <span class="badge badge-primary-gov">
+                      <%= teacher.certificate_count || 0 %>
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <a href="/admin/teachers/<%= teacher.id %>" 
+                       class="btn btn-gov-info-outline btn-sm rounded-circle me-1"
+                       title="ดูรายละเอียด">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="/admin/teachers/<%= teacher.id %>/edit" 
+                       class="btn btn-gov-warning-outline btn-sm rounded-circle me-1"
+                       title="แก้ไข">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <button type="button" 
+                            class="btn btn-gov-danger-outline btn-sm rounded-circle btn-delete"
+                            title="ลบ"
+                            data-id="<%= teacher.id %>"
+                            data-name="<%= teacher.full_name %>">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="text-center py-5">
+      <div class="mb-3">
+        <div class="bg-light rounded-circle d-inline-flex p-3 border">
+          <i class="bi bi-people fs-1 text-muted"></i>
+        </div>
+      </div>
+      <h5 class="text-muted fw-medium">ไม่พบข้อมูลครู</h5>
+      <p class="text-muted mb-3">ยังไม่มีครูลงทะเบียนในระบบ</p>
+      <a href="/admin/teachers/new" class="btn btn-gov-primary rounded-pill px-4">
+        <i class="bi bi-plus-circle me-1"></i>เพิ่มครูใหม่
+      </a>
+    </div>
+  <% } %>
+</div>
+
+<!-- ✅ Modal ยืนยันการลบ -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>ยืนยันการลบ</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="ปิด"></button>
+      </div>
+      <div class="modal-body">
+        <p>คุณแน่ใจหรือไม่ว่าต้องการลบ <strong id="deleteName"></strong> ออกจากระบบ?</p>
+        <p class="text-muted small">การดำเนินการนี้ไม่สามารถยกเลิกได้</p>
+      </div>
+      <div class="modal-footer">
+        <form id="deleteForm" method="POST">
+          <input type="hidden" name="_method" value="DELETE" />
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="submit" class="btn btn-danger">ยืนยันลบ</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ JavaScript (เหมือนเดิม แต่ใช้ปุ่มใหม่) -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.body.addEventListener('click', function(e) {
+      const btn = e.target.closest('.btn-delete');
+      if (btn) {
+        const id = btn.dataset.id;
+        const name = btn.dataset.name;
+        document.getElementById('deleteName').textContent = name;
+        const form = document.getElementById('deleteForm');
+        form.action = `/admin/teachers/${id}`;
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+      }
+    });
+
+    document.querySelectorAll('.teacher-img').forEach(img => {
+      img.addEventListener('error', function() {
+        this.src = '/images/default-teacher.png';
+      });
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    const districtFilter = document.getElementById('districtFilter');
+    const schoolFilter = document.getElementById('schoolFilter');
+    const rows = document.querySelectorAll('#teachersTable tbody tr');
+
+    if (!rows.length) return;
+
+    function filterTable() {
+      const term = (searchInput?.value || '').toLowerCase();
+      const district = (districtFilter?.value || '').toLowerCase();
+      const school = (schoolFilter?.value || '').toLowerCase();
+
+      rows.forEach(row => {
+        const name = row.dataset.name || '';
+        const dist = row.dataset.district || '';
+        const sch = row.dataset.school || '';
+        const match = 
+          name.includes(term) &&
+          (!district || dist === district) &&
+          sch.includes(school);
+        row.style.display = match ? '' : 'none';
+      });
+    }
+
+    if (searchInput) searchInput.addEventListener('input', filterTable);
+    if (districtFilter) districtFilter.addEventListener('change', filterTable);
+    if (schoolFilter) schoolFilter.addEventListener('input', filterTable);
+  });
+</script>

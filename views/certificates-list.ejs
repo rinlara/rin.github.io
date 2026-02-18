@@ -1,0 +1,530 @@
+<!-- views/certificates-list.ejs -->
+
+<% if (locals.error) { %>
+  <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    <%= locals.error %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<div class="card shadow-lg border-0">
+  <div class="card-header bg-gradient-primary text-white py-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h3 class="mb-0 fw-bold">
+        <i class="fas fa-certificate me-2"></i>
+        <strong>หมายเลขเกียรติบัตรที่ได้รับอนุมัติ</strong>
+      </h3>
+      <a href="/request-certificate" class="btn btn-light btn-sm">
+        <i class="fas fa-arrow-left me-1"></i>กลับหน้าหลัก
+      </a>
+    </div>
+  </div>
+  
+  <div class="card-body p-4">
+    <!-- ข้อมูลคำขอ -->
+    <div class="mb-4 p-3 bg-light rounded border">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold text-muted">
+            <i class="fas fa-book me-1"></i>โครงการ/กิจกรรม
+          </label>
+          <p class="fs-5"><%= request.event_name %></p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold text-muted">
+            <i class="fas fa-calendar-check me-1"></i>วันที่จัดกิจกรรม
+          </label>
+          <p class="fs-5">
+            <%= new Date(request.event_date).toLocaleDateString('th-TH', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            }) %>
+          </p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold text-muted">
+            <i class="fas fa-user me-1"></i>ชื่อคนขอ
+          </label>
+          <p class="fs-5"><%= request.requester_name || '-' %></p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold text-muted">
+            <i class="fas fa-signature me-1"></i>ชื่อเจ้าของลายเซ็น
+          </label>
+          <p class="fs-5"><%= request.signature_owner || '-' %></p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold text-muted">
+            <i class="fas fa-hashtag me-1"></i>จำนวนหมายเลขที่ขอ
+          </label>
+          <p class="fs-5">
+            <span class="badge bg-primary fs-6">
+              <%= request.certificate_count %> หมายเลข
+            </span>
+          </p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold text-muted">
+            <i class="fas fa-info-circle me-1"></i>สถานะ
+          </label>
+          <p class="fs-5">
+            <span class="badge bg-success fs-6">
+              <i class="fas fa-check-circle me-1"></i>อนุมัติแล้ว
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- หัวข้อ -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="mb-0 fw-bold">
+        <i class="fas fa-list-ol me-2 text-primary"></i>
+        รายการหมายเลขเกียรติบัตร (<%= certificates.length %> หมายเลข)
+      </h4>
+      <button class="btn btn-success" onclick="copyAllNumbers()">
+        <i class="fas fa-copy me-1"></i>คัดลอกทั้งหมด
+      </button>
+    </div>
+
+    <!-- ตารางหมายเลขเกียรติบัตร -->
+    <div class="table-responsive">
+      <table class="table table-hover table-striped">
+        <thead class="table-light">
+          <tr>
+            <th width="10%">ลำดับ</th>
+            <th width="30%">หมายเลขเกียรติบัตร</th>
+            <th width="25%">สถานะการใช้งาน</th>
+            <th width="25%">ผู้รับ</th>
+            <th width="10%">จัดการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% certificates.forEach((cert, index) => { %>
+            <tr>
+              <td class="align-middle fw-bold"><%= index + 1 %></td>
+              <td class="align-middle">
+                <div class="d-flex align-items-center">
+                  <code class="bg-white px-3 py-2 rounded border me-2 fs-5">
+                    <%= cert.certificate_number %>
+                  </code>
+                  <button class="btn btn-sm btn-outline-primary" 
+                          onclick="copyNumber('<%= cert.certificate_number %>')" 
+                          title="คัดลอก">
+                    <i class="fas fa-copy"></i>
+                  </button>
+                </div>
+              </td>
+              <td class="align-middle">
+                <% if (cert.used) { %>
+                  <span class="badge bg-success">
+                    <i class="fas fa-check me-1"></i>ใช้งานแล้ว
+                  </span>
+                  <div class="mt-1">
+                    <small class="text-muted">
+                      <%= cert.issued_date ? new Date(cert.issued_date).toLocaleDateString('th-TH') : '-' %>
+                    </small>
+                  </div>
+                <% } else { %>
+                  <span class="badge bg-warning text-dark">
+                    <i class="fas fa-clock me-1"></i>ยังไม่ได้ใช้
+                  </span>
+                <% } %>
+              </td>
+              <td class="align-middle">
+                <%= cert.recipient_name || '-' %>
+                <% if (cert.recipient_school) { %>
+                  <div class="mt-1">
+                    <small class="text-muted"><%= cert.recipient_school %></small>
+                  </div>
+                <% } %>
+              </td>
+              <td class="align-middle">
+                <button class="btn btn-sm btn-info" 
+                        onclick="printCertificate('<%= cert.certificate_number %>')" 
+                        title="พิมพ์">
+                  <i class="fas fa-print"></i>
+                </button>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- คำแนะนำ -->
+    <div class="alert alert-info mt-4 mb-0 border-0 shadow-sm">
+      <h6 class="alert-heading fw-bold">
+        <i class="fas fa-info-circle me-2"></i>คำแนะนำการใช้งาน
+      </h6>
+      <hr class="my-2">
+      <ul class="mb-0 ps-3">
+        <li>คลิกปุ่ม <span class="badge bg-primary"><i class="fas fa-copy"></i></span> เพื่อคัดลอกหมายเลขเกียรติบัตร</li>
+        <li>คลิกปุ่ม <span class="badge bg-success"><i class="fas fa-copy"></i> คัดลอกทั้งหมด</span> เพื่อคัดลอกหมายเลขทั้งหมด</li>
+        <li>หมายเลขเกียรติบัตรสามารถนำไปใช้ในการสร้างไฟล์เกียรติบัตรได้ทันที</li>
+        <li>เมื่อใช้หมายเลขแล้ว สถานะจะเปลี่ยนเป็น "ใช้งานแล้ว"</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  // คัดลอกหมายเลขเดียว
+  function copyNumber(number) {
+    navigator.clipboard.writeText(number).then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'คัดลอกสำเร็จ!',
+        text: `หมายเลข: ${number}`,
+        timer: 1500,
+        showConfirmButton: false
+      });
+    }).catch(err => {
+      Swal.fire({
+        icon: 'error',
+        title: 'คัดลอกล้มเหลว',
+        text: 'ไม่สามารถคัดลอกหมายเลขได้'
+      });
+    });
+  }
+
+  // คัดลอกทั้งหมด
+  function copyAllNumbers() {
+    const numbers = <%= JSON.stringify(certificates.map(c => c.certificate_number)) %>;
+    const text = numbers.join('\n');
+    
+    navigator.clipboard.writeText(text).then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'คัดลอกทั้งหมดสำเร็จ!',
+        html: `<p>คัดลอกหมายเลข ${numbers.length} หมายเลข</p>
+               <small class="text-muted">วางในโปรแกรมเอกสารเพื่อดูรายการ</small>`,
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }).catch(err => {
+      Swal.fire({
+        icon: 'error',
+        title: 'คัดลอกล้มเหลว',
+        text: 'ไม่สามารถคัดลอกหมายเลขทั้งหมดได้'
+      });
+    });
+  }
+
+  // พิมพ์เกียรติบัตร (ตัวอย่าง)
+  function printCertificate(number) {
+    Swal.fire({
+      title: 'พิมพ์เกียรติบัตร',
+      html: `<p class="text-center">หมายเลขเกียรติบัตร: <strong>${number}</strong></p>
+             <p class="text-muted small text-center">ฟังก์ชันนี้จะเชื่อมต่อกับระบบพิมพ์เกียรติบัตรในอนาคต</p>`,
+      icon: 'info',
+      confirmButtonText: 'ตกลง'
+    });
+  }
+
+  // โหลด SweetAlert2
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof Swal === 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+      script.onload = function() {
+        console.log('SweetAlert2 loaded');
+      };
+      document.head.appendChild(script);
+    }
+  });
+</script>
+
+<style>
+  :root {
+    --primary-navy: #003d7a;
+    --primary-blue: #0052a3;
+    --secondary-gold: #d4af37;
+    --light-bg: #f5f7fa;
+    --border-color: #e2e8f0;
+    --text-dark: #1a202c;
+    --text-muted: #718096;
+  }
+
+  .alert {
+    border: none;
+    border-radius: 10px;
+    border-left: 5px solid;
+    animation: slideIn 0.4s ease;
+  }
+
+  .alert-danger {
+    background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));
+    border-left-color: #ef4444;
+    color: #7f1d1d;
+  }
+
+  .alert-info {
+    background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.05));
+    border-left-color: #3b82f6;
+    color: #1e40af;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    border: 1px solid var(--border-color) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 2px 10px rgba(0, 61, 122, 0.08) !important;
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, var(--primary-navy) 0%, var(--primary-blue) 100%) !important;
+    color: white;
+    border: none !important;
+    padding: 1.5rem !important;
+    border-bottom: 4px solid var(--secondary-gold);
+  }
+
+  .card-header h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .card-header .btn-light {
+    background: white !important;
+    color: var(--primary-navy) !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-header .btn-light:hover {
+    background: var(--secondary-gold) !important;
+    box-shadow: 0 6px 16px rgba(212, 175, 55, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .card-body {
+    background: white;
+    padding: 2rem !important;
+  }
+
+  /* Request Info Section */
+  .bg-light.rounded.border {
+    background: linear-gradient(135deg, #f5f7fa 0%, #ecf0f5 100%) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 12px !important;
+  }
+
+  .form-label {
+    color: var(--text-muted) !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.2px;
+  }
+
+  .form-label i {
+    color: var(--secondary-gold);
+  }
+
+  /* Badges */
+  .badge {
+    padding: 0.6em 0.95em !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px;
+  }
+
+  .badge.bg-primary {
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-navy)) !important;
+    box-shadow: 0 4px 12px rgba(0, 82, 163, 0.2);
+  }
+
+  .badge.bg-success {
+    background: linear-gradient(90deg, #10b981, #059669) !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  }
+
+  .badge.bg-warning {
+    background: linear-gradient(90deg, #f59e0b, #d97706) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+  }
+
+  /* Section Heading */
+  .d-flex.justify-content-between.align-items-center h4 {
+    color: var(--primary-navy);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    font-size: 1.25rem;
+  }
+
+  .d-flex.justify-content-between.align-items-center h4 i {
+    color: var(--secondary-gold);
+  }
+
+  /* Buttons */
+  .btn-success {
+    background: linear-gradient(90deg, #10b981, #059669) !important;
+    border: none !important;
+    font-weight: 600 !important;
+    padding: 0.7rem 1.5rem !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  }
+
+  .btn-success:hover {
+    background: linear-gradient(90deg, #059669, #047857) !important;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline-primary {
+    border-color: var(--primary-blue) !important;
+    color: var(--primary-blue) !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-primary:hover {
+    background-color: var(--primary-blue) !important;
+    border-color: var(--primary-blue) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(0, 82, 163, 0.2);
+  }
+
+  .btn-sm.btn-info {
+    background: linear-gradient(90deg, #06b6d4, #0891b2) !important;
+    border: none;
+    color: white !important;
+    font-weight: 600;
+    padding: 0.5rem 0.8rem !important;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+  }
+
+  .btn-sm.btn-info:hover {
+    background: linear-gradient(90deg, #0891b2, #0e7490) !important;
+    box-shadow: 0 6px 16px rgba(6, 182, 212, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* Table Styling */
+  .table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+  }
+
+  .table {
+    margin-bottom: 0;
+  }
+
+  .table thead.table-light {
+    background: linear-gradient(90deg, var(--primary-navy), var(--primary-blue)) !important;
+    color: white;
+  }
+
+  .table thead.table-light th {
+    border: none;
+    color: white !important;
+    font-weight: 700;
+    padding: 1.1rem 1rem;
+    letter-spacing: 0.2px;
+  }
+
+  .table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+  }
+
+  .table tbody tr:hover {
+    background-color: #f5f7fa !important;
+    box-shadow: inset 4px 0 0 var(--secondary-gold);
+  }
+
+  .table tbody td {
+    padding: 1rem;
+    color: var(--text-dark);
+    vertical-align: middle;
+  }
+
+  code {
+    background: white !important;
+    color: var(--primary-blue);
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px;
+    padding: 0.6rem 1rem !important;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  .text-muted {
+    color: var(--text-muted) !important;
+  }
+
+  /* Alert Info Box */
+  .alert-info.mt-4 {
+    background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.04)) !important;
+    border: 1px solid #bfdbfe !important;
+    border-radius: 12px !important;
+  }
+
+  .alert-heading {
+    color: var(--primary-navy) !important;
+    font-size: 1.05rem;
+    letter-spacing: 0.2px;
+  }
+
+  .alert-heading i {
+    color: var(--primary-blue);
+  }
+
+  .alert-info ul li {
+    color: var(--text-dark);
+    margin-bottom: 0.6rem;
+    line-height: 1.6;
+  }
+
+  .alert-info ul li .badge {
+    margin: 0 0.3rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .card-header {
+      padding: 1.2rem !important;
+    }
+
+    .card-header h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-header .btn-light {
+      width: 100%;
+    }
+
+    .card-body {
+      padding: 1.2rem !important;
+    }
+
+    .d-flex.justify-content-between.align-items-center {
+      flex-direction: column;
+      align-items: flex-start !important;
+    }
+
+    .d-flex.justify-content-between.align-items-center .btn-success {
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .table {
+      font-size: 0.9rem;
+    }
+  }
+</style>

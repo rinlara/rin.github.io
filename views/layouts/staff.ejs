@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title || "ระบบ E-Certificate สพป.ขอนแก่น เขต 2" %></title>
+
+  <!-- ✅ Bootstrap CSS — ลบช่องว่างท้าย URL -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- ✅ Font Awesome — ใช้ jsDelivr + ลบช่องว่าง -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+
+  <!-- Use system font stack (avoid external Google Fonts) -->
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, "Noto Sans Thai", 'Noto Sans', sans-serif;
+      background-color: #f4f6fa;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== Navbar ===== */
+    header.navbar {
+      background: linear-gradient(90deg, #00308f, #0056d2);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+      border-bottom: 4px solid #ffcc00;
+      padding: 0.6rem 0;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+      color: white !important;
+      font-size: 1.15rem;
+      text-decoration: none;
+    }
+
+    .navbar-brand img {
+      height: 52px;
+      width: 52px;
+      object-fit: cover;
+      margin-right: 12px;
+      border-radius: 50%;
+      background-color: white;
+      padding: 4px;
+      border: 2px solid #ffcc00;
+    }
+
+    .navbar-nav .nav-link {
+      color: white !important;
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #ffdd33 !important;
+    }
+
+    /* ===== Layout ===== */
+    .main-wrapper {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    aside.sidebar {
+      width: 240px;
+      background: #00308f;
+      color: white;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    aside.sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    aside.sidebar a:hover,
+    aside.sidebar a.active {
+      background-color: #0056d2;
+    }
+
+    main.content {
+      flex: 1;
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 0 1.5rem 2rem 1.5rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    /* ===== User Info ===== */
+    .user-info {
+      display: flex;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      margin-bottom: 1rem;
+      color: white;
+    }
+
+    .user-info i {
+      font-size: 1.2rem;
+    }
+
+    /* ===== Footer ===== */
+    footer {
+      background: linear-gradient(90deg, #002b80, #004bbd);
+      color: white;
+      text-align: center;
+      padding: 18px 0;
+      font-size: 0.95rem;
+      box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
+      margin-top: auto;
+    }
+
+    footer p { margin: 0; }
+
+    @media (max-width: 992px) {
+      .main-wrapper {
+        flex-direction: column;
+      }
+      aside.sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 1rem 0.5rem;
+      }
+      aside.sidebar a {
+        min-width: 120px;
+        justify-content: center;
+        font-size: 0.9rem;
+      }
+      main.content {
+        margin: 1rem;
+        padding: 1.5rem;
+      }
+      .user-info {
+        justify-content: space-between;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <% if (locals.user && locals.user.role === 'staff') { %>
+    <!-- Navbar -->
+    <header class="navbar navbar-expand-lg navbar-dark sticky-top">
+      <div class="container d-flex justify-content-between align-items-center">
+        <a href="/staff" class="navbar-brand">
+          <img src="/images/logo องค์กรคุณภาพเเละธรรมาภิบาล.png" alt="โลโก้ สพป.ขก2">
+          ระบบ E-Certificate สพป.ขอนแก่น เขต 2
+        </a>
+
+        <div class="d-flex align-items-center">
+          <div class="text-white me-3">
+            สวัสดี, <strong>บุคลากร <%= locals.user.full_name %></strong>
+          </div>
+          <form action="/logout" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-warning btn-sm">
+              <i class="fas fa-sign-out-alt me-1"></i> ออกจากระบบ
+            </button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sidebar + Content -->
+    <div class="main-wrapper">
+      <aside class="sidebar">
+        <div class="user-info">
+          <i class="fas fa-building"></i>
+          <span>บุคลากร</span>
+        </div>
+        
+        <a href="/staff" class="<%= (locals.activePage === 'dashboard') ? 'active' : '' %>">
+          <i class="fas fa-home"></i> หน้าหลัก
+        </a>
+        <a href="/staff/upload" class="<%= (locals.activePage === 'upload') ? 'active' : '' %>">
+          <i class="fas fa-upload"></i> อัปโหลด
+        </a>
+        <a href="/request-certificate" class="<%= (locals.activePage === 'request-certificate') ? 'active' : '' %>">
+      <i class="fas fa-certificate"></i> ขอหมายเลขเกียรติบัตร
+    </a>
+        <a href="/staff/certificates" class="<%= (locals.activePage === 'certificates') ? 'active' : '' %>">
+          <i class="fas fa-award"></i> เกียรติบัตร
+        </a>
+        <a href="/staff/profile" class="<%= (locals.activePage === 'profile') ? 'active' : '' %>">
+          <i class="fas fa-user"></i> โปรไฟล์
+        </a>
+        <a href="/guide" class="<%= (locals.activePage === 'guide') ? 'active' : '' %>">
+          <i class="fas fa-book"></i> คู่มือ
+        </a>
+      </aside>
+
+      <main class="content">
+        <h1 class="page-title mb-4"><%= title %></h1>
+        
+        <!-- Alerts -->
+        <% if (locals.success) { %>
+          <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <%= locals.success %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% } %>
+        
+        <% if (locals.error) { %>
+          <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            <%= locals.error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% } %>
+        
+        <%- body %>
+      </main>
+    </div>
+  <% } else { %>
+    <!-- ไม่ใช่บุคลากร หรือยังไม่ล็อกอิน -->
+    <div class="container mt-5 text-center">
+      <div class="alert alert-warning">
+        <h4>คุณไม่มีสิทธิ์เข้าถึงหน้านี้</h4>
+        <p>กำลังเปลี่ยนเส้นทางไปยังหน้าล็อกอิน...</p>
+      </div>
+    </div>
+    <script>
+      setTimeout(() => {
+        window.location.href = '/login?error=คุณไม่มีสิทธิ์เข้าถึงหน้านี้';
+      }, 2000);
+    </script>
+  <% } %>
+
+  <footer>
+    <p>© <%= new Date().getFullYear() %> สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2 | พัฒนาโดยฝ่ายเทคโนโลยีสารสนเทศ</p>
+  </footer>
+
+  <!-- ✅ Bootstrap JS — ลบช่องว่างท้าย URL -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .profile-preview { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #e9ecef; }
+    .form-card { border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <h2 class="mb-4">แก้ไขข้อมูลครู</h2>
+
+    <% if (locals.error_msg && error_msg.length > 0) { %>
+      <div class="alert alert-danger alert-dismissible fade show">
+        <%= error_msg %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    <% } %>
+    <% if (locals.success_msg && success_msg.length > 0) { %>
+      <div class="alert alert-success alert-dismissible fade show">
+        <%= success_msg %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    <% } %>
+
+    <div class="card form-card p-4">
+      <form method="POST" enctype="multipart/form-data">
+        <div class="text-center mb-4">
+          <img src="/uploads/<%= teacher.profile_image || 'default.jpg' %>" 
+               class="profile-preview" id="preview">
+          <p class="mt-2 text-muted">รูปภาพปัจจุบัน</p>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">ชื่อ-สกุล *</label>
+            <input type="text" name="full_name" class="form-control" value="<%= teacher.full_name %>" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">อีเมล *</label>
+            <input type="email" name="email" class="form-control" value="<%= teacher.email %>" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">เบอร์โทรศัพท์</label>
+            <input type="text" name="phone" class="form-control" value="<%= teacher.phone || '' %>">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">วิชาเอก</label>
+            <input type="text" name="subject" class="form-control" value="<%= teacher.subject %>">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">อำเภอ</label>
+            <input type="text" name="district" class="form-control" value="<%= teacher.district %>">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">โรงเรียน</label>
+            <input type="text" name="school_name" class="form-control" value="<%= teacher.school_name %>">
+          </div>
+          <div class="col-12">
+            <label class="form-label">เปลี่ยนรูปภาพ (ไม่บังคับ)</label>
+            <input type="file" name="profile_image" class="form-control" accept="image/*">
+            <div class="form-text">รองรับ JPG, PNG (ขนาดไม่เกิน 5 MB)</div>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+          <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
+          <a href="/admin/teachers" class="btn btn-secondary">ยกเลิก</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

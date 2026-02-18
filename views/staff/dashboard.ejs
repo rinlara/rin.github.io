@@ -1,0 +1,525 @@
+<%
+const user = locals.user || {};
+const certificates = locals.certificates || [];
+const certificatesCount = certificates.length;
+const userName = user.full_name || 'ไม่ระบุชื่อ';
+const position = user.position || 'ไม่ระบุตำแหน่ง';
+const schoolName = user.school_name || 'ไม่ระบุโรงเรียน';
+const district = user.district || 'ไม่ระบุอำเภอ';
+const phone = user.phone || 'ไม่ระบุ';
+const email = user.email || 'ไม่ระบุ';
+%>
+
+<!-- ✅ โหลด Font Awesome และ Kanit Font -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<!-- Removed external Google Fonts to avoid CSP/font loading issues -->
+
+<style>
+  :root {
+    --primary-blue: #002147;
+    --primary-blue-dark: #001a38;
+    --gold: #D4AF37;
+    --gold-light: #f0e6b3;
+    --light-bg: #f8fafc;
+    --card-shadow: 0 4px 16px rgba(0, 33, 71, 0.08);
+    --border-radius: 16px;
+  }
+
+  .dashboard-container {
+    font-family: 'Kanit', sans-serif;
+    background-color: var(--light-bg);
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
+
+  /* ========== แถบโปรไฟล์ ========== */
+  .profile-header {
+    background: linear-gradient(135deg, var(--primary-blue), #003a75);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 33, 71, 0.2);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-header::before {
+    content: "";
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 50%;
+  }
+
+  .profile-content {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .profile-avatar {
+    position: relative;
+  }
+
+  .profile-avatar img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 4px solid white;
+    object-fit: cover;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+  }
+
+  .profile-avatar img:hover {
+    transform: scale(1.05);
+  }
+
+  .profile-info h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+
+  .profile-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1rem;
+    margin-top: 1.2rem;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    opacity: 0.95;
+  }
+
+  .meta-item i {
+    width: 24px;
+    text-align: center;
+    color: var(--gold);
+    font-size: 1rem;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-sm {
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-profile {
+    background: var(--gold);
+    color: var(--primary-blue);
+    box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
+  }
+  .btn-profile:hover {
+    background: #c19e2d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.5);
+  }
+
+  /* ========== สถิติ ========== */
+  .stats-section {
+    margin-bottom: 2.5rem;
+  }
+
+  .stats-title {
+    color: var(--primary-blue);
+    font-weight: 700;
+    margin-bottom: 1.4rem;
+    font-size: 1.45rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1.3rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1.6rem 1.4rem;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-top: 4px solid var(--gold);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 33, 71, 0.15);
+  }
+
+  .stat-value {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    margin: 0.5rem 0;
+  }
+
+  .stat-label {
+    font-size: 0.95rem;
+    color: #555;
+    font-weight: 500;
+    margin-top: 0.2rem;
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+  }
+
+  /* ========== เกียรติบัตร ========== */
+  .certificates-section {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 2rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.8rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .section-title {
+    color: var(--primary-blue);
+    font-weight: 700;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .view-all-link {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.2s;
+  }
+  .view-all-link:hover {
+    color: var(--primary-blue);
+  }
+
+  .certificate-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.6rem;
+  }
+
+  .certificate-card {
+    background: #fcfdfd;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .certificate-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 24px rgba(0, 33, 71, 0.12);
+    border-color: var(--gold);
+  }
+
+  .certificate-preview {
+    height: 140px;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem;
+    border-bottom: 2px solid var(--gold-light);
+  }
+
+  .certificate-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+  }
+
+  .certificate-card:hover .certificate-preview img {
+    transform: scale(1.03);
+  }
+
+  .certificate-body {
+    padding: 1.3rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .certificate-title {
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 0.6rem;
+    font-size: 1.05rem;
+    line-height: 1.4;
+    flex-grow: 1;
+  }
+
+  .certificate-detail {
+    font-size: 0.85rem;
+    color: #555;
+    margin: 0.4rem 0;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .certificate-detail i {
+    color: var(--gold);
+    min-width: 18px;
+    font-size: 0.9rem;
+  }
+
+  .view-btn {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--primary-blue);
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-top: auto;
+    text-align: center;
+    transition: background 0.2s, transform 0.2s;
+    width: 100%;
+  }
+
+  .view-btn:hover {
+    background: #c19e2d;
+    transform: translateY(-2px);
+  }
+
+  /* ========== ไม่มีข้อมูล ========== */
+  .empty-state {
+    text-align: center;
+    padding: 3.5rem 1.5rem;
+  }
+
+  .empty-icon {
+    font-size: 4.5rem;
+    color: #cbd5e1;
+    margin-bottom: 1.4rem;
+  }
+
+  .empty-text {
+    font-size: 1.25rem;
+    color: #64748b;
+    margin-bottom: 1.6rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .empty-btn {
+    background: var(--primary-blue);
+    color: white;
+    padding: 0.85rem 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    transition: background 0.2s, transform 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 33, 71, 0.15);
+  }
+
+  .empty-btn:hover {
+    background: var(--primary-blue-dark);
+    transform: translateY(-2px);
+  }
+
+  /* ========== Responsive ========== */
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 1rem;
+    }
+    .profile-content {
+      flex-direction: column;
+      text-align: center;
+    }
+    .profile-meta {
+      grid-template-columns: 1fr;
+    }
+    .action-buttons {
+      justify-content: center;
+    }
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .stats-grid,
+    .certificate-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="dashboard-container">
+  <!-- 🔷 โปรไฟล์บุคลากร -->
+  <div class="profile-header">
+    <div class="profile-content">
+      <div class="profile-avatar">
+        <img src="<%= user.image_path || '/images/default-staff.png' %>" alt="รูปภาพบุคลากร">
+      </div>
+      <div class="profile-info">
+        <h2>ยินดีต้อนรับคุณ <%= userName %></h2>
+        <div class="profile-meta">
+          <div class="meta-item">
+            <i class="fas fa-user-tie"></i>
+            <span><%= position %></span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-school"></i>
+            <span><%= schoolName %></span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span><%= district %></span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-phone"></i>
+            <span><%= phone %></span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-envelope"></i>
+            <span><%= email %></span>
+          </div>
+        </div>
+        <div class="action-buttons">
+          <a href="/staff/profile" class="btn-sm btn-profile">
+            <i class="fas fa-user-edit"></i> แก้ไขโปรไฟล์
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔷 สถิติ -->
+  <div class="stats-section">
+    <h3 class="stats-title">
+      <i class="fas fa-chart-line"></i> สรุปภาพรวม
+    </h3>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-award"></i>
+        </div>
+        <div class="stat-value"><%= certificatesCount %></div>
+        <div class="stat-label">เกียรติบัตรทั้งหมด</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-building"></i>
+        </div>
+        <div class="stat-value">1</div>
+        <div class="stat-label">สังกัดหน่วยงาน</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-user-shield"></i>
+        </div>
+        <div class="stat-value"><%= position === 'ไม่ระบุตำแหน่ง' ? '–' : position %></div>
+        <div class="stat-label">ตำแหน่งปัจจุบัน</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔷 เกียรติบัตร -->
+  <div class="certificates-section">
+    <div class="section-header">
+      <h3 class="section-title">
+        <i class="fas fa-award"></i> เกียรติบัตรของคุณ (<%= certificatesCount %>)
+      </h3>
+      <% if (certificates.length > 0) { %>
+        <a href="/staff/certificates" class="view-all-link">
+          ดูทั้งหมด <i class="fas fa-arrow-right"></i>
+        </a>
+      <% } %>
+    </div>
+
+    <% if (certificates.length > 0) { %>
+      <div class="certificate-grid">
+        <% certificates.slice(0, 6).forEach(cert => { %>
+          <div class="certificate-card">
+            <div class="certificate-preview">
+              <img src="<%= cert.file_path %>" alt="เกียรติบัตร <%= cert.title %>">
+            </div>
+            <div class="certificate-body">
+              <div class="certificate-title"><%= cert.title %></div>
+              <div class="certificate-detail">
+                <i class="fas fa-hashtag"></i>
+                <span><%= cert.certificate_number || 'ไม่ระบุเลขที่' %></span>
+              </div>
+              <div class="certificate-detail">
+                <i class="fas fa-building"></i>
+                <span><%= cert.issuing_agency || 'ไม่ระบุหน่วยงาน' %></span>
+              </div>
+              <div class="certificate-detail">
+                <i class="fas fa-calendar-day"></i>
+                <span><%= (cert.issue_date && cert.issue_date !== '0000-00-00') ? new Date(cert.issue_date).toLocaleDateString('th-TH') : 'ไม่ระบุวันที่' %></span>
+              </div>
+              <a href="<%= cert.file_path %>" target="_blank" class="view-btn">
+                <i class="fas fa-file-pdf"></i> ดูเอกสาร
+              </a>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="fas fa-award"></i>
+        </div>
+        <div class="empty-text">คุณยังไม่มีเกียรติบัตรในระบบ</div>
+        <a href="/staff/certificates/new" class="empty-btn">
+          <i class="fas fa-plus-circle"></i> อัปโหลดเกียรติบัตรแรกของคุณ
+        </a>
+      </div>
+    <% } %>
+  </div>
+</div>

@@ -1,0 +1,302 @@
+<!-- 🔹 ส่วนหัวหลัก -->
+<section class="hero text-center py-5 rounded-4 shadow-sm mb-5" 
+  style="background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;">
+  <div class="mb-3">
+    <i class="bi bi-person-badge" style="font-size: 3rem;"></i>
+  </div>
+  <h1 class="fw-bold mb-2" style="font-size: 2.5rem;">รายละเอียดบุคลากร</h1>
+  <p class="mb-0 fs-5"><%= staff.full_name %></p>
+</section>
+
+<!-- 🔹 ปุ่มกลับ/จัดการ -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+  <a href="/admin/staffs" class="btn btn-outline-secondary d-inline-flex align-items-center">
+    <i class="bi bi-arrow-left me-2"></i> กลับไปรายชื่อ
+  </a>
+  <a href="/admin/staffs/edit/<%= staff.id %>" class="btn btn-warning d-inline-flex align-items-center">
+    <i class="bi bi-pencil me-2"></i> แก้ไขข้อมูล
+  </a>
+  <form action="/admin/staffs/delete/<%= staff.id %>" method="POST" style="display:inline;" onsubmit="return confirm('ยืนยันการลบบุคลากรนี้? ข้อมูลทั้งหมดจะถูกลบอย่างถาวร!');">
+    <button type="submit" class="btn btn-danger d-inline-flex align-items-center">
+      <i class="bi bi-trash me-2"></i> ลบบุคลากร
+    </button>
+  </form>
+</div>
+
+<!-- 🔹 ข้อมูลบุคลากร -->
+<div class="card shadow-sm rounded-3 border-0 mb-4">
+  <div class="card-header bg-light py-3 px-4 border-0 rounded-top-3">
+    <h5 class="mb-0"><i class="bi bi-file-person me-2"></i>ข้อมูลส่วนบุคคล</h5>
+  </div>
+  <div class="card-body p-4">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="d-flex mb-3">
+          <div class="me-3" style="color: #2a5298; font-size: 1.3rem;"><i class="bi bi-hash"></i></div>
+          <div class="flex-grow-1">
+            <div class="text-muted small fw-600">รหัสบุคลากร</div>
+            <div class="fw-semibold fs-5">#<%= staff.id %></div>
+          </div>
+        </div>
+
+        <div class="d-flex mb-3">
+          <div class="me-3" style="color: #2a5298; font-size: 1.3rem;"><i class="bi bi-person"></i></div>
+          <div class="flex-grow-1">
+            <div class="text-muted small fw-600">ชื่อ-นามสกุล</div>
+            <div class="fw-semibold fs-5"><%= staff.full_name %></div>
+          </div>
+        </div>
+
+        <div class="d-flex mb-3">
+          <div class="me-3" style="color: #2a5298; font-size: 1.3rem;"><i class="bi bi-envelope"></i></div>
+          <div class="flex-grow-1">
+            <div class="text-muted small fw-600">อีเมล</div>
+            <div class="fw-normal"><a href="mailto:<%= staff.email %>" class="text-decoration-none"><%= staff.email %></a></div>
+          </div>
+        </div>
+
+        <div class="d-flex mb-3">
+          <div class="me-3" style="color: #2a5298; font-size: 1.3rem;"><i class="bi bi-telephone"></i></div>
+          <div class="flex-grow-1">
+            <div class="text-muted small fw-600">เบอร์โทรศัพท์</div>
+            <div class="fw-normal"><%= staff.phone ? '<a href="tel:' + staff.phone + '" class="text-decoration-none">' + staff.phone + '</a>' : '<span class="text-muted">-</span>' %></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex mb-3">
+          <div class="me-3" style="color: #2a5298; font-size: 1.3rem;"><i class="bi bi-briefcase"></i></div>
+          <div class="flex-grow-1">
+            <div class="text-muted small fw-600">ตำแหน่ง</div>
+            <div class="fw-normal"><%= staff.position || '<span class="text-muted">-</span>' %></div>
+          </div>
+        </div>
+
+        <div class="d-flex mb-3">
+          <div class="me-3" style="color: #2a5298; font-size: 1.3rem;"><i class="bi bi-building"></i></div>
+          <div class="flex-grow-1">
+            <div class="text-muted small fw-600">โรงเรียน</div>
+            <div class="fw-normal"><%= staff.school_name || '<span class="text-muted">-</span>' %></div>
+          </div>
+        </div>
+
+        <div class="d-flex mb-3">
+          <div class="me-3" style="color: #2a5298; font-size: 1.3rem;"><i class="bi bi-calendar-plus"></i></div>
+          <div class="flex-grow-1">
+            <div class="text-muted small fw-600">สร้างเมื่อ</div>
+            <div class="fw-normal"><%= new Date(staff.created_at).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %></div>
+          </div>
+        </div>
+
+        <% if (staff.updated_at && staff.updated_at !== staff.created_at) { %>
+        <div class="d-flex mb-3">
+          <div class="me-3" style="color: #2a5298; font-size: 1.3rem;"><i class="bi bi-clock-history"></i></div>
+          <div class="flex-grow-1">
+            <div class="text-muted small fw-600">แก้ไขล่าสุด</div>
+            <div class="fw-normal"><%= new Date(staff.updated_at).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %></div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🔹 เกียรติบัตรของบุคลากร -->
+<div class="card shadow-sm rounded-3 border-0">
+  <div class="card-header bg-light py-3 px-4 border-0 rounded-top-3">
+    <div class="d-flex justify-content-between align-items-center">
+      <h5 class="mb-0"><i class="bi bi-award me-2" style="color: #2a5298;"></i>เกียรติบัตร</h5>
+      <span class="badge bg-info rounded-pill" id="cert-count">0</span>
+    </div>
+  </div>
+  <div class="card-body p-4">
+    <div id="certificates-container">
+      <div class="text-center py-5">
+        <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+        <p class="text-muted mt-3 mb-0">กำลังโหลดข้อมูลเกียรติบัตร...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cert-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .cert-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    border-color: #2a5298;
+  }
+
+  .cert-thumbnail {
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #2a5298;
+  }
+
+  .cert-info {
+    padding: 1rem;
+  }
+
+  .cert-number {
+    color: #2a5298;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .cert-title {
+    font-weight: 600;
+    color: #333;
+    margin: 0.5rem 0;
+    line-height: 1.4;
+  }
+
+  .cert-issuer {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .cert-date {
+    color: #999;
+    font-size: 0.85rem;
+  }
+
+  .cert-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .cert-actions a {
+    flex: 1;
+    padding: 0.5rem;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .cert-view {
+    background: #e3f2fd;
+    color: #2a5298;
+  }
+
+  .cert-view:hover {
+    background: #2a5298;
+    color: white;
+  }
+
+  .cert-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #999;
+  }
+
+  .cert-empty i {
+    font-size: 3rem;
+    color: #ddd;
+    margin-bottom: 1rem;
+    display: block;
+  }
+</style>
+
+<script>
+  // ดึงเกียรติบัตรของบุคลากรนี้
+  async function loadCertificates() {
+    try {
+      const staffId = <%= staff.id %>;
+      console.log('🔍 เรียกดึงเกียรติบัตร สำหรับบุคลากร:', staffId);
+      
+      const response = await fetch(`/api/staff/${staffId}/certificates`);
+      console.log('📡 ได้รับการตอบสนอง:', response.status, response.statusText);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const certificates = await response.json();
+      console.log('✅ ได้รับเกียรติบัตร:', certificates);
+      
+      const container = document.getElementById('certificates-container');
+      const countBadge = document.getElementById('cert-count');
+
+      countBadge.textContent = certificates.length;
+
+      if (certificates.length === 0) {
+        container.innerHTML = `
+          <div class="cert-empty">
+            <i class="bi bi-inbox"></i>
+            <p>ยังไม่มีเกียรติบัตร</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '<div class="row g-3">';
+      
+      certificates.forEach(cert => {
+        const issueDate = new Date(cert.issue_date).toLocaleDateString('th-TH', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+
+        html += `
+          <div class="col-md-6 col-lg-4">
+            <div class="cert-card">
+              <div class="cert-thumbnail">
+                <i class="bi bi-file-pdf" style="font-size: 3rem;"></i>
+              </div>
+              <div class="cert-info">
+                <div class="cert-number">${cert.certificate_number || 'N/A'}</div>
+                <div class="cert-title">${cert.title}</div>
+                <div class="cert-issuer"><i class="bi bi-building me-1"></i>${cert.issuing_organization}</div>
+                <div class="cert-date"><i class="bi bi-calendar me-1"></i>${issueDate}</div>
+                <div class="cert-actions">
+                  <a href="/staff/certificates/${cert.id}" class="cert-view" title="ดูรายละเอียด">
+                    <i class="bi bi-eye me-1"></i>ดู
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += '</div>';
+      container.innerHTML = html;
+
+    } catch (error) {
+      console.error('❌ ข้อผิดพลาดในการโหลดเกียรติบัตร:', error);
+      const container = document.getElementById('certificates-container');
+      container.innerHTML = `
+        <div class="alert alert-warning" role="alert">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          <strong>เกิดข้อผิดพลาด:</strong> ${error.message}
+          <br>
+          <small class="text-muted">กรุณาลองโหลดหน้าใหม่ หรือติดต่อผู้ดูแลระบบ</small>
+        </div>
+      `;
+    }
+  }
+
+  // เรียกใช้เมื่อโหลดหน้า
+  document.addEventListener('DOMContentLoaded', loadCertificates);
+</script>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title || "ระบบ E-Certificate สพป.ขอนแก่น เขต 2" %></title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
+
+  <!-- Use system font stack (avoid external Google Fonts) -->
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, "Noto Sans Thai", 'Noto Sans', sans-serif;
+      background-color: #f4f6fa;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== Navbar ===== */
+    header.navbar {
+      background: linear-gradient(90deg, #00308f, #0056d2);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+      border-bottom: 4px solid #ffcc00;
+      padding: 0.6rem 0;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+      color: white !important;
+      font-size: 1.15rem;
+      text-decoration: none;
+    }
+
+    .navbar-brand img {
+      height: 62px;
+      width: 62px;
+      object-fit: cover;
+      margin-right: 10px;
+      border-radius: 50%;
+      border: 2px solid #dbb310;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .navbar-nav .nav-link {
+      color: white !important;
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #ffdd33 !important;
+    }
+
+    /* ===== Layout ===== */
+    .main-wrapper {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    aside.sidebar {
+      width: 240px;
+      background: #00308f;
+      color: white;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    aside.sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+    }
+
+    aside.sidebar a:hover,
+    aside.sidebar a.active {
+      background-color: #0056d2;
+    }
+
+    main.content {
+      flex: 1;
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 0 1.5rem 2rem 1.5rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    /* ===== User Info ===== */
+    .user-info {
+      display: flex;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      margin-bottom: 1rem;
+      color: white;
+    }
+
+    .user-info i {
+      font-size: 1.2rem;
+    }
+
+    /* ===== Footer ===== */
+    footer {
+      background: linear-gradient(90deg, #002b80, #004bbd);
+      color: white;
+      text-align: center;
+      padding: 18px 0;
+      font-size: 0.95rem;
+      box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
+      margin-top: auto;
+    }
+
+    footer p { margin: 0; }
+
+    @media (max-width: 992px) {
+      .main-wrapper {
+        flex-direction: column;
+      }
+      aside.sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 1rem 0.5rem;
+      }
+      aside.sidebar a {
+        min-width: 120px;
+        justify-content: center;
+      }
+      main.content {
+        margin: 1rem;
+        padding: 1.5rem;
+      }
+      .user-info {
+        justify-content: space-between;
+        font-size: 0.9rem;
+      }
+      .navbar-brand span {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <% if (locals.user) { %>
+    <!-- Navbar -->
+    <header class="navbar navbar-expand-lg navbar-dark sticky-top">
+      <div class="container d-flex justify-content-between align-items-center">
+        <a href="<%= locals.user.role === 'teacher' ? '/teacher' : '/admin' %>" class="navbar-brand">
+          <img src="/images/logo องค์กรคุณภาพเเละธรรมาภิบาล.png" alt="โลโก้ สพป.ขก2">
+          <span>ระบบ E-Certificate สพป.ขอนแก่น เขต 2</span>
+        </a>
+
+        <div class="d-flex align-items-center">
+          <div class="text-white me-3">
+            สวัสดี, <strong><%= locals.user.full_name %></strong>
+          </div>
+          <a href="/logout" class="btn btn-warning btn-sm text-decoration-none d-flex align-items-center">
+            <i class="fas fa-sign-out-alt me-1"></i> ออกจากระบบ
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sidebar + Content -->
+    <div class="main-wrapper">
+      <% if (locals.user.role === 'teacher') { %>
+        <aside class="sidebar">
+          <div class="user-info">
+            <i class="fas fa-user-graduate"></i>
+            <span><%= locals.user.full_name %></span>
+          </div>
+          
+          <a href="/teacher" class="<%= (locals.activePage === 'dashboard') ? 'active' : '' %>">
+            <i class="fas fa-home"></i> หน้าหลัก
+          </a>
+           <a href="/request-certificate" class="<%= (locals.activePage === 'request-certificate') ? 'active' : '' %>">
+      <i class="fas fa-certificate"></i> ขอหมายเลขเกียรติบัตร
+    </a>
+          <a href="/teacher/upload" class="<%= (locals.activePage === 'upload') ? 'active' : '' %>">
+            <i class="fas fa-upload"></i> อัปโหลด
+          </a>
+          <a href="/teacher/certificates" class="<%= (locals.activePage === 'certificates') ? 'active' : '' %>">
+            <i class="fas fa-award"></i> เกียรติบัตร
+          </a>
+          <a href="/teacher/profile" class="<%= (locals.activePage === 'profile') ? 'active' : '' %>">
+            <i class="fas fa-user"></i> โปรไฟล์
+          </a>
+          <a href="/guide" class="<%= (locals.activePage === 'guide') ? 'active' : '' %>">
+            <i class="fas fa-book"></i> คู่มือ
+          </a>
+        </aside>
+      <% } else if (locals.user.role === 'admin') { %>
+        <aside class="sidebar">
+          <div class="user-info">
+            <i class="fas fa-user-shield"></i>
+            <span><%= locals.user.full_name %></span>
+          </div>
+          
+          <a href="/admin" class="<%= (locals.activePage === 'admin-dashboard') ? 'active' : '' %>">
+            <i class="fas fa-tachometer-alt"></i> แดชบอร์ด
+          </a>
+          <a href="/admin/certificate-requests" class="<%= (locals.activePage === 'certificate-requests') ? 'active' : '' %>">
+            <i class="fas fa-tasks"></i> จัดการคำขอ
+          </a>
+          <a href="/guide" class="<%= (locals.activePage === 'guide') ? 'active' : '' %>">
+            <i class="fas fa-book"></i> คู่มือ
+          </a>
+        </aside>
+      <% } %>
+
+      <main class="content">
+        <h1 class="page-title mb-4"><%= title %></h1>
+        
+        <!-- Alerts -->
+        <% if (locals.success) { %>
+          <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <%= locals.success %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% } %>
+        
+        <% if (locals.error) { %>
+          <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            <%= locals.error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% } %>
+        
+        <%- body %>
+      </main>
+    </div>
+  <% } else { %>
+    <!-- Public Pages (Login, Register, Home) -->
+    <main class="container mt-5">
+      <% if (locals.success) { %>
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+          <%= locals.success %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+      
+      <% if (locals.error) { %>
+        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+          <%= locals.error %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+      
+      <%- body %>
+    </main>
+  <% } %>
+
+  <footer>
+    <p>© 2025 สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2 | พัฒนาโดยฝ่ายเทคโนโลยีสารสนเทศ</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

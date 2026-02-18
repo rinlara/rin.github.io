@@ -1,0 +1,429 @@
+<%
+const admins = locals.admins || [];
+const success = locals.success;
+const error = locals.error;
+%>
+
+<style>
+  :root {
+    --primary-navy: #003d7a;
+    --primary-blue: #0052a3;
+    --secondary-gold: #d4af37;
+    --light-bg: #f5f7fa;
+    --border-color: #e2e8f0;
+    --text-dark: #1a202c;
+    --text-muted: #718096;
+  }
+
+  .container-fluid {
+    padding: 2.5rem;
+    background: linear-gradient(135deg, var(--light-bg) 0%, #ecf0f5 100%);
+  }
+
+  .page-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .page-header h1 {
+    color: var(--primary-navy);
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.5rem;
+  }
+
+  .breadcrumb {
+    background: transparent;
+    padding: 0;
+  }
+
+  .breadcrumb-item.active {
+    color: var(--secondary-gold);
+    font-weight: 600;
+  }
+
+  .alert {
+    border: none;
+    border-radius: 10px;
+    border-left: 5px solid;
+    animation: slideIn 0.4s ease;
+  }
+
+  .alert-success {
+    background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.05));
+    border-left-color: #22c55e;
+    color: #166534;
+  }
+
+  .alert-danger {
+    background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));
+    border-left-color: #ef4444;
+    color: #7f1d1d;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Card Styling */
+  .card {
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0, 61, 122, 0.08);
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
+    color: white;
+    border: none;
+    border-bottom: 4px solid var(--secondary-gold);
+    padding: 1.5rem;
+  }
+
+  .card-header h4 {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .card-body {
+    padding: 2rem;
+  }
+
+  /* Button Styling */
+  .btn-primary {
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-navy)) !important;
+    border: none !important;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 82, 163, 0.2);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(90deg, var(--primary-navy), #00408a) !important;
+    box-shadow: 0 6px 16px rgba(0, 61, 122, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .btn-info {
+    background: linear-gradient(90deg, #06b6d4, #0891b2) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+  }
+
+  .btn-info:hover {
+    background: linear-gradient(90deg, #0891b2, #0e7490) !important;
+    box-shadow: 0 6px 16px rgba(6, 182, 212, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .btn-danger {
+    background: linear-gradient(90deg, #ef4444, #dc2626) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+  }
+
+  .btn-danger:hover {
+    background: linear-gradient(90deg, #dc2626, #b91c1c) !important;
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* Form Styling */
+  .form-label {
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.2px;
+  }
+
+  .form-control {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.7rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 82, 163, 0.1);
+    outline: none;
+  }
+
+  /* Table Styling */
+  .table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+  }
+
+  .table {
+    margin-bottom: 0;
+  }
+
+  .table thead th {
+    background: linear-gradient(90deg, var(--primary-navy), var(--primary-blue));
+    color: white;
+    border: none;
+    font-weight: 700;
+    padding: 1rem;
+    letter-spacing: 0.2px;
+  }
+
+  .table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+  }
+
+  .table tbody tr:hover {
+    background-color: #f5f7fa;
+    box-shadow: inset 4px 0 0 var(--secondary-gold);
+  }
+
+  .table tbody td {
+    padding: 1rem;
+    color: var(--text-dark);
+    vertical-align: middle;
+  }
+
+  .badge {
+    font-weight: 700;
+    padding: 0.5em 0.95em;
+  }
+
+  .badge-admin {
+    background: linear-gradient(90deg, #06b6d4, #0891b2);
+    color: white;
+  }
+
+  .badge-superadmin {
+    background: linear-gradient(90deg, var(--secondary-gold), #e8be27);
+    color: var(--primary-navy);
+  }
+
+  .nav-tabs {
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .nav-tabs .nav-link {
+    color: var(--text-muted);
+    border: none;
+    font-weight: 600;
+  }
+
+  .nav-tabs .nav-link.active {
+    color: white;
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-navy));
+    border: none;
+    border-bottom: 3px solid var(--secondary-gold);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 768px) {
+    .container-fluid {
+      padding: 1.5rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .card-body {
+      padding: 1.2rem;
+    }
+
+    .table {
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="page-header">
+    <h1><i class="fas fa-users-cog me-2" style="color: var(--secondary-gold);"></i>จัดการแอดมิน</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/superadmin/dashboard" style="color: var(--primary-blue);">Super Admin</a></li>
+        <li class="breadcrumb-item active">จัดการแอดมิน</li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- Alerts -->
+  <% if (success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle me-2"></i>
+      <%= success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <% if (error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="list-tab" data-bs-toggle="tab" data-bs-target="#list" type="button" role="tab" aria-controls="list" aria-selected="true">
+        <i class="fas fa-list me-2"></i>รายการแอดมิน
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab" aria-controls="add" aria-selected="false">
+        <i class="fas fa-plus-circle me-2"></i>เพิ่มแอดมินใหม่
+      </button>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- List Tab -->
+    <div class="tab-pane fade show active" id="list" role="tabpanel" aria-labelledby="list-tab">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="mb-0">👥 รายการแอดมินและ Super Admin</h4>
+        </div>
+        <div class="card-body">
+          <% if (admins && admins.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th width="5%">#</th>
+                    <th>ชื่อเต็ม</th>
+                    <th>อีเมล</th>
+                    <th>โทรศัพท์</th>
+                    <th>โรงเรียน</th>
+                    <th>บทบาท</th>
+                    <th>สร้างเมื่อ</th>
+                    <th width="15%">การจัดการ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% admins.forEach((admin, index) => { %>
+                    <tr>
+                      <td><strong><%= index + 1 %></strong></td>
+                      <td><strong><%= admin.full_name %></strong></td>
+                      <td><small class="text-muted"><%= admin.email %></small></td>
+                      <td><small><%= admin.phone || '-' %></small></td>
+                      <td><small><%= admin.school_name || '-' %></small></td>
+                      <td>
+                        <% if (admin.role === 'super_admin') { %>
+                          <span class="badge badge-superadmin">👑 Super Admin</span>
+                        <% } else { %>
+                          <span class="badge badge-admin">Admin</span>
+                        <% } %>
+                      </td>
+                      <td><small class="text-muted"><%= new Date(admin.created_at).toLocaleDateString('th-TH') %></small></td>
+                      <td>
+                        <a href="/superadmin/admins/<%= admin.id %>/edit" class="btn btn-sm btn-info">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <form action="/superadmin/admins/<%= admin.id %>/delete" method="POST" style="display: inline;" 
+                              onsubmit="return confirm('คุณแน่ใจหรือว่าต้องการลบแอดมินนี้?');">
+                          <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <div class="empty-state-icon">👤</div>
+              <p>ยังไม่มีแอดมิน กดแท็บ "เพิ่มแอดมินใหม่" เพื่อเพิ่มแอดมิน</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Tab -->
+    <div class="tab-pane fade" id="add" role="tabpanel" aria-labelledby="add-tab">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="mb-0">➕ เพิ่มแอดมินใหม่</h4>
+        </div>
+        <div class="card-body">
+          <form action="/superadmin/admins/create" method="POST">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">ชื่อเต็ม <span style="color: #ef4444;">*</span></label>
+                <input type="text" class="form-control" name="full_name" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">อีเมล <span style="color: #ef4444;">*</span></label>
+                <input type="email" class="form-control" name="email" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">โทรศัพท์</label>
+                <input type="tel" class="form-control" name="phone">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">โรงเรียน</label>
+                <input type="text" class="form-control" name="school_name">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">อัตราส่วนบันทึก <span style="color: #ef4444;">*</span></label>
+                <select class="form-control" name="role" required>
+                  <option value="">-- เลือกบทบาท --</option>
+                  <option value="admin">Admin</option>
+                  <option value="super_admin">Super Admin</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label"></label>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">รหัสผ่าน <span style="color: #ef4444;">*</span></label>
+                <input type="password" class="form-control" name="password" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">ยืนยันรหัสผ่าน <span style="color: #ef4444;">*</span></label>
+                <input type="password" class="form-control" name="password_confirm" required>
+              </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus-circle me-2"></i>เพิ่มแอดมิน
+              </button>
+              <button type="reset" class="btn btn-secondary btn-lg ms-2">
+                <i class="fas fa-redo me-2"></i>ล้างข้อมูล
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
