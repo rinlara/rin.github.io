@@ -391,25 +391,26 @@
     });
   }
 
-  // ✅ คัดลอกหมายเลขทั้งหมด
-  function copyAllNumbers() {
-    const certs = <%= JSON.stringify(certs).replace(/</g, '\\u003c') %>;
-    if (!certs || certs.length === 0) {
-      alert('ไม่มีหมายเลขให้คัดลอก');
-      return;
-    }
-    
-    const allNumbers = certs.map(c => c.certificate_number).filter(n => n).join('\n');
-    
-    navigator.clipboard.writeText(allNumbers).then(() => {
-      if (typeof Swal !== 'undefined') {
-        Swal.fire({icon: 'success', title: 'คัดลอกเรียบร้อย!', text: 'คัดลอก ' + certs.length + ' หมายเลขไปยังคลิปบอร์ด', timer: 2000, showConfirmButton: false});
-      } else {
-        alert('คัดลอกหมายเลขทั้งหมดเรียบร้อยแล้ว!');
-      }
-    }).catch(err => {
-      console.error('Copy error:', err);
-      alert('เกิดข้อผิดพลาดในการคัดลอก');
-    });
+  <script>
+var certs = [];
+
+<% if (typeof certs !== 'undefined') { %>
+certs = <%- JSON.stringify(certs) %>;
+<% } %>
+
+function copyAllNumbers() {
+  if (!certs || certs.length === 0) {
+    alert("ไม่มีหมายเลขให้คัดลอก");
+    return;
   }
+
+  var numbers = certs
+    .map(function(c){ return c.certificate_number; })
+    .filter(function(n){ return n; })
+    .join("\n");
+
+  navigator.clipboard.writeText(numbers)
+    .then(function(){ alert("คัดลอกสำเร็จ"); })
+    .catch(function(){ alert("คัดลอกไม่ได้"); });
+}
 </script>

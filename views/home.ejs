@@ -1,1379 +1,1292 @@
 <% locals.activePage = 'home'; %>
-
 <!-- Google Fonts: Sarabun -->
 <!-- Removed Google Fonts to avoid CSP/font loading issues -->
-
 <!-- Font Awesome (แก้ให้ใช้ cdn.jsdelivr.net เพื่อไม่ให้ละเมิด CSP) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css">
-
 <!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <!-- Animate.css -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
-
+<!-- ✅ เพิ่ม Favicon -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <style>
-  :root {
-    --primary-navy: #003d7a;
-    --primary-blue: #0052a3;
-    --primary-blue-dark: #002a5c;
-    --secondary-gold: #d4af37;
-    --accent-red: #c41e3a;
-    --light-bg: #f5f5f5;
-    --neutral-bg: #ffffff;
-    --text-dark: #1a1a1a;
-    --text-muted: #666666;
-    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --official-gray: #e8e8e8;
-  }
-
-  body {
-    font-family: 'Sarabun', sans-serif;
-    background-color: var(--light-bg);
-    color: var(--text-dark);
-    overflow-x: hidden;
-    margin-top: 76px;
-    line-height: 1.6;
-  }
-
-  /* ========== NAVBAR ========== */
-  .navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: linear-gradient(90deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1050;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 3px solid var(--secondary-gold);
-  }
-
-  .navbar-brand {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    text-decoration: none;
-  }
-
-  .navbar-logo {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
-    object-fit: cover;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-    border: 2px solid var(--secondary-gold);
-  }
-
-  .navbar-title {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: white;
-    letter-spacing: 0px;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  }
-
-  .navbar-actions {
-    display: flex;
-    gap: 14px;
-    align-items: center;
-  }
-
-  .btn-login {
-    background: transparent;
-    border: 2px solid white;
-    color: white;
-    padding: 0.6rem 1.5rem;
-    border-radius: 4px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-  }
-
-  .btn-login:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: var(--secondary-gold);
-    color: var(--secondary-gold);
-  }
-
-  .btn-register {
-    background: var(--secondary-gold);
-    color: var(--primary-navy);
-    border: none;
-    padding: 0.6rem 1.6rem;
-    border-radius: 4px;
-    font-weight: 700;
-    box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
-    transition: all 0.3s ease;
-  }
-
-  .btn-register:hover {
-    background: #e8be27;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
-  }
-
-  /* ========== SECTIONS ========== */
-  .section-title {
-    text-align: center;
-    margin: 2rem 0 1.5rem;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--primary-navy);
-    position: relative;
-    padding-bottom: 16px;
-    letter-spacing: -0.5px;
-  }
-
-  .section-title::after {
-    content: '';
-    width: 120px;
-    height: 4px;
-    background: linear-gradient(to right, var(--secondary-gold), var(--primary-blue));
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 2px;
-  }
-
-  .content-card {
-    background: white;
-    border-radius: 8px;
-    padding: 1.8rem;
-    box-shadow: var(--card-shadow);
-    margin-bottom: 1.5rem;
-    border-left: 4px solid var(--primary-blue);
-    transition: all 0.3s ease;
-    border: 1px solid #e8e8e8;
-  }
-
-  .content-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  }
-
-  .stat-section {
-    background: linear-gradient(135deg, #f9f9f9 0%, #f5f5f5 100%);
-    padding: 2rem 0;
-    margin: 2rem 0;
-    border-top: 1px solid #d4d4d4;
-    border-bottom: 1px solid #d4d4d4;
-  }
-
-  .stat-card {
-    background: white;
-    border-radius: 8px;
-    padding: 1.5rem 1.2rem;
-    box-shadow: var(--card-shadow);
-    text-align: center;
-    border-top: 4px solid var(--secondary-gold);
-    transition: transform 0.3s ease;
-    border: 1px solid #e8e8e8;
-  }
-
-  .stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  }
-
-  .stat-number {
-    font-size: 2.4rem;
-    font-weight: 700;
-    color: var(--primary-navy);
-    line-height: 1;
-  }
-
-  .stat-label {
-    color: var(--text-dark);
-    font-size: 1rem;
-    font-weight: 600;
-  }
-
-  .feature-icon-box {
-    width: 80px;
-    height: 80px;
-    background: rgba(0, 61, 122, 0.08);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    color: var(--primary-navy);
-    font-size: 2rem;
-    transition: all 0.3s ease;
-  }
-
-  .feature-card:hover .feature-icon-box {
-    background: rgba(0, 52, 163, 0.12);
-    transform: scale(1.05);
-  }
-
-  .feature-card {
-    background: white;
-    border-radius: 8px;
-    padding: 1.8rem;
-    box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
-    height: 100%;
-    text-align: center;
-    border: 1px solid #e8e8e8;
-  }
-
-  .feature-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-  }
-
-  .map-container {
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border: 1px solid #e8e8e8;
-  }
-
-  .map-frame {
-    width: 100%;
-    height: 350px;
-    border: none;
-  }
-
-  .contact-item {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.2rem;
-    align-items: flex-start;
-    padding: 1.3rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
-    border: 1px solid #e8e8e8;
-  }
-
-  .contact-item:hover {
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  }
-
-  .contact-icon {
-    width: 50px;
-    height: 50px;
-    background: rgba(0, 61, 122, 0.1);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary-navy);
-    flex-shrink: 0;
-    font-size: 1.2rem;
-  }
-
-  .img-highlight {
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    width: 100%;
-    height: auto;
-    transition: transform 0.3s ease;
-    border: 1px solid #e8e8e8;
-  }
-
-  .img-highlight:hover {
-    transform: scale(1.01);
-  }
-
-  footer {
-    background: linear-gradient(135deg, var(--primary-navy), var(--primary-blue));
-    color: white;
-    text-align: center;
-    padding: 2rem 0;
-    margin-top: 3rem;
-    border-top: 4px solid var(--secondary-gold);
-  }
-
-  /* CTA Banner */
-  .cta-banner {
-    background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
-    color: white;
-    padding: 2.5rem 2rem;
-    text-align: center;
-    border-radius: 8px;
-    margin: 2.5rem 0;
-    box-shadow: 0 8px 20px rgba(0, 20, 60, 0.2);
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(212, 175, 55, 0.3);
-  }
-
-  .cta-banner::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
-    transform: rotate(30deg);
-    z-index: 0;
-  }
-
-  .cta-banner > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  .cta-banner h3 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-  }
-
-  .cta-banner p {
-    max-width: 720px;
-    margin: 0 auto 1.5rem;
-    opacity: 0.95;
-    font-size: 1.1rem;
-    line-height: 1.6;
-  }
-
-  .btn-cta {
-    background: var(--secondary-gold);
-    color: var(--primary-navy);
-    font-weight: 700;
-    padding: 0.9rem 2rem;
-    border-radius: 4px;
-    font-size: 1.05rem;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
-    transition: all 0.3s ease;
-    border: none;
-    text-decoration: none;
-    display: inline-block;
-  }
-
-  .btn-cta:hover {
-    background: #e8be27;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(212, 175, 55, 0.45);
-    color: var(--primary-navy);
-    text-decoration: none;
-  }
-
-  /* Hero Section */
-  .hero-section {
-    animation: slideInDown 0.8s ease;
-  }
-
-  /* Carousel Improvements */
-  .carousel-indicators [data-bs-target] {
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 50%;
-  }
-
-  .carousel-indicators .active {
-    background-color: #ffd700;
-  }
-
-  .carousel-control-prev-icon,
-  .carousel-control-next-icon {
-    filter: invert(1);
-  }
-
-  /* Animation Styles */
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
-  }
-
-  @keyframes bounce {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-  }
-
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Process Steps */
-  .process-steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 0.8rem;
-    margin: 2rem 0;
-  }
-
-  .step-card {
-    background: white;
-    border-radius: 8px;
-    padding: 1.6rem 1.3rem;
-    box-shadow: var(--card-shadow);
-    border: 1px solid #e8e8e8;
-    text-align: center;
-    position: relative;
-    transition: all 0.3s ease;
-  }
-
-  .step-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  }
-
-  .step-number {
-    background: linear-gradient(135deg, var(--primary-navy), var(--primary-blue));
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0 auto 1.2rem;
-    box-shadow: 0 4px 12px rgba(0, 61, 122, 0.3);
-  }
-
-  .step-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--primary-navy);
-    margin-bottom: 0.8rem;
-  }
-
-  .step-description {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-
-  .step-connector {
-    display: none;
-  }
-
-  @media (min-width: 768px) {
-    .step-connector {
-      display: block;
-      position: absolute;
-      top: 75px;
-      right: -1rem;
-      width: 1rem;
-      height: 3px;
-      background: linear-gradient(to right, var(--secondary-gold), transparent);
-    }
-
-    .step-card:last-child .step-connector {
-      display: none;
-    }
-  }
-
-  .news-card {
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: var(--card-shadow);
-    transition: transform 0.3s ease;
-    height: 100%;
-    border-top: 4px solid transparent;
-    border: 1px solid #e8e8e8;
-  }
-
-  .news-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-  }
-
-  .news-card:nth-child(1) {
-    border-top-color: #0d47a1;
-  }
-
-  .news-card:nth-child(2) {
-    border-top-color: #00796b;
-  }
-
-  .news-card:nth-child(3) {
-    border-top-color: #c62828;
-  }
-
-  .news-img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-  }
-
-  .news-body {
-    padding: 1.5rem;
-  }
-
-  .news-date {
-    color: var(--primary-navy);
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .news-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 0.8rem;
-    line-height: 1.4;
-  }
-
-  .news-excerpt {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    margin-bottom: 1rem;
-  }
-
-  .news-badge {
-    display: inline-block;
-    background: var(--secondary-gold);
-    color: var(--primary-navy);
-    padding: 0.25rem 0.8rem;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.8rem;
-  }
-
-  /* Video Section */
-  .video-card {
-    background: white;
-    border-radius: 8px;
-    padding: 2rem;
-    box-shadow: var(--card-shadow);
-    text-align: center;
-    border: 1px solid #e8e8e8;
-  }
-
-  .video-thumbnail {
-    width: 100%;
-    height: 220px;
-    background: linear-gradient(135deg, var(--primary-navy), var(--primary-blue));
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    cursor: pointer;
-  }
-
-  .play-icon {
-    font-size: 4rem;
-    color: white;
-    opacity: 0.9;
-    transition: opacity 0.3s;
-  }
-
-  .video-thumbnail:hover .play-icon {
-    opacity: 1;
-  }
-
-  /* Responsive */
-  @media (max-width: 992px) {
-    .section-title {
-      font-size: 1.8rem;
-    }
-  }
-
-  @media (max-width: 768px) {
-    body { margin-top: 72px; }
-    .navbar { padding: 0.8rem 1.3rem; }
-    .navbar-logo { width: 50px; height: 50px; }
-    .navbar-title { font-size: 1.15rem; }
-    .section-title { font-size: 1.6rem; }
-    .stat-number { font-size: 2rem; }
-    .process-steps {
-      grid-template-columns: 1fr !important;
-      gap: 1.5rem;
-    }
-    .step-connector {
-      display: none !important;
-    }
-    .content-card, .feature-card, .stat-card {
-      padding: 1.5rem;
-    }
-  }
-
-  @media (max-width: 576px) {
-    .navbar-title { font-size: 1rem; }
-    .btn-login, .btn-register { padding: 0.5rem 1rem; font-size: 0.9rem; }
-    .section-title { font-size: 1.5rem; }
-    .stat-number { font-size: 1.8rem; }
-  }
+:root {
+--primary-navy: #003d7a;
+--primary-blue: #0052a3;
+--primary-blue-dark: #002a5c;
+--secondary-gold: #d4af37;
+--accent-red: #c41e3a;
+--light-bg: #f5f5f5;
+--neutral-bg: #ffffff;
+--text-dark: #1a1a1a;
+--text-muted: #666666;
+--card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+--official-gray: #e8e8e8;
+}
+body {
+font-family: 'Sarabun', sans-serif;
+background-color: var(--light-bg);
+color: var(--text-dark);
+overflow-x: hidden;
+margin-top: 76px;
+line-height: 1.6;
+}
+/* ========== NAVBAR ========== */
+.navbar {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+background: linear-gradient(90deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+z-index: 1050;
+padding: 1rem 2rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 3px solid var(--secondary-gold);
+}
+.navbar-brand {
+display: flex;
+align-items: center;
+gap: 14px;
+text-decoration: none;
+}
+.navbar-logo {
+width: 60px;
+height: 60px;
+border-radius: 8px;
+object-fit: cover;
+box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+border: 2px solid var(--secondary-gold);
+}
+.navbar-title {
+font-size: 1.35rem;
+font-weight: 700;
+color: white;
+letter-spacing: 0px;
+text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.navbar-actions {
+display: flex;
+gap: 14px;
+align-items: center;
+}
+.btn-login {
+background: transparent;
+border: 2px solid white;
+color: white;
+padding: 0.6rem 1.5rem;
+border-radius: 4px;
+font-weight: 600;
+transition: all 0.3s ease;
+}
+.btn-login:hover {
+background: rgba(255, 255, 255, 0.15);
+border-color: var(--secondary-gold);
+color: var(--secondary-gold);
+}
+.btn-register {
+background: var(--secondary-gold);
+color: var(--primary-navy);
+border: none;
+padding: 0.6rem 1.6rem;
+border-radius: 4px;
+font-weight: 700;
+box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
+transition: all 0.3s ease;
+}
+.btn-register:hover {
+background: #e8be27;
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+}
+/* ========== SECTIONS ========== */
+.section-title {
+text-align: center;
+margin: 2rem 0 1.5rem;
+font-size: 2rem;
+font-weight: 700;
+color: var(--primary-navy);
+position: relative;
+padding-bottom: 16px;
+letter-spacing: -0.5px;
+}
+.section-title::after {
+content: '';
+width: 120px;
+height: 4px;
+background: linear-gradient(to right, var(--secondary-gold), var(--primary-blue));
+position: absolute;
+bottom: 0;
+left: 50%;
+transform: translateX(-50%);
+border-radius: 2px;
+}
+.content-card {
+background: white;
+border-radius: 8px;
+padding: 1.8rem;
+box-shadow: var(--card-shadow);
+margin-bottom: 1.5rem;
+border-left: 4px solid var(--primary-blue);
+transition: all 0.3s ease;
+border: 1px solid #e8e8e8;
+}
+.content-card:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.stat-section {
+background: linear-gradient(135deg, #f9f9f9 0%, #f5f5f5 100%);
+padding: 2rem 0;
+margin: 2rem 0;
+border-top: 1px solid #d4d4d4;
+border-bottom: 1px solid #d4d4d4;
+}
+.stat-card {
+background: white;
+border-radius: 8px;
+padding: 1.5rem 1.2rem;
+box-shadow: var(--card-shadow);
+text-align: center;
+border-top: 4px solid var(--secondary-gold);
+transition: transform 0.3s ease;
+border: 1px solid #e8e8e8;
+}
+.stat-card:hover {
+transform: translateY(-3px);
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.stat-number {
+font-size: 2.4rem;
+font-weight: 700;
+color: var(--primary-navy);
+line-height: 1;
+}
+.stat-label {
+color: var(--text-dark);
+font-size: 1rem;
+font-weight: 600;
+}
+.feature-icon-box {
+width: 80px;
+height: 80px;
+background: rgba(0, 61, 122, 0.08);
+border-radius: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
+margin: 0 auto 1.5rem;
+color: var(--primary-navy);
+font-size: 2rem;
+transition: all 0.3s ease;
+}
+.feature-card:hover .feature-icon-box {
+background: rgba(0, 52, 163, 0.12);
+transform: scale(1.05);
+}
+.feature-card {
+background: white;
+border-radius: 8px;
+padding: 1.8rem;
+box-shadow: var(--card-shadow);
+transition: all 0.3s ease;
+height: 100%;
+text-align: center;
+border: 1px solid #e8e8e8;
+}
+.feature-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+.map-container {
+border-radius: 8px;
+overflow: hidden;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+border: 1px solid #e8e8e8;
+}
+.map-frame {
+width: 100%;
+height: 350px;
+border: none;
+}
+.contact-item {
+display: flex;
+gap: 1rem;
+margin-bottom: 1.2rem;
+align-items: flex-start;
+padding: 1.3rem;
+background: white;
+border-radius: 8px;
+box-shadow: var(--card-shadow);
+transition: all 0.3s ease;
+border: 1px solid #e8e8e8;
+}
+.contact-item:hover {
+transform: translateX(4px);
+box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+.contact-icon {
+width: 50px;
+height: 50px;
+background: rgba(0, 61, 122, 0.1);
+border-radius: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: var(--primary-navy);
+flex-shrink: 0;
+font-size: 1.2rem;
+}
+.img-highlight {
+border-radius: 8px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+width: 100%;
+height: auto;
+transition: transform 0.3s ease;
+border: 1px solid #e8e8e8;
+}
+.img-highlight:hover {
+transform: scale(1.01);
+}
+footer {
+background: linear-gradient(135deg, var(--primary-navy), var(--primary-blue));
+color: white;
+text-align: center;
+padding: 2rem 0;
+margin-top: 3rem;
+border-top: 4px solid var(--secondary-gold);
+}
+/* CTA Banner */
+.cta-banner {
+background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
+color: white;
+padding: 2.5rem 2rem;
+text-align: center;
+border-radius: 8px;
+margin: 2.5rem 0;
+box-shadow: 0 8px 20px rgba(0, 20, 60, 0.2);
+position: relative;
+overflow: hidden;
+border: 1px solid rgba(212, 175, 55, 0.3);
+}
+.cta-banner::before {
+content: "";
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+transform: rotate(30deg);
+z-index: 0;
+}
+.cta-banner > * {
+position: relative;
+z-index: 1;
+}
+.cta-banner h3 {
+font-size: 1.8rem;
+font-weight: 700;
+margin-bottom: 1rem;
+}
+.cta-banner p {
+max-width: 720px;
+margin: 0 auto 1.5rem;
+opacity: 0.95;
+font-size: 1.1rem;
+line-height: 1.6;
+}
+.btn-cta {
+background: var(--secondary-gold);
+color: var(--primary-navy);
+font-weight: 700;
+padding: 0.9rem 2rem;
+border-radius: 4px;
+font-size: 1.05rem;
+box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
+transition: all 0.3s ease;
+border: none;
+text-decoration: none;
+display: inline-block;
+}
+.btn-cta:hover {
+background: #e8be27;
+transform: translateY(-2px);
+box-shadow: 0 6px 16px rgba(212, 175, 55, 0.45);
+color: var(--primary-navy);
+text-decoration: none;
+}
+/* Hero Section */
+.hero-section {
+animation: slideInDown 0.8s ease;
+}
+/* Carousel Improvements */
+.carousel-indicators [data-bs-target] {
+background-color: rgba(255, 255, 255, 0.5);
+border-radius: 50%;
+}
+.carousel-indicators .active {
+background-color: #ffd700;
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+filter: invert(1);
+}
+/* Animation Styles */
+@keyframes float {
+0%, 100% { transform: translateY(0px); }
+50% { transform: translateY(-15px); }
+}
+@keyframes bounce {
+0%, 100% { transform: scale(1); }
+50% { transform: scale(1.1); }
+}
+@keyframes slideIn {
+from {
+opacity: 0;
+transform: translateY(10px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+/* Process Steps */
+.process-steps {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+gap: 0.8rem;
+margin: 2rem 0;
+}
+.step-card {
+background: white;
+border-radius: 8px;
+padding: 1.6rem 1.3rem;
+box-shadow: var(--card-shadow);
+border: 1px solid #e8e8e8;
+text-align: center;
+position: relative;
+transition: all 0.3s ease;
+}
+.step-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+.step-number {
+background: linear-gradient(135deg, var(--primary-navy), var(--primary-blue));
+color: white;
+width: 50px;
+height: 50px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1.5rem;
+font-weight: 700;
+margin: 0 auto 1.2rem;
+box-shadow: 0 4px 12px rgba(0, 61, 122, 0.3);
+}
+.step-title {
+font-size: 1.1rem;
+font-weight: 700;
+color: var(--primary-navy);
+margin-bottom: 0.8rem;
+}
+.step-description {
+color: var(--text-muted);
+font-size: 0.95rem;
+line-height: 1.5;
+}
+.step-connector {
+display: none;
+}
+@media (min-width: 768px) {
+.step-connector {
+display: block;
+position: absolute;
+top: 75px;
+right: -1rem;
+width: 1rem;
+height: 3px;
+background: linear-gradient(to right, var(--secondary-gold), transparent);
+}
+.step-card:last-child .step-connector {
+display: none;
+}
+}
+.news-card {
+background: white;
+border-radius: 8px;
+overflow: hidden;
+box-shadow: var(--card-shadow);
+transition: transform 0.3s ease;
+height: 100%;
+border-top: 4px solid transparent;
+border: 1px solid #e8e8e8;
+}
+.news-card:hover {
+transform: translateY(-3px);
+box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+.news-card:nth-child(1) {
+border-top-color: #0d47a1;
+}
+.news-card:nth-child(2) {
+border-top-color: #00796b;
+}
+.news-card:nth-child(3) {
+border-top-color: #c62828;
+}
+.news-img {
+width: 100%;
+height: 180px;
+object-fit: cover;
+}
+.news-body {
+padding: 1.5rem;
+}
+.news-date {
+color: var(--primary-navy);
+font-weight: 600;
+font-size: 0.9rem;
+margin-bottom: 0.5rem;
+}
+.news-title {
+font-size: 1.15rem;
+font-weight: 700;
+color: var(--text-dark);
+margin-bottom: 0.8rem;
+line-height: 1.4;
+}
+.news-excerpt {
+color: var(--text-muted);
+font-size: 0.95rem;
+margin-bottom: 1rem;
+}
+.news-badge {
+display: inline-block;
+background: var(--secondary-gold);
+color: var(--primary-navy);
+padding: 0.25rem 0.8rem;
+border-radius: 12px;
+font-weight: 600;
+font-size: 0.8rem;
+}
+/* Video Section */
+.video-card {
+background: white;
+border-radius: 8px;
+padding: 2rem;
+box-shadow: var(--card-shadow);
+text-align: center;
+border: 1px solid #e8e8e8;
+}
+.video-thumbnail {
+width: 100%;
+height: 220px;
+background: linear-gradient(135deg, var(--primary-navy), var(--primary-blue));
+border-radius: 8px;
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+cursor: pointer;
+}
+.play-icon {
+font-size: 4rem;
+color: white;
+opacity: 0.9;
+transition: opacity 0.3s;
+}
+.video-thumbnail:hover .play-icon {
+opacity: 1;
+}
+/* Responsive */
+@media (max-width: 992px) {
+.section-title {
+font-size: 1.8rem;
+}
+}
+@media (max-width: 768px) {
+body { margin-top: 72px; }
+.navbar { padding: 0.8rem 1.3rem; }
+.navbar-logo { width: 50px; height: 50px; }
+.navbar-title { font-size: 1.15rem; }
+.section-title { font-size: 1.6rem; }
+.stat-number { font-size: 2rem; }
+.process-steps {
+grid-template-columns: 1fr !important;
+gap: 1.5rem;
+}
+.step-connector {
+display: none !important;
+}
+.content-card, .feature-card, .stat-card {
+padding: 1.5rem;
+}
+}
+@media (max-width: 576px) {
+.navbar-title { font-size: 1rem; }
+.btn-login, .btn-register { padding: 0.5rem 1rem; font-size: 0.9rem; }
+.section-title { font-size: 1.5rem; }
+.stat-number { font-size: 1.8rem; }
+}
 </style>
-
 <!-- ========== MODAL POPUP โฆษณา ========== -->
 <div class="modal fade" id="promotionModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content" style="border: none; border-radius: 28px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-      <!-- Header ด้วย Gradient สีทางการ -->
-      <div style="background: linear-gradient(135deg, #003d7a 0%, #005fa3 50%, #003d7a 100%); padding: 3.2rem 2rem; text-align: center; position: relative; overflow: hidden; border-bottom: 3px solid #d4af37;">
-        <!-- Decorative elements -->
-        <div style="position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; background: rgba(212,175,55,0.08); border-radius: 50%;"></div>
-        <div style="position: absolute; bottom: -25px; left: -25px; width: 150px; height: 150px; background: rgba(255,255,255,0.08); border-radius: 50%;"></div>
-        <div style="position: relative; z-index: 1;">
-          <div style="margin-bottom: 0.8rem;">
-            <i class="fas fa-certificate" style="font-size: 2.8rem; color: #d4af37;"></i>
-          </div>
-          <h2 style="color: white; font-weight: 900; font-size: 1.75rem; margin-bottom: 0.5rem; letter-spacing: 0.8px;">
-            ระบบ E-Certificate
-          </h2>
-          <p style="color: #d4af37; margin: 0; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.3px;">
-            สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2
-          </p>
-        </div>
-        <!-- Close button -->
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" 
-                style="position: absolute; top: 1.5rem; right: 1.5rem; width: 40px; height: 40px; opacity: 0.9; background: rgba(255,255,255,0.15); border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;"></button>
-      </div>
-
-      <!-- Body ที่เป็นทางการ -->
-      <div style="padding: 3rem;">
-        <!-- Box 1: ขั้นตอนการใช้งาน -->
-        <div style="background: linear-gradient(135deg, rgba(0, 61, 122, 0.05), rgba(0, 95, 163, 0.05)); padding: 2.2rem; border-radius: 16px; border-left: 6px solid #003d7a; border-top: 1px solid rgba(0, 95, 163, 0.15); margin-bottom: 2.2rem; box-shadow: 0 2px 8px rgba(0, 61, 122, 0.08);">
-          <h4 style="color: #003d7a; font-weight: 800; margin-bottom: 1.4rem; font-size: 1.12rem;">
-            <i class="fas fa-list-check me-2"></i>ขั้นตอนการใช้งานระบบ
-          </h4>
-          <div style="display: grid; gap: 1.2rem;">
-            <!-- Step 1 -->
-            <div style="display: flex; align-items: flex-start; gap: 1.2rem;">
-              <div style="background: linear-gradient(135deg, #003d7a, #005fa3); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 800; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(0, 61, 122, 0.3);">1</div>
-              <div>
-                <h6 style="color: #003d7a; font-weight: 700; margin-bottom: 0.4rem; font-size: 1.06rem;">ขั้นตอนที่ 1: ลงทะเบียนและสร้างบัญชีผู้ใช้</h6>
-                <p style="color: #555; font-size: 0.96rem; margin: 0; line-height: 1.5;">ใช้อีเมลหน่วยงานตามที่กำหนดโดยสำนักงาน และตั้งรหัสผ่านที่เข็มแข็ง เพื่อรักษาความปลอดภัยของบัญชีผู้ใช้</p>
-              </div>
-            </div>
-            <!-- Step 2 -->
-            <div style="display: flex; align-items: flex-start; gap: 1.2rem;">
-              <div style="background: linear-gradient(135deg, #005fa3, #003d7a); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 800; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(0, 95, 163, 0.3);">2</div>
-              <div>
-                <h6 style="color: #003d7a; font-weight: 700; margin-bottom: 0.4rem; font-size: 1.06rem;">ขั้นตอนที่ 2: อัปโหลดเอกสารเกียรติบัตรและใบประกาศ</h6>
-                <p style="color: #555; font-size: 0.96rem; margin: 0; line-height: 1.5;">อัปโหลดไฟล์รูปแบบ PDF, JPG หรือ PNG (ไม่เกิน 10 MB) พร้อมกรอกข้อมูลหัวข้อ วันที่ และรายละเอียดอื่นๆ อย่างครบถ้วน</p>
-              </div>
-            </div>
-            <!-- Step 3 -->
-            <div style="display: flex; align-items: flex-start; gap: 1.2rem;">
-              <div style="background: linear-gradient(135deg, #003d7a, #005fa3); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 800; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(0, 61, 122, 0.3);">3</div>
-              <div>
-                <h6 style="color: #003d7a; font-weight: 700; margin-bottom: 0.4rem; font-size: 1.06rem;">ขั้นตอนที่ 3: ค้นหา จัดหมวดหมู่ และสร้างรายงาน</h6>
-                <p style="color: #555; font-size: 0.96rem; margin: 0; line-height: 1.5;">ค้นหาและจัดหมวดหมู่เกียรติบัตรตามหมวดวิชา สร้างรายงานสรุปประจำปี และดาวน์โหลดเป็นไฟล์ PDF เพื่อจัดเก็บและอ้างอิงได้ตลอดไป</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Box 2: คุณสมบัติระบบ -->
-        <div style="margin-bottom: 2.5rem;">
-          <h5 style="color: #003f7f; font-weight: 800; margin-bottom: 1.2rem; font-size: 1.1rem;">
-            <i class="fas fa-check-square me-2"></i>คุณสมบัติหลักของระบบ
-          </h5>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div style="padding: 1.2rem; background: linear-gradient(135deg, #f5f8fc, #eef4fb); border-radius: 14px; border-left: 5px solid #003f7f;">
-              <p style="margin: 0; color: #003f7f; font-weight: 600; font-size: 0.98rem;">
-                <i class="fas fa-lock me-2" style="color: #005fa3;"></i>เข้ารหัสและปลอดภัย
-              </p>
-            </div>
-            <div style="padding: 1.2rem; background: linear-gradient(135deg, #f5f8fc, #eef4fb); border-radius: 14px; border-left: 5px solid #003f7f;">
-              <p style="margin: 0; color: #003f7f; font-weight: 600; font-size: 0.98rem;">
-                <i class="fas fa-cloud-upload-alt me-2" style="color: #005fa3;"></i>อัปโหลดได้ง่าย
-              </p>
-            </div>
-            <div style="padding: 1.2rem; background: linear-gradient(135deg, #f5f8fc, #eef4fb); border-radius: 14px; border-left: 5px solid #003f7f;">
-              <p style="margin: 0; color: #003f7f; font-weight: 600; font-size: 0.98rem;">
-                <i class="fas fa-search me-2" style="color: #005fa3;"></i>ค้นหาข้อมูล
-              </p>
-            </div>
-            <div style="padding: 1.2rem; background: linear-gradient(135deg, #f5f8fc, #eef4fb); border-radius: 14px; border-left: 5px solid #003f7f;">
-              <p style="margin: 0; color: #003f7f; font-weight: 600; font-size: 0.98rem;">
-                <i class="fas fa-file-pdf me-2" style="color: #005fa3;"></i>สร้างรายงาน
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Information Box -->
-        <div style="padding: 1.8rem; background: linear-gradient(135deg, #fffbf0, #fff9e6); border-radius: 14px; border-left: 5px solid #d4af37; margin-bottom: 2.5rem; box-shadow: 0 2px 8px rgba(212, 175, 55, 0.15);">
-          <p style="margin: 0; color: #333; font-size: 0.98rem; line-height: 1.6;">
-            <i class="fas fa-info-circle me-2" style="color: #d4af37; font-weight: 700;"></i>
-            <strong>หมายเหตุ:</strong> ระบบ E-Certificate นี้จัดทำขึ้นสำหรับครูและบุคลากรทางการศึกษา ที่สังกัด สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2 เพื่อใช้ในการจัดเก็บและแสดงผลเกียรติบัตรและใบประกาศอย่างเป็นระบบและปลอดภัย
-          </p>
-        </div>
-
-        <!-- CTA Buttons -->
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-          <% if (!locals.user) { %>
-            <a href="/register" class="btn" style="background: linear-gradient(135deg, #003f7f, #005fa3); color: white; font-weight: 700; padding: 1.1rem 2.2rem; border: none; border-radius: 8px; font-size: 1.05rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 6px 20px rgba(0, 63, 127, 0.35); cursor: pointer;">
-              <i class="fas fa-user-plus me-2"></i>ลงทะเบียน
-            </a>
-            <a href="/login" class="btn" style="background: white; color: #003f7f; font-weight: 700; padding: 1.1rem 2.2rem; border: 2.5px solid #003f7f; border-radius: 8px; font-size: 1.05rem; text-decoration: none; transition: all 0.3s ease; cursor: pointer;">
-              <i class="fas fa-sign-in-alt me-2"></i>เข้าสู่ระบบ
-            </a>
-          <% } else { %>
-            <a href="<%= dashboardUrl %>" class="btn" style="background: linear-gradient(135deg, #003f7f, #005fa3); color: white; font-weight: 700; padding: 1.1rem 2.2rem; border: none; border-radius: 8px; font-size: 1.05rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 6px 20px rgba(0, 63, 127, 0.35); cursor: pointer;">
-              <i class="fas fa-tachometer-alt me-2"></i>ไปยังแดชบอร์ด
-            </a>
-          <% } %>
-        </div>
-      </div>
-
-      <!-- Footer Info -->
-      <div style="background: #f8f9fa; padding: 1.5rem; text-align: center; border-top: 1px solid #e9ecef;">
-        <p style="margin: 0; color: #666; font-size: 0.9rem;">
-          <i class="fas fa-clock me-1" style="color: #003f7f;"></i>
-          ระบบติดต่อผลสนับสนุนได้ที่ 0-4322-2345 ต่อ 101 (วันจันทร์-ศุกร์ 08:30-16:30 น.)
-        </p>
-      </div>
-    </div>
-  </div>
+<div class="modal-dialog modal-dialog-centered modal-lg">
+<div class="modal-content" style="border: none; border-radius: 28px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+<!-- Header ด้วย Gradient สีทางการ -->
+<div style="background: linear-gradient(135deg, #003d7a 0%, #005fa3 50%, #003d7a 100%); padding: 3.2rem 2rem; text-align: center; position: relative; overflow: hidden; border-bottom: 3px solid #d4af37;">
+<!-- Decorative elements -->
+<div style="position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; background: rgba(212,175,55,0.08); border-radius: 50%;"></div>
+<div style="position: absolute; bottom: -25px; left: -25px; width: 150px; height: 150px; background: rgba(255,255,255,0.08); border-radius: 50%;"></div>
+<div style="position: relative; z-index: 1;">
+<div style="margin-bottom: 0.8rem;">
+<i class="fas fa-certificate" style="font-size: 2.8rem; color: #d4af37;"></i>
 </div>
-    </div>
-  </div>
+<h2 style="color: white; font-weight: 900; font-size: 1.75rem; margin-bottom: 0.5rem; letter-spacing: 0.8px;">
+ระบบ E-Certificate
+</h2>
+<p style="color: #d4af37; margin: 0; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.3px;">
+สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2
+</p>
+</div>
+<!-- Close button -->
+<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+style="position: absolute; top: 1.5rem; right: 1.5rem; width: 40px; height: 40px; opacity: 0.9; background: rgba(255,255,255,0.15); border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;"></button>
+</div>
+<!-- Body ที่เป็นทางการ -->
+<div style="padding: 3rem;">
+<!-- Box 1: ขั้นตอนการใช้งาน -->
+<div style="background: linear-gradient(135deg, rgba(0, 61, 122, 0.05), rgba(0, 95, 163, 0.05)); padding: 2.2rem; border-radius: 16px; border-left: 6px solid #003d7a; border-top: 1px solid rgba(0, 95, 163, 0.15); margin-bottom: 2.2rem; box-shadow: 0 2px 8px rgba(0, 61, 122, 0.08);">
+<h4 style="color: #003d7a; font-weight: 800; margin-bottom: 1.4rem; font-size: 1.12rem;">
+<i class="fas fa-list-check me-2"></i>ขั้นตอนการใช้งานระบบ
+</h4>
+<div style="display: grid; gap: 1.2rem;">
+<!-- Step 1 -->
+<div style="display: flex; align-items: flex-start; gap: 1.2rem;">
+<div style="background: linear-gradient(135deg, #003d7a, #005fa3); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 800; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(0, 61, 122, 0.3);">1</div>
+<div>
+<h6 style="color: #003d7a; font-weight: 700; margin-bottom: 0.4rem; font-size: 1.06rem;">ขั้นตอนที่ 1: ลงทะเบียนและสร้างบัญชีผู้ใช้</h6>
+<p style="color: #555; font-size: 0.96rem; margin: 0; line-height: 1.5;">ใช้อีเมลหน่วยงานตามที่กำหนดโดยสำนักงาน และตั้งรหัสผ่านที่เข็มแข็ง เพื่อรักษาความปลอดภัยของบัญชีผู้ใช้</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div style="display: flex; align-items: flex-start; gap: 1.2rem;">
+<div style="background: linear-gradient(135deg, #005fa3, #003d7a); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 800; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(0, 95, 163, 0.3);">2</div>
+<div>
+<h6 style="color: #003d7a; font-weight: 700; margin-bottom: 0.4rem; font-size: 1.06rem;">ขั้นตอนที่ 2: อัปโหลดเอกสารเกียรติบัตรและใบประกาศ</h6>
+<p style="color: #555; font-size: 0.96rem; margin: 0; line-height: 1.5;">อัปโหลดไฟล์รูปแบบ PDF, JPG หรือ PNG (ไม่เกิน 10 MB) พร้อมกรอกข้อมูลหัวข้อ วันที่ และรายละเอียดอื่นๆ อย่างครบถ้วน</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div style="display: flex; align-items: flex-start; gap: 1.2rem;">
+<div style="background: linear-gradient(135deg, #003d7a, #005fa3); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 800; font-size: 1.2rem; box-shadow: 0 4px 12px rgba(0, 61, 122, 0.3);">3</div>
+<div>
+<h6 style="color: #003d7a; font-weight: 700; margin-bottom: 0.4rem; font-size: 1.06rem;">ขั้นตอนที่ 3: ค้นหา จัดหมวดหมู่ และสร้างรายงาน</h6>
+<p style="color: #555; font-size: 0.96rem; margin: 0; line-height: 1.5;">ค้นหาและจัดหมวดหมู่เกียรติบัตรตามหมวดวิชา สร้างรายงานสรุปประจำปี และดาวน์โหลดเป็นไฟล์ PDF เพื่อจัดเก็บและอ้างอิงได้ตลอดไป</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Box 2: คุณสมบัติระบบ -->
+<div style="margin-bottom: 2.5rem;">
+<h5 style="color: #003f7f; font-weight: 800; margin-bottom: 1.2rem; font-size: 1.1rem;">
+<i class="fas fa-check-square me-2"></i>คุณสมบัติหลักของระบบ
+</h5>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+<div style="padding: 1.2rem; background: linear-gradient(135deg, #f5f8fc, #eef4fb); border-radius: 14px; border-left: 5px solid #003f7f;">
+<p style="margin: 0; color: #003f7f; font-weight: 600; font-size: 0.98rem;">
+<i class="fas fa-lock me-2" style="color: #005fa3;"></i>เข้ารหัสและปลอดภัย
+</p>
+</div>
+<div style="padding: 1.2rem; background: linear-gradient(135deg, #f5f8fc, #eef4fb); border-radius: 14px; border-left: 5px solid #003f7f;">
+<p style="margin: 0; color: #003f7f; font-weight: 600; font-size: 0.98rem;">
+<i class="fas fa-cloud-upload-alt me-2" style="color: #005fa3;"></i>อัปโหลดได้ง่าย
+</p>
+</div>
+<div style="padding: 1.2rem; background: linear-gradient(135deg, #f5f8fc, #eef4fb); border-radius: 14px; border-left: 5px solid #003f7f;">
+<p style="margin: 0; color: #003f7f; font-weight: 600; font-size: 0.98rem;">
+<i class="fas fa-search me-2" style="color: #005fa3;"></i>ค้นหาข้อมูล
+</p>
+</div>
+<div style="padding: 1.2rem; background: linear-gradient(135deg, #f5f8fc, #eef4fb); border-radius: 14px; border-left: 5px solid #003f7f;">
+<p style="margin: 0; color: #003f7f; font-weight: 600; font-size: 0.98rem;">
+<i class="fas fa-file-pdf me-2" style="color: #005fa3;"></i>สร้างรายงาน
+</p>
+</div>
+</div>
+</div>
+<!-- Information Box -->
+<div style="padding: 1.8rem; background: linear-gradient(135deg, #fffbf0, #fff9e6); border-radius: 14px; border-left: 5px solid #d4af37; margin-bottom: 2.5rem; box-shadow: 0 2px 8px rgba(212, 175, 55, 0.15);">
+<p style="margin: 0; color: #333; font-size: 0.98rem; line-height: 1.6;">
+<i class="fas fa-info-circle me-2" style="color: #d4af37; font-weight: 700;"></i>
+<strong>หมายเหตุ:</strong> ระบบ E-Certificate นี้จัดทำขึ้นสำหรับครูและบุคลากรทางการศึกษา ที่สังกัด สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2 เพื่อใช้ในการจัดเก็บและแสดงผลเกียรติบัตรและใบประกาศอย่างเป็นระบบและปลอดภัย
+</p>
+</div>
+<!-- CTA Buttons -->
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+<% if (!locals.user) { %>
+<a href="/register" class="btn" style="background: linear-gradient(135deg, #003f7f, #005fa3); color: white; font-weight: 700; padding: 1.1rem 2.2rem; border: none; border-radius: 8px; font-size: 1.05rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 6px 20px rgba(0, 63, 127, 0.35); cursor: pointer;">
+<i class="fas fa-user-plus me-2"></i>ลงทะเบียน
+</a>
+<a href="/login" class="btn" style="background: white; color: #003f7f; font-weight: 700; padding: 1.1rem 2.2rem; border: 2.5px solid #003f7f; border-radius: 8px; font-size: 1.05rem; text-decoration: none; transition: all 0.3s ease; cursor: pointer;">
+<i class="fas fa-sign-in-alt me-2"></i>เข้าสู่ระบบ
+</a>
+<% } else { %>
+<a href="<%= dashboardUrl %>" class="btn" style="background: linear-gradient(135deg, #003f7f, #005fa3); color: white; font-weight: 700; padding: 1.1rem 2.2rem; border: none; border-radius: 8px; font-size: 1.05rem; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 6px 20px rgba(0, 63, 127, 0.35); cursor: pointer;">
+<i class="fas fa-tachometer-alt me-2"></i>ไปยังแดชบอร์ด
+</a>
+<% } %>
+</div>
+</div>
+<!-- Footer Info -->
+<div style="background: #f8f9fa; padding: 1.5rem; text-align: center; border-top: 1px solid #e9ecef;">
+<p style="margin: 0; color: #666; font-size: 0.9rem;">
+<i class="fas fa-clock me-1" style="color: #003f7f;"></i>
+ระบบติดต่อผลสนับสนุนได้ที่ 0-4322-2345 ต่อ 101 (วันจันทร์-ศุกร์ 08:30-16:30 น.)
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <nav class="navbar">
-  <a href="/" class="navbar-brand">
-    <img src="/images/logo องค์กรคุณภาพเเละธรรมาภิบาล.png" 
-         alt="สพป.ขอนแก่น เขต 2" 
-         class="navbar-logo">
-    <span class="navbar-title">ระบบ E-Certificate สพป.ขอนแก่น เขต 2</span>
-  </a>
-
-  <div class="navbar-actions">
-    <% if (!locals.user) { %>
-      <a href="/login" class="btn-login">
-        <i class="fas fa-sign-in-alt me-1"></i> เข้าสู่ระบบ
-      </a>
-      <a href="/register" class="btn-register">
-        <i class="fas fa-user-plus me-1"></i> ลงทะเบียน
-      </a>
-    <% } else { %>
-      <a href="/logout" class="btn-login">
-        <i class="fas fa-sign-out-alt me-1"></i> ออกจากระบบ
-      </a>
-    <% } %>
-  </div>
-</nav>
-
-<div class="container">
-
-  <!-- Hero Banner ที่สวยงามมากขึ้น -->
-  <div class="hero-section animate__animated animate__fadeIn">
-    <div class="row align-items-center" style="margin-bottom: 2rem;">
-      <div class="col-lg-7">
-        <div style="background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-blue) 50%, #004aad 100%); padding: 3rem; border-radius: 12px; color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.12);">
-          <h1 style="font-size: 2.4rem; font-weight: 900; margin-bottom: 0.6rem;">
-            <i class="fas fa-certificate me-2" style="color: #ffd700;"></i>ระบบ E-Certificate
-          </h1>
-          <p style="font-size: 1.05rem; margin-bottom: 1rem; opacity: 0.95;">
-            สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2 — ระบบสำหรับจัดเก็บและจัดการเกียรติบัตร
-            ของครูและบุคลากรอย่างเป็นระบบ ปลอดภัย และค้นหาได้ทันที
-          </p>
-          <ul style="margin-bottom: 1.2rem;">
-            <li>จัดเก็บเกียรติบัตรและใบประกาศอย่างปลอดภัย</li>
-            <li>ค้นหาและสร้างรายงานสำหรับการประเมินวิทยฐานะ</li>
-            <li>รองรับการอนุมัติและออกหมายเลขเกียรติบัตร</li>
-          </ul>
-          <div style="display:flex; gap:12px; flex-wrap:wrap;">
-            <% if (!locals.user) { %>
-              <a href="/register" class="btn btn-cta"><i class="fas fa-user-plus me-2"></i>ลงทะเบียน</a>
-              <a href="/login" class="btn" style="background: white; color: var(--primary-blue); font-weight:700; padding:0.7rem 1.4rem; border-radius:8px;">เข้าสู่ระบบ</a>
-            <% } else { %>
-              <a href="<%= dashboardUrl %>" class="btn btn-cta"><i class="fas fa-tachometer-alt me-2"></i>ไปยังแดชบอร์ด</a>
-            <% } %>
-            <a href="/news" class="btn btn-outline-light" style="border-color: rgba(255,255,255,0.25);">อ่านข่าวทั้งหมด</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-5 d-none d-lg-block">
-        <div style="border-radius:12px; overflow:hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.12);">
-          <img src="/images/hero-banner.svg" alt="สพป.ขอนแก่น เขต 2" style="width:100%; height:100%; display:block; object-fit:cover;">
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 🎨 Carousel โฆษณาและข่าวประชาสัมพันธ์ -->
-  <section style="margin: 2rem 0; background: white; border-radius: 0px; box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid #e8e8e8;">
-    <div id="announcementCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000">
-      <div class="carousel-inner">
-        <!-- ประกาศที่ 1 -->
-        <div class="carousel-item active">
-          <div style="background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-blue) 100%); 
-                      padding: 3.5rem 2rem; 
-                      text-align: center; 
-                      color: white; 
-                      min-height: 280px; 
-                      display: flex; 
-                      flex-direction: column; 
-                      justify-content: center; 
-                      align-items: center;">
-            <i class="fas fa-certificate" style="font-size: 3rem; color: #d4af37; margin-bottom: 1.2rem;"></i>
-            <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.8rem;">ระบบ E-Certificate เปิดใช้งานแล้ว</h2>
-            <p style="font-size: 1rem; opacity: 0.95; margin-bottom: 1.2rem; line-height: 1.5;">
-              เริ่มใช้งานอย่างเป็นทางการตั้งแต่วันที่ 1 ธันวาคม 2568<br>
-              ลงทะเบียนในระบบและเริ่มจัดเก็บเกียรติบัตรของคุณ
-            </p>
-            <a href="/register" class="btn" style="background: white; color: var(--primary-navy); font-weight: 700; padding: 0.7rem 1.8rem; border-radius: 4px; text-decoration: none;">
-              <i class="fas fa-sign-up me-1"></i>ลงทะเบียน
-            </a>
-          </div>
-        </div>
-        <!-- ประกาศที่ 2 -->
-        <div class="carousel-item">
-          <div style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-navy) 100%); 
-                      padding: 3.5rem 2rem; 
-                      text-align: center; 
-                      color: white; 
-                      min-height: 280px; 
-                      display: flex; 
-                      flex-direction: column; 
-                      justify-content: center; 
-                      align-items: center;">
-            <i class="fas fa-book-open" style="font-size: 3rem; color: #d4af37; margin-bottom: 1.2rem;"></i>
-            <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.8rem;">คู่มือการใช้งานระบบ</h2>
-            <p style="font-size: 1rem; opacity: 0.95; margin-bottom: 1.2rem; line-height: 1.5;">
-              ดาวน์โหลดคู่มือฉบับสมบูรณ์ วิดีโอสาธิต และตัวอย่างการใช้งาน<br>
-              พร้อมคำแนะนำและการสนับสนุนจากทีมผู้ดูแลระบบ
-            </p>
-            <a href="#" data-download-guide class="btn" style="background: white; color: var(--primary-navy); font-weight: 700; padding: 0.7rem 1.8rem; border-radius: 4px; text-decoration: none;">
-              <i class="fas fa-download me-1"></i>ดาวน์โหลด
-            </a>
-          </div>
-        </div>
-        <!-- ประกาศที่ 3 -->
-        <div class="carousel-item">
-          <div style="background: linear-gradient(135deg, #1a5490 0%, #003d7a 100%); 
-                      padding: 3.5rem 2rem; 
-                      text-align: center; 
-                      color: white; 
-                      min-height: 280px; 
-                      display: flex; 
-                      flex-direction: column; 
-                      justify-content: center; 
-                      align-items: center;">
-            <i class="fas fa-users" style="font-size: 3rem; color: #d4af37; margin-bottom: 1.2rem;"></i>
-            <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.8rem;">อบรมการใช้งานระบบ</h2>
-            <p style="font-size: 1rem; opacity: 0.95; margin-bottom: 1.2rem; line-height: 1.5;">
-              วันที่ 5-7 ธันวาคม 2568 เวลา 08:30-16:30 น.<br>
-              ณ ห้องประชุม สำนักงานเขตพื้นที่การศึกษา (ไม่มีค่าใช้จ่าย)
-            </p>
-            <a href="#" data-training-register class="btn" style="background: white; color: var(--primary-navy); font-weight: 700; padding: 0.7rem 1.8rem; border-radius: 4px; text-decoration: none;">
-              <i class="fas fa-calendar-check me-1"></i>ลงทะเบียน
-            </a>
-          </div>
-        </div>
-        <!-- ประกาศที่ 4 -->
-        <div class="carousel-item">
-          <div style="background: linear-gradient(135deg, #6a1b9a 0%, #7b1fa2 100%); 
-                      padding: 4rem 2rem; 
-                      text-align: center; 
-                      color: white; 
-                      min-height: 300px; 
-                      display: flex; 
-                      flex-direction: column; 
-                      justify-content: center; 
-                      align-items: center;">
-            <i class="fas fa-shield-alt" style="font-size: 3.5rem; color: #ce93d8; margin-bottom: 1.5rem;"></i>
-            <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">🔒 ปลอดภัย 100%</h2>
-            <p style="font-size: 1.15rem; opacity: 0.95; margin-bottom: 1.5rem;">
-              เข้ารหัส SSL + สำรองข้อมูลรายวัน + เป็นไปตามมาตรฐาน ISO 27001<br>
-              ข้อมูลของคุณอยู่ในที่นิรাপด
-            </p>
-            <a href="#" data-security-info class="btn btn-light fw-bold px-5 py-2" style="font-size: 1.1rem;">
-              <i class="fas fa-info-circle me-2"></i> เรียนรู้เพิ่มเติม
-            </a>
-          </div>
-        </div>
-      </div>
-      <!-- Navigation -->
-      <button class="carousel-control-prev" type="button" data-bs-target="#announcementCarousel" data-bs-slide="prev" 
-              style="background: rgba(0,0,0,0.3); width: 60px; border-radius: 8px; left: 1rem;">
-        <span class="carousel-control-prev-icon"></span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#announcementCarousel" data-bs-slide="next"
-              style="background: rgba(0,0,0,0.3); width: 60px; border-radius: 8px; right: 1rem;">
-        <span class="carousel-control-next-icon"></span>
-      </button>
-      <!-- Indicators -->
-      <div class="carousel-indicators" style="bottom: 20px;">
-        <button type="button" data-bs-target="#announcementCarousel" data-bs-slide-to="0" class="active" 
-                style="width: 12px; height: 12px; border-radius: 50%;"></button>
-        <button type="button" data-bs-target="#announcementCarousel" data-bs-slide-to="1"
-                style="width: 12px; height: 12px; border-radius: 50%;"></button>
-        <button type="button" data-bs-target="#announcementCarousel" data-bs-slide-to="2"
-                style="width: 12px; height: 12px; border-radius: 50%;"></button>
-        <button type="button" data-bs-target="#announcementCarousel" data-bs-slide-to="3"
-                style="width: 12px; height: 12px; border-radius: 50%;"></button>
-      </div>
-    </div>
-  </section>
-  <section class="py-5">
-    <h2 class="section-title animate__animated animate__fadeIn">วัตถุประสงค์ของระบบ</h2>
-    <div class="row g-4">
-      <div class="col-lg-7">
-        <div class="content-card h-100 animate__animated animate__fadeInLeft">
-          <p class="fs-5">
-            <i class="fas fa-bullseye text-primary me-2"></i>
-            <strong>ระบบ E-Certificate</strong> ถูกพัฒนาขึ้นเพื่อส่งเสริมให้ข้าราชการครูและบุคลากรทางการศึกษาในสังกัด
-            สามารถบันทึก จัดเก็บ ค้นหา และแสดงผลเกียรติบัตร ใบประกาศ หรือผลงานด้านต่าง ๆ ได้อย่างเป็นระบบ
-            โดยมีเป้าหมายหลัก ดังนี้:
-          </p>
-          <ul class="mt-3 fs-5">
-            <li class="mb-2">ลดความเสี่ยงการสูญหายหรือชำรุดของเอกสารต้นฉบับ</li>
-            <li class="mb-2">อำนวยความสะดวกในการรวบรวมเอกสารสำหรับการประเมินวิทยฐานะและ PA</li>
-            <li class="mb-2">สนับสนุนการวิเคราะห์ข้อมูลเชิงลึกเกี่ยวกับการพัฒนาวิชาชีพครู</li>
-            <li>ส่งเสริมการบริหารจัดการองค์กรด้วยข้อมูล (Data-Driven Organization)</li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-lg-5 d-flex align-items-center justify-content-center">
-        <img src="images/สกรีนช็อต 2025-11-20 150532.png" 
-             alt="วัตถุประสงค์ระบบ" 
-             class="img-highlight animate__animated animate__fadeInRight">
-      </div>
-    </div>
-  </section>
-
-  <!-- ความสำคัญ -->
-  <section class="py-5">
-    <h2 class="section-title animate__animated animate__fadeIn">ความสำคัญของระบบ</h2>
-    <div class="row g-4">
-      <div class="col-lg-6">
-        <div class="content-card h-100 animate__animated animate__fadeInUp">
-          <p class="fs-5">
-            <i class="fas fa-lightbulb text-warning me-2"></i>
-            <strong>สำหรับครูและบุคลากร:</strong> ระบบช่วยให้คุณจัดเก็บผลงานได้ตลอดชีวิตวิชาชีพ
-            ไม่ต้องกังวลเรื่องเอกสารหาย หรือต้องค้นหาเป็นชั่วโมงเมื่อถึงเวลาประเมิน
-            ทุกอย่างอยู่ในที่เดียว พร้อมดู พร้อมดาวน์โหลด พร้อมใช้งาน
-          </p>
-        </div>
-      </div>
-      <div class="col-lg-6">
-        <div class="content-card h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
-          <p class="fs-5">
-            <i class="fas fa-building text-info me-2"></i>
-            <strong>สำหรับหน่วยงาน:</strong> ผู้บริหารสามารถติดตามพัฒนาการของบุคลากร
-            วางแผนพัฒนาเชิงกลยุทธ์ และรายงานผลต่อสำนักงานคณะกรรมการการศึกษาขั้นพื้นฐาน (สพฐ.)
-            ได้อย่างแม่นยำและทันเวลา
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ข่าวสารล่าสุด -->
-  <section class="py-5">
-    <h2 class="section-title animate__animated animate__fadeIn">ข่าวสารและประกาศสำคัญ</h2>
-    <% 
-      // หาก `locals.news` ถูกส่งจากเซิร์ฟเวอร์ ให้ใช้รายการข่าวนั้น หากไม่มีก็ใช้รายการตัวอย่างที่ปรับเป็นปัจจุบัน
-        const defaultNews = [
-        {
-          date: '10 กุมภาพันธ์ 2569',
-          title: 'สพป.ขอนแก่น เขต 2 จัดประกวดผลงานนวัตกรรมการสอนระดับเขต',
-          excerpt: 'เชิญชวนครูส่งผลงานเข้าร่วมประกวดนวัตกรรมการสอน ชิงทุนพัฒนางานและโล่เกียรติคุณ เปิดรับผลงานถึง 28 กุมภาพันธ์ 2569',
-          tag: 'ประกวด',
-          image: '/images/news/innovation-contest.svg',
-          url: '/news/innovation-contest'
-        },
-        {
-          date: '04 กุมภาพันธ์ 2569',
-          title: 'โครงการพัฒนาครูด้านดิจิทัล ปี 2569 (อบรมเชิงปฏิบัติการ)',
-          excerpt: 'สพป.ขอนแก่น เขต 2 จัดอบรมเพิ่มทักษะการใช้เทคโนโลยีการสอนและการใช้ระบบ E-Certificate ให้กับครูทั้งเขต',
-          tag: 'อบรม',
-          image: '/images/news/digital-training.svg',
-          url: '/news/digital-training'
-        },
-        {
-          date: '28 มกราคม 2569',
-          title: 'ประกาศผลการคัดเลือกโรงเรียนต้นแบบด้านคุณภาพการศึกษา',
-          excerpt: 'ประกาศรายชื่อโรงเรียนต้นแบบ 12 แห่ง ที่ผ่านการคัดเลือกระดับเขตเพื่อรับการสนับสนุนเชิงงบประมาณ',
-          tag: 'ประกาศ',
-          image: '/images/news/school-award.svg',
-          url: '/news/school-award'
-        }
-      ];
-      const newsList = locals.news && Array.isArray(locals.news) && locals.news.length ? locals.news : defaultNews;
-    %>
-
-    <div class="row g-4">
-      <% newsList.forEach((item, idx) => { %>
-        <div class="col-md-6 col-lg-4">
-          <div class="news-card animate__animated animate__fadeInUp" style="animation-delay: <%= (idx * 0.06) %>s;">
-            <div style="height: 180px; display:flex; align-items:center; justify-content:center; color:white; background: linear-gradient(135deg, rgba(0,61,122,0.9), rgba(0,82,163,0.9));">
-              <% if (item.image) { %>
-                <img src="<%= item.image %>" alt="<%= item.title %>" class="news-img" style="height:180px; width:100%; object-fit:cover;">
-              <% } else { %>
-                <i class="fas fa-newspaper" style="font-size: 3rem; opacity: 0.9;"></i>
-              <% } %>
-            </div>
-            <div class="news-body">
-              <div class="news-date"><%= item.date %></div>
-              <h3 class="news-title"><a href="<%= item.url || '#' %>" style="color: inherit; text-decoration: none;"><%= item.title %></a></h3>
-              <p class="news-excerpt"><%= item.excerpt %></p>
-              <span class="news-badge"><%= item.tag %></span>
-            </div>
-          </div>
-        </div>
-      <% }) %>
-    </div>
-    <div class="text-center mt-4">
-      <a href="/news" class="btn btn-outline-primary px-4 py-2 rounded-pill fw-bold">
-        <i class="fas fa-newspaper me-1"></i> ดูข่าวสารทั้งหมด
-      </a>
-    </div>
-  </section>
-
-  <!-- วิดีโอแนะนำ -->
-  <section class="py-5">
-    <h2 class="section-title animate__animated animate__fadeIn">วิดีโอแนะนำการใช้งาน</h2>
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="video-card animate__animated animate__fadeIn" style="border: 3px solid #e9ecef;">
-          <div class="video-thumbnail" style="cursor: pointer;" 
-               onclick="alert('ฟีเจอร์วิดีโอจะเปิดใช้งานเร็ว ๆ นี้')">
-            <i class="fas fa-play-circle play-icon"></i>
-          </div>
-          <h4 class="mt-3 fw-bold" style="color: var(--primary-blue);">
-            <i class="fas fa-graduation-cap me-2" style="color: #ffd700;"></i>วิธีอัปโหลดและจัดการเกียรติบัตร
-          </h4>
-          <p class="text-muted">ชมวิดีโอสาธิตการใช้งานระบบ E-Certificate แบบละเอียด พร้อมตัวอย่างจริง</p>
-          <div style="margin-top: 1.5rem; padding: 1.5rem; background: #f0f7ff; border-radius: 12px; border-left: 4px solid var(--primary-blue);">
-            <p class="mb-0" style="color: var(--primary-blue); font-weight: 500;">
-              <i class="fas fa-clock me-2"></i><strong>ระยะเวลา:</strong> 15 นาที | <strong>สำหรับ:</strong> ผู้เริ่มต้นใหม่
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- คุณสมบัติเด่น -->
-  <section class="py-5">
-    <h2 class="section-title animate__animated animate__fadeIn">คุณสมบัติเด่นของระบบ</h2>
-    <div class="row g-4">
-      <div class="col-md-6 col-lg-3">
-        <div class="feature-card animate__animated animate__fadeInUp">
-          <div class="feature-icon-box"><i class="fas fa-cloud-upload-alt"></i></div>
-          <h5 class="fw-bold">อัปโหลดง่าย</h5>
-          <p class="text-muted mb-0">รองรับ PDF, JPG, PNG พร้อมกรอกข้อมูลเชิงบริบท</p>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="feature-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
-          <div class="feature-icon-box"><i class="fas fa-search"></i></div>
-          <h5 class="fw-bold">ค้นหาทันใจ</h5>
-          <p class="text-muted mb-0">ค้นหาด้วยชื่อกิจกรรม หน่วยงาน ปี พ.ศ. หรือคำสำคัญ</p>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="feature-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
-          <div class="feature-icon-box"><i class="fas fa-lock"></i></div>
-          <h5 class="fw-bold">ปลอดภัยสูงสุด</h5>
-          <p class="text-muted mb-0">เข้ารหัส SSL + สำรองข้อมูลรายวันตามมาตรฐาน ISO 27001</p>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="feature-card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
-          <div class="feature-icon-box"><i class="fas fa-chart-line"></i></div>
-          <h5 class="fw-bold">รายงานผลทันที</h5>
-          <p class="text-muted mb-0">สรุปผลงานรายบุคคล รายโรงเรียน รายอำเภอแบบเรียลไทม์</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ภาพรวมระบบ -->
-  <section class="py-5">
-    <h2 class="section-title animate__animated animate__fadeIn">ภาพรวมการใช้งานระบบ</h2>
-    <div class="process-steps">
-      <div class="step-card animate__animated animate__fadeInUp">
-        <div class="step-number">1</div>
-        <h5 class="step-title">ลงทะเบียน / เข้าสู่ระบบ</h5>
-        <p class="step-description">ใช้อีเมลหน่วยงาน (@kkn2.go.th) และรหัสผ่านที่ตั้งไว้</p>
-        <div class="step-connector"></div>
-      </div>
-      <div class="step-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
-        <div class="step-number">2</div>
-        <h5 class="step-title">อัปโหลดเกียรติบัตร</h5>
-        <p class="step-description">เลือกไฟล์ กรอกข้อมูลกิจกรรม ระบุวันที่ และหน่วยงานผู้มอบ</p>
-        <div class="step-connector"></div>
-      </div>
-      <div class="step-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
-        <div class="step-number">3</div>
-        <h5 class="step-title">จัดเก็บและจัดหมวดหมู่</h5>
-        <p class="step-description">ระบบจัดกลุ่มอัตโนมัติ เช่น ด้านวิชาการ ด้านกิจกรรม ด้านบริหาร</p>
-        <div class="step-connector"></div>
-      </div>
-      <div class="step-card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
-        <div class="step-number">4</div>
-        <h5 class="step-title">ค้นหาและรายงาน</h5>
-        <p class="step-description">สร้างรายงาน PDF สำหรับส่งประเมินวิทยฐานะหรือ PA ได้ทันที</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- คู่มือการใช้งาน -->
-  <section class="py-5">
-    <h2 class="section-title animate__animated animate__fadeIn">คู่มือการใช้งาน</h2>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="content-card text-center animate__animated animate__fadeInUp">
-          <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
-          <h5>ลงทะเบียนบัญชี</h5>
-          <p class="text-muted">ใช้อีเมลหน่วยงานเท่านั้น เช่น somchai@kkn2.go.th</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="content-card text-center animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
-          <i class="fas fa-file-upload fa-3x text-primary mb-3"></i>
-          <h5>อัปโหลดเกียรติบัตร</h5>
-          <p class="text-muted">ไฟล์ขนาดไม่เกิน 10 MB รองรับ PDF, JPG, PNG</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="content-card text-center animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
-          <i class="fas fa-download fa-3x text-primary mb-3"></i>
-          <h5>ดาวน์โหลดรายงาน</h5>
-          <p class="text-muted">สร้างรายงานรวมผลงานได้ตลอดเวลา</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA Banner ปรับปรุง -->
-  <div class="cta-banner animate__animated animate__zoomIn" style="margin-top: 4.5rem;">
-    <div style="text-align: center;">
-      <h3 style="font-size: 2.4rem; font-weight: 900; color: white; margin-bottom: 1rem;">
-        <i class="fas fa-rocket" style="color: #ffd700; font-size: 2.8rem; margin-right: 0.5rem;"></i>เริ่มต้นใช้งานวันนี้!
-      </h3>
-      <p style="font-size: 1.2rem; color: rgba(255,255,255,0.95); max-width: 700px; margin: 1.5rem auto;">
-        ลงทะเบียนเพื่อเริ่มบันทึกและจัดการเกียรติบัตรของคุณอย่างเป็นระบบ — ฟรี 100%<br>
-        <strong style="color: #ffd700;">ใช้เวลาเพียง 2 นาทีในการสมัครสมาชิก</strong>
-      </p>
-      <% if (!locals.user) { %>
-        <div style="margin-top: 2.5rem; display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
-          <a href="/register" class="btn btn-cta" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
-            <i class="fas fa-user-plus me-2"></i> ลงทะเบียนเลย
-          </a>
-          <a href="/login" style="background: white; color: var(--primary-blue); border: 2px solid white; padding: 1rem 2.5rem; border-radius: 14px; font-weight: 700; font-size: 1.1rem; text-decoration: none;" class="btn">
-            <i class="fas fa-sign-in-alt me-2"></i> เข้าสู่ระบบ
-          </a>
-        </div>
-      <% } else { %>
-        <a href="<%= dashboardUrl %>" class="btn btn-cta" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
-          <i class="fas fa-tachometer-alt me-2"></i> ไปยังแดชบอร์ด
-        </a>
-      <% } %>
-    </div>
-  </div>
-
-  <!-- สถิติ -->
-<section class="stat-section">
-  <div class="text-center mb-4 animate__animated animate__fadeIn">
-    <div class="d-inline-block px-4 py-3 rounded-3" style="background: linear-gradient(135deg, #00296b, #00308f); box-shadow: 0 6px 18px rgba(0,0,0,0.25);">
-      <h2 class="mb-0" style="font-size: 1.8rem; font-weight: 700; color: white;">
-        📊 ข้อมูลสถิติการใช้งานระบบ 
-        <span style="color: #ffd700; font-weight: 700; display: block; margin-top: 0.5rem;">
-          ณ วันที่ 2 ธันวาคม 2568
-        </span>
-      </h2>
-    </div>
-  </div>
-  <div class="row g-4">
-    <div class="col-md-4">
-      <div class="stat-card animate__animated animate__pulse" style="animation-delay: 0.1s; border: 2px solid #e9ecef;">
-        <div style="color: var(--primary-blue); font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: 0.5rem;">
-          <i class="fas fa-users me-2"></i><%= (locals.teacherCount || 0).toLocaleString('th-TH') %>
-        </div>
-        <div class="stat-label">ครูและบุคลากรที่ลงทะเบียน</div>
-        <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">
-          <i class="fas fa-arrow-up me-1" style="color: #16a34a;"></i>เพิ่มขึ้นจากเดือนที่แล้ว
-        </p>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="stat-card animate__animated animate__pulse" style="animation-delay: 0.2s; border: 2px solid #e9ecef;">
-        <div style="color: #e53935; font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: 0.5rem;">
-          <i class="fas fa-certificate me-2"></i><%= (locals.certificateCount || 0).toLocaleString('th-TH') %>
-        </div>
-        <div class="stat-label">เกียรติบัตรที่บันทึกในระบบ</div>
-        <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">
-          <i class="fas fa-arrow-up me-1" style="color: #16a34a;"></i>ยังคงเพิ่มขึ้นทุกวัน
-        </p>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="stat-card animate__animated animate__pulse" style="animation-delay: 0.3s; border: 2px solid #e9ecef;">
-        <div style="color: #00796b; font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: 0.5rem;">
-          <i class="fas fa-school me-2"></i><%= (locals.schoolCount || 0).toLocaleString('th-TH') %>
-        </div>
-        <div class="stat-label">โรงเรียนในสังกัด</div>
-        <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">
-          <i class="fas fa-check-circle me-1" style="color: #16a34a;"></i>ทั้งหมดเข้าระบบแล้ว
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-  <!-- ติดต่อเรา -->
-  <section class="py-5">
-    <h2 class="section-title animate__animated animate__fadeIn">ติดต่อและสนับสนุน</h2>
-    <div class="row g-5">
-      <div class="col-lg-6">
-        <!-- Contact Info Cards -->
-        <div class="contact-item animate__animated animate__fadeInLeft">
-          <div class="contact-icon"><i class="fas fa-map-marker-alt fs-5"></i></div>
-          <div style="flex: 1;">
-            <h5 class="fw-bold" style="color: var(--primary-blue); margin-bottom: 0.5rem;">
-              <i class="fas fa-building me-2"></i>ที่อยู่สำนักงาน
-            </h5>
-            <p class="text-muted mb-0" style="font-size: 1rem;">
-              สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2<br>
-              ตำบลในเมือง อำเภอบ้านไผ่ จังหวัดขอนแก่น 41000
-            </p>
-          </div>
-        </div>
-        <div class="contact-item animate__animated animate__fadeInLeft" style="animation-delay: 0.1s;">
-          <div class="contact-icon"><i class="fas fa-phone-alt fs-5"></i></div>
-          <div style="flex: 1;">
-            <h5 class="fw-bold" style="color: var(--primary-blue); margin-bottom: 0.5rem;">
-              <i class="fas fa-headset me-2"></i>โทรศัพท์
-            </h5>
-            <p class="text-muted mb-0" style="font-size: 1rem;">
-              <strong>0-4322-2345</strong> ต่อ <strong>101</strong> (กลุ่มเทคโนโลยีเพื่อการศึกษา)<br>
-              <span style="font-size: 0.9rem;">จันทร์-ศุกร์ | 08:30 - 16:30 น.</span>
-            </p>
-          </div>
-        </div>
-        <div class="contact-item animate__animated animate__fadeInLeft" style="animation-delay: 0.2s;">
-          <div class="contact-icon"><i class="fas fa-envelope fs-5"></i></div>
-          <div style="flex: 1;">
-            <h5 class="fw-bold" style="color: var(--primary-blue); margin-bottom: 0.5rem;">
-              <i class="fas fa-at me-2"></i>อีเมล
-            </h5>
-            <p class="text-muted mb-0" style="font-size: 1rem;">
-              <a href="mailto:info@kkn2.go.th" style="color: var(--primary-blue); text-decoration: none; font-weight: 500;">
-                info@kkn2.go.th
-              </a><br>
-              <span style="font-size: 0.9rem;">ตอบกลับภายใน 24 ชั่วโมง</span>
-            </p>
-          </div>
-        </div>
-        <div class="contact-item animate__animated animate__fadeInLeft" style="animation-delay: 0.3s;">
-          <div class="contact-icon"><i class="fas fa-clock fs-5"></i></div>
-          <div style="flex: 1;">
-            <h5 class="fw-bold" style="color: var(--primary-blue); margin-bottom: 0.5rem;">
-              <i class="fas fa-calendar-check me-2"></i>เวลาทำการ
-            </h5>
-            <p class="text-muted mb-0" style="font-size: 1rem;">
-              <strong>วันจันทร์ - ศุกร์</strong><br>
-              <strong>08:30 - 16:30</strong> น. (ยกเว้นวันหยุดราชการ)
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-6 d-flex align-items-center justify-content-center">
-        <div class="map-container animate__animated animate__fadeInRight" style="border: 3px solid #e9ecef; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-          <iframe
-            class="map-frame"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3825.625234256789!2d102.83651197550045!3d16.436020184362975!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31228c1e5b1d6a2d%3A0x9e6c3e1b1c0d6c3d!2sOffice+of+the+Primary+Educational+Service+Area+2%2C+Khon+Kaen!5e0!3m2!1sen!2sth!4v1717000000000!5m2!1sen!2sth"
-            allowfullscreen
-            loading="lazy"
-            title="แผนที่ สพป.ขอนแก่น เขต 2"
-            style="border: none;">
-          </iframe>
-        </div>
-      </div>
-    </div>
-  </section>
+<a href="/" class="navbar-brand">
+<img src="/images/logo องค์กรคุณภาพเเละธรรมาภิบาล.png"
+alt="สพป.ขอนแก่น เขต 2"
+class="navbar-logo">
+<span class="navbar-title">ระบบ E-Certificate สพป.ขอนแก่น เขต 2</span>
+</a>
+<div class="navbar-actions">
+<% if (!locals.user) { %>
+<a href="/login" class="btn-login">
+<i class="fas fa-sign-in-alt me-1"></i> เข้าสู่ระบบ
+</a>
+<a href="/register" class="btn-register">
+<i class="fas fa-user-plus me-1"></i> ลงทะเบียน
+</a>
+<% } else { %>
+<a href="/logout" class="btn-login">
+<i class="fas fa-sign-out-alt me-1"></i> ออกจากระบบ
+</a>
+<% } %>
 </div>
-
+</nav>
+<div class="container">
+<!-- Hero Banner ที่สวยงามมากขึ้น -->
+<div class="hero-section animate__animated animate__fadeIn">
+<div class="row align-items-center" style="margin-bottom: 2rem;">
+<div class="col-lg-7">
+<div style="background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-blue) 50%, #004aad 100%); padding: 3rem; border-radius: 12px; color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.12);">
+<h1 style="font-size: 2.4rem; font-weight: 900; margin-bottom: 0.6rem;">
+<i class="fas fa-certificate me-2" style="color: #ffd700;"></i>ระบบ E-Certificate
+</h1>
+<p style="font-size: 1.05rem; margin-bottom: 1rem; opacity: 0.95;">
+สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2 — ระบบสำหรับจัดเก็บและจัดการเกียรติบัตร
+ของครูและบุคลากรอย่างเป็นระบบ ปลอดภัย และค้นหาได้ทันที
+</p>
+<ul style="margin-bottom: 1.2rem;">
+<li>จัดเก็บเกียรติบัตรและใบประกาศอย่างปลอดภัย</li>
+<li>ค้นหาและสร้างรายงานสำหรับการประเมินวิทยฐานะ</li>
+<li>รองรับการอนุมัติและออกหมายเลขเกียรติบัตร</li>
+</ul>
+<div style="display:flex; gap:12px; flex-wrap:wrap;">
+<% if (!locals.user) { %>
+<a href="/register" class="btn btn-cta"><i class="fas fa-user-plus me-2"></i>ลงทะเบียน</a>
+<a href="/login" class="btn" style="background: white; color: var(--primary-blue); font-weight:700; padding:0.7rem 1.4rem; border-radius:8px;">เข้าสู่ระบบ</a>
+<% } else { %>
+<a href="<%= dashboardUrl %>" class="btn btn-cta"><i class="fas fa-tachometer-alt me-2"></i>ไปยังแดชบอร์ด</a>
+<% } %>
+<a href="/news" class="btn btn-outline-light" style="border-color: rgba(255,255,255,0.25);">อ่านข่าวทั้งหมด</a>
+</div>
+</div>
+</div>
+<div class="col-lg-5 d-none d-lg-block">
+<div style="border-radius:12px; overflow:hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.12);">
+<img src="/images/hero-banner.svg" alt="สพป.ขอนแก่น เขต 2" style="width:100%; height:100%; display:block; object-fit:cover;">
+</div>
+</div>
+</div>
+</div>
+<!-- 🎨 Carousel โฆษณาและข่าวประชาสัมพันธ์ -->
+<section style="margin: 2rem 0; background: white; border-radius: 0px; box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid #e8e8e8;">
+<div id="announcementCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000">
+<div class="carousel-inner">
+<!-- ประกาศที่ 1 -->
+<div class="carousel-item active">
+<div style="background: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-blue) 100%);
+padding: 3.5rem 2rem;
+text-align: center;
+color: white;
+min-height: 280px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;">
+<i class="fas fa-certificate" style="font-size: 3rem; color: #d4af37; margin-bottom: 1.2rem;"></i>
+<h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.8rem;">ระบบ E-Certificate เปิดใช้งานแล้ว</h2>
+<p style="font-size: 1rem; opacity: 0.95; margin-bottom: 1.2rem; line-height: 1.5;">
+เริ่มใช้งานอย่างเป็นทางการตั้งแต่วันที่ 1 ธันวาคม 2568<br>
+ลงทะเบียนในระบบและเริ่มจัดเก็บเกียรติบัตรของคุณ
+</p>
+<a href="/register" class="btn" style="background: white; color: var(--primary-navy); font-weight: 700; padding: 0.7rem 1.8rem; border-radius: 4px; text-decoration: none;">
+<i class="fas fa-sign-up me-1"></i>ลงทะเบียน
+</a>
+</div>
+</div>
+<!-- ประกาศที่ 2 -->
+<div class="carousel-item">
+<div style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-navy) 100%);
+padding: 3.5rem 2rem;
+text-align: center;
+color: white;
+min-height: 280px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;">
+<i class="fas fa-book-open" style="font-size: 3rem; color: #d4af37; margin-bottom: 1.2rem;"></i>
+<h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.8rem;">คู่มือการใช้งานระบบ</h2>
+<p style="font-size: 1rem; opacity: 0.95; margin-bottom: 1.2rem; line-height: 1.5;">
+ดาวน์โหลดคู่มือฉบับสมบูรณ์ วิดีโอสาธิต และตัวอย่างการใช้งาน<br>
+พร้อมคำแนะนำและการสนับสนุนจากทีมผู้ดูแลระบบ
+</p>
+<a href="#" data-download-guide class="btn" style="background: white; color: var(--primary-navy); font-weight: 700; padding: 0.7rem 1.8rem; border-radius: 4px; text-decoration: none;">
+<i class="fas fa-download me-1"></i>ดาวน์โหลด
+</a>
+</div>
+</div>
+<!-- ประกาศที่ 3 -->
+<div class="carousel-item">
+<div style="background: linear-gradient(135deg, #1a5490 0%, #003d7a 100%);
+padding: 3.5rem 2rem;
+text-align: center;
+color: white;
+min-height: 280px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;">
+<i class="fas fa-users" style="font-size: 3rem; color: #d4af37; margin-bottom: 1.2rem;"></i>
+<h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.8rem;">อบรมการใช้งานระบบ</h2>
+<p style="font-size: 1rem; opacity: 0.95; margin-bottom: 1.2rem; line-height: 1.5;">
+วันที่ 5-7 ธันวาคม 2568 เวลา 08:30-16:30 น.<br>
+ณ ห้องประชุม สำนักงานเขตพื้นที่การศึกษา (ไม่มีค่าใช้จ่าย)
+</p>
+<a href="#" data-training-register class="btn" style="background: white; color: var(--primary-navy); font-weight: 700; padding: 0.7rem 1.8rem; border-radius: 4px; text-decoration: none;">
+<i class="fas fa-calendar-check me-1"></i>ลงทะเบียน
+</a>
+</div>
+</div>
+<!-- ประกาศที่ 4 -->
+<div class="carousel-item">
+<div style="background: linear-gradient(135deg, #6a1b9a 0%, #7b1fa2 100%);
+padding: 4rem 2rem;
+text-align: center;
+color: white;
+min-height: 300px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;">
+<i class="fas fa-shield-alt" style="font-size: 3.5rem; color: #ce93d8; margin-bottom: 1.5rem;"></i>
+<h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">🔒 ปลอดภัย 100%</h2>
+<p style="font-size: 1.15rem; opacity: 0.95; margin-bottom: 1.5rem;">
+เข้ารหัส SSL + สำรองข้อมูลรายวัน + เป็นไปตามมาตรฐาน ISO 27001<br>
+ข้อมูลของคุณอยู่ในที่นิรպด
+</p>
+<a href="#" data-security-info class="btn btn-light fw-bold px-5 py-2" style="font-size: 1.1rem;">
+<i class="fas fa-info-circle me-2"></i> เรียนรู้เพิ่มเติม
+</a>
+</div>
+</div>
+</div>
+<!-- Navigation -->
+<button class="carousel-control-prev" type="button" data-bs-target="#announcementCarousel" data-bs-slide="prev"
+style="background: rgba(0,0,0,0.3); width: 60px; border-radius: 8px; left: 1rem;">
+<span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" type="button" data-bs-target="#announcementCarousel" data-bs-slide="next"
+style="background: rgba(0,0,0,0.3); width: 60px; border-radius: 8px; right: 1rem;">
+<span class="carousel-control-next-icon"></span>
+</button>
+<!-- Indicators -->
+<div class="carousel-indicators" style="bottom: 20px;">
+<button type="button" data-bs-target="#announcementCarousel" data-bs-slide-to="0" class="active"
+style="width: 12px; height: 12px; border-radius: 50%;"></button>
+<button type="button" data-bs-target="#announcementCarousel" data-bs-slide-to="1"
+style="width: 12px; height: 12px; border-radius: 50%;"></button>
+<button type="button" data-bs-target="#announcementCarousel" data-bs-slide-to="2"
+style="width: 12px; height: 12px; border-radius: 50%;"></button>
+<button type="button" data-bs-target="#announcementCarousel" data-bs-slide-to="3"
+style="width: 12px; height: 12px; border-radius: 50%;"></button>
+</div>
+</div>
+</section>
+<section class="py-5">
+<h2 class="section-title animate__animated animate__fadeIn">วัตถุประสงค์ของระบบ</h2>
+<div class="row g-4">
+<div class="col-lg-7">
+<div class="content-card h-100 animate__animated animate__fadeInLeft">
+<p class="fs-5">
+<i class="fas fa-bullseye text-primary me-2"></i>
+<strong>ระบบ E-Certificate</strong> ถูกพัฒนาขึ้นเพื่อส่งเสริมให้ข้าราชการครูและบุคลากรทางการศึกษาในสังกัด
+สามารถบันทึก จัดเก็บ ค้นหา และแสดงผลเกียรติบัตร ใบประกาศ หรือผลงานด้านต่าง ๆ ได้อย่างเป็นระบบ
+โดยมีเป้าหมายหลัก ดังนี้:
+</p>
+<ul class="mt-3 fs-5">
+<li class="mb-2">ลดความเสี่ยงการสูญหายหรือชำรุดของเอกสารต้นฉบับ</li>
+<li class="mb-2">อำนวยความสะดวกในการรวบรวมเอกสารสำหรับการประเมินวิทยฐานะและ PA</li>
+<li class="mb-2">สนับสนุนการวิเคราะห์ข้อมูลเชิงลึกเกี่ยวกับการพัฒนาวิชาชีพครู</li>
+<li>ส่งเสริมการบริหารจัดการองค์กรด้วยข้อมูล (Data-Driven Organization)</li>
+</ul>
+</div>
+</div>
+<div class="col-lg-5 d-flex align-items-center justify-content-center">
+<img src="images/สกรีนช็อต 2025-11-20 150532.png"
+alt="วัตถุประสงค์ระบบ"
+class="img-highlight animate__animated animate__fadeInRight">
+</div>
+</div>
+</section>
+<!-- ความสำคัญ -->
+<section class="py-5">
+<h2 class="section-title animate__animated animate__fadeIn">ความสำคัญของระบบ</h2>
+<div class="row g-4">
+<div class="col-lg-6">
+<div class="content-card h-100 animate__animated animate__fadeInUp">
+<p class="fs-5">
+<i class="fas fa-lightbulb text-warning me-2"></i>
+<strong>สำหรับครูและบุคลากร:</strong> ระบบช่วยให้คุณจัดเก็บผลงานได้ตลอดชีวิตวิชาชีพ
+ไม่ต้องกังวลเรื่องเอกสารหาย หรือต้องค้นหาเป็นชั่วโมงเมื่อถึงเวลาประเมิน
+ทุกอย่างอยู่ในที่เดียว พร้อมดู พร้อมดาวน์โหลด พร้อมใช้งาน
+</p>
+</div>
+</div>
+<div class="col-lg-6">
+<div class="content-card h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+<p class="fs-5">
+<i class="fas fa-building text-info me-2"></i>
+<strong>สำหรับหน่วยงาน:</strong> ผู้บริหารสามารถติดตามพัฒนาการของบุคลากร
+วางแผนพัฒนาเชิงกลยุทธ์ และรายงานผลต่อสำนักงานคณะกรรมการการศึกษาขั้นพื้นฐาน (สพฐ.)
+ได้อย่างแม่นยำและทันเวลา
+</p>
+</div>
+</div>
+</div>
+</section>
+<!-- ข่าวสารล่าสุด -->
+<section class="py-5">
+<h2 class="section-title animate__animated animate__fadeIn">ข่าวสารและประกาศสำคัญ</h2>
+<%
+// หาก `locals.news` ถูกส่งจากเซิร์ฟเวอร์ ให้ใช้รายการข่าวนั้น หากไม่มีก็ใช้รายการตัวอย่างที่ปรับเป็นปัจจุบัน
+const defaultNews = [
+{
+date: '10 กุมภาพันธ์ 2569',
+title: 'สพป.ขอนแก่น เขต 2 จัดประกวดผลงานนวัตกรรมการสอนระดับเขต',
+excerpt: 'เชิญชวนครูส่งผลงานเข้าร่วมประกวดนวัตกรรมการสอน ชิงทุนพัฒนางานและโล่เกียรติคุณ เปิดรับผลงานถึง 28 กุมภาพันธ์ 2569',
+tag: 'ประกวด',
+image: '/images/news/innovation-contest.svg',
+url: '/news/innovation-contest'
+},
+{
+date: '04 กุมภาพันธ์ 2569',
+title: 'โครงการพัฒนาครูด้านดิจิทัล ปี 2569 (อบรมเชิงปฏิบัติการ)',
+excerpt: 'สพป.ขอนแก่น เขต 2 จัดอบรมเพิ่มทักษะการใช้เทคโนโลยีการสอนและการใช้ระบบ E-Certificate ให้กับครูทั้งเขต',
+tag: 'อบรม',
+image: '/images/news/digital-training.svg',
+url: '/news/digital-training'
+},
+{
+date: '28 มกราคม 2569',
+title: 'ประกาศผลการคัดเลือกโรงเรียนต้นแบบด้านคุณภาพการศึกษา',
+excerpt: 'ประกาศรายชื่อโรงเรียนต้นแบบ 12 แห่ง ที่ผ่านการคัดเลือกระดับเขตเพื่อรับการสนับสนุนเชิงงบประมาณ',
+tag: 'ประกาศ',
+image: '/images/news/school-award.svg',
+url: '/news/school-award'
+}
+];
+const newsList = locals.news && Array.isArray(locals.news) && locals.news.length ? locals.news : defaultNews;
+%>
+<div class="row g-4">
+<% newsList.forEach((item, idx) => { %>
+<div class="col-md-6 col-lg-4">
+<div class="news-card animate__animated animate__fadeInUp" style="animation-delay: <%= (idx * 0.06) %>s;">
+<div style="height: 180px; display:flex; align-items:center; justify-content:center; color:white; background: linear-gradient(135deg, rgba(0,61,122,0.9), rgba(0,82,163,0.9));">
+<% if (item.image) { %>
+<img src="<%= item.image %>" alt="<%= item.title %>" class="news-img" style="height:180px; width:100%; object-fit:cover;">
+<% } else { %>
+<i class="fas fa-newspaper" style="font-size: 3rem; opacity: 0.9;"></i>
+<% } %>
+</div>
+<div class="news-body">
+<div class="news-date"><%= item.date %></div>
+<h3 class="news-title"><a href="<%= item.url || '#' %>" style="color: inherit; text-decoration: none;"><%= item.title %></a></h3>
+<p class="news-excerpt"><%= item.excerpt %></p>
+<span class="news-badge"><%= item.tag %></span>
+</div>
+</div>
+</div>
+<% }) %>
+</div>
+<div class="text-center mt-4">
+<a href="/news" class="btn btn-outline-primary px-4 py-2 rounded-pill fw-bold">
+<i class="fas fa-newspaper me-1"></i> ดูข่าวสารทั้งหมด
+</a>
+</div>
+</section>
+<!-- วิดีโอแนะนำ -->
+<section class="py-5">
+<h2 class="section-title animate__animated animate__fadeIn">วิดีโอแนะนำการใช้งาน</h2>
+<div class="row justify-content-center">
+<div class="col-lg-8">
+<div class="video-card animate__animated animate__fadeIn" style="border: 3px solid #e9ecef;">
+<div class="video-thumbnail" style="cursor: pointer;"
+onclick="alert('ฟีเจอร์วิดีโอจะเปิดใช้งานเร็ว ๆ นี้')">
+<i class="fas fa-play-circle play-icon"></i>
+</div>
+<h4 class="mt-3 fw-bold" style="color: var(--primary-blue);">
+<i class="fas fa-graduation-cap me-2" style="color: #ffd700;"></i>วิธีอัปโหลดและจัดการเกียรติบัตร
+</h4>
+<p class="text-muted">ชมวิดีโอสาธิตการใช้งานระบบ E-Certificate แบบละเอียด พร้อมตัวอย่างจริง</p>
+<div style="margin-top: 1.5rem; padding: 1.5rem; background: #f0f7ff; border-radius: 12px; border-left: 4px solid var(--primary-blue);">
+<p class="mb-0" style="color: var(--primary-blue); font-weight: 500;">
+<i class="fas fa-clock me-2"></i><strong>ระยะเวลา:</strong> 15 นาที | <strong>สำหรับ:</strong> ผู้เริ่มต้นใหม่
+</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- คุณสมบัติเด่น -->
+<section class="py-5">
+<h2 class="section-title animate__animated animate__fadeIn">คุณสมบัติเด่นของระบบ</h2>
+<div class="row g-4">
+<div class="col-md-6 col-lg-3">
+<div class="feature-card animate__animated animate__fadeInUp">
+<div class="feature-icon-box"><i class="fas fa-cloud-upload-alt"></i></div>
+<h5 class="fw-bold">อัปโหลดง่าย</h5>
+<p class="text-muted mb-0">รองรับ PDF, JPG, PNG พร้อมกรอกข้อมูลเชิงบริบท</p>
+</div>
+</div>
+<div class="col-md-6 col-lg-3">
+<div class="feature-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+<div class="feature-icon-box"><i class="fas fa-search"></i></div>
+<h5 class="fw-bold">ค้นหาทันใจ</h5>
+<p class="text-muted mb-0">ค้นหาด้วยชื่อกิจกรรม หน่วยงาน ปี พ.ศ. หรือคำสำคัญ</p>
+</div>
+</div>
+<div class="col-md-6 col-lg-3">
+<div class="feature-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+<div class="feature-icon-box"><i class="fas fa-lock"></i></div>
+<h5 class="fw-bold">ปลอดภัยสูงสุด</h5>
+<p class="text-muted mb-0">เข้ารหัส SSL + สำรองข้อมูลรายวันตามมาตรฐาน ISO 27001</p>
+</div>
+</div>
+<div class="col-md-6 col-lg-3">
+<div class="feature-card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+<div class="feature-icon-box"><i class="fas fa-chart-line"></i></div>
+<h5 class="fw-bold">รายงานผลทันที</h5>
+<p class="text-muted mb-0">สรุปผลงานรายบุคคล รายโรงเรียน รายอำเภอแบบเรียลไทม์</p>
+</div>
+</div>
+</div>
+</section>
+<!-- ภาพรวมระบบ -->
+<section class="py-5">
+<h2 class="section-title animate__animated animate__fadeIn">ภาพรวมการใช้งานระบบ</h2>
+<div class="process-steps">
+<div class="step-card animate__animated animate__fadeInUp">
+<div class="step-number">1</div>
+<h5 class="step-title">ลงทะเบียน / เข้าสู่ระบบ</h5>
+<p class="step-description">ใช้อีเมลหน่วยงาน (@kkn2.go.th) และรหัสผ่านที่ตั้งไว้</p>
+<div class="step-connector"></div>
+</div>
+<div class="step-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+<div class="step-number">2</div>
+<h5 class="step-title">อัปโหลดเกียรติบัตร</h5>
+<p class="step-description">เลือกไฟล์ กรอกข้อมูลกิจกรรม ระบุวันที่ และหน่วยงานผู้มอบ</p>
+<div class="step-connector"></div>
+</div>
+<div class="step-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+<div class="step-number">3</div>
+<h5 class="step-title">จัดเก็บและจัดหมวดหมู่</h5>
+<p class="step-description">ระบบจัดกลุ่มอัตโนมัติ เช่น ด้านวิชาการ ด้านกิจกรรม ด้านบริหาร</p>
+<div class="step-connector"></div>
+</div>
+<div class="step-card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+<div class="step-number">4</div>
+<h5 class="step-title">ค้นหาและรายงาน</h5>
+<p class="step-description">สร้างรายงาน PDF สำหรับส่งประเมินวิทยฐานะหรือ PA ได้ทันที</p>
+</div>
+</div>
+</section>
+<!-- คู่มือการใช้งาน -->
+<section class="py-5">
+<h2 class="section-title animate__animated animate__fadeIn">คู่มือการใช้งาน</h2>
+<div class="row g-4">
+<div class="col-md-4">
+<div class="content-card text-center animate__animated animate__fadeInUp">
+<i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+<h5>ลงทะเบียนบัญชี</h5>
+<p class="text-muted">ใช้อีเมลหน่วยงานเท่านั้น เช่น somchai@kkn2.go.th</p>
+</div>
+</div>
+<div class="col-md-4">
+<div class="content-card text-center animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+<i class="fas fa-file-upload fa-3x text-primary mb-3"></i>
+<h5>อัปโหลดเกียรติบัตร</h5>
+<p class="text-muted">ไฟล์ขนาดไม่เกิน 10 MB รองรับ PDF, JPG, PNG</p>
+</div>
+</div>
+<div class="col-md-4">
+<div class="content-card text-center animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+<i class="fas fa-download fa-3x text-primary mb-3"></i>
+<h5>ดาวน์โหลดรายงาน</h5>
+<p class="text-muted">สร้างรายงานรวมผลงานได้ตลอดเวลา</p>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Banner ปรับปรุง -->
+<div class="cta-banner animate__animated animate__zoomIn" style="margin-top: 4.5rem;">
+<div style="text-align: center;">
+<h3 style="font-size: 2.4rem; font-weight: 900; color: white; margin-bottom: 1rem;">
+<i class="fas fa-rocket" style="color: #ffd700; font-size: 2.8rem; margin-right: 0.5rem;"></i>เริ่มต้นใช้งานวันนี้!
+</h3>
+<p style="font-size: 1.2rem; color: rgba(255,255,255,0.95); max-width: 700px; margin: 1.5rem auto;">
+ลงทะเบียนเพื่อเริ่มบันทึกและจัดการเกียรติบัตรของคุณอย่างเป็นระบบ — ฟรี 100%<br>
+<strong style="color: #ffd700;">ใช้เวลาเพียง 2 นาทีในการสมัครสมาชิก</strong>
+</p>
+<% if (!locals.user) { %>
+<div style="margin-top: 2.5rem; display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+<a href="/register" class="btn btn-cta" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
+<i class="fas fa-user-plus me-2"></i> ลงทะเบียนเลย
+</a>
+<a href="/login" style="background: white; color: var(--primary-blue); border: 2px solid white; padding: 1rem 2.5rem; border-radius: 14px; font-weight: 700; font-size: 1.1rem; text-decoration: none;" class="btn">
+<i class="fas fa-sign-in-alt me-2"></i> เข้าสู่ระบบ
+</a>
+</div>
+<% } else { %>
+<a href="<%= dashboardUrl %>" class="btn btn-cta" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
+<i class="fas fa-tachometer-alt me-2"></i> ไปยังแดชบอร์ด
+</a>
+<% } %>
+</div>
+</div>
+<!-- สถิติ -->
+<section class="stat-section">
+<div class="text-center mb-4 animate__animated animate__fadeIn">
+<div class="d-inline-block px-4 py-3 rounded-3" style="background: linear-gradient(135deg, #00296b, #00308f); box-shadow: 0 6px 18px rgba(0,0,0,0.25);">
+<h2 class="mb-0" style="font-size: 1.8rem; font-weight: 700; color: white;">
+📊 ข้อมูลสถิติการใช้งานระบบ
+<span style="color: #ffd700; font-weight: 700; display: block; margin-top: 0.5rem;">
+ณ วันที่ 2 ธันวาคม 2568
+</span>
+</h2>
+</div>
+</div>
+<div class="row g-4">
+<div class="col-md-4">
+<div class="stat-card animate__animated animate__pulse" style="animation-delay: 0.1s; border: 2px solid #e9ecef;">
+<div style="color: var(--primary-blue); font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: 0.5rem;">
+<i class="fas fa-users me-2"></i><%= (locals.teacherCount || 0).toLocaleString('th-TH') %>
+</div>
+<div class="stat-label">ครูและบุคลากรที่ลงทะเบียน</div>
+<p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">
+<i class="fas fa-arrow-up me-1" style="color: #16a34a;"></i>เพิ่มขึ้นจากเดือนที่แล้ว
+</p>
+</div>
+</div>
+<div class="col-md-4">
+<div class="stat-card animate__animated animate__pulse" style="animation-delay: 0.2s; border: 2px solid #e9ecef;">
+<div style="color: #e53935; font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: 0.5rem;">
+<i class="fas fa-certificate me-2"></i><%= (locals.certificateCount || 0).toLocaleString('th-TH') %>
+</div>
+<div class="stat-label">เกียรติบัตรที่บันทึกในระบบ</div>
+<p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">
+<i class="fas fa-arrow-up me-1" style="color: #16a34a;"></i>ยังคงเพิ่มขึ้นทุกวัน
+</p>
+</div>
+</div>
+<div class="col-md-4">
+<div class="stat-card animate__animated animate__pulse" style="animation-delay: 0.3s; border: 2px solid #e9ecef;">
+<div style="color: #00796b; font-size: 2.8rem; font-weight: 800; line-height: 1; margin-bottom: 0.5rem;">
+<i class="fas fa-school me-2"></i><%= (locals.schoolCount || 0).toLocaleString('th-TH') %>
+</div>
+<div class="stat-label">โรงเรียนในสังกัด</div>
+<p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">
+<i class="fas fa-check-circle me-1" style="color: #16a34a;"></i>ทั้งหมดเข้าระบบแล้ว
+</p>
+</div>
+</div>
+</div>
+</section>
+<!-- ติดต่อเรา -->
+<section class="py-5">
+<h2 class="section-title animate__animated animate__fadeIn">ติดต่อและสนับสนุน</h2>
+<div class="row g-5">
+<div class="col-lg-6">
+<!-- Contact Info Cards -->
+<div class="contact-item animate__animated animate__fadeInLeft">
+<div class="contact-icon"><i class="fas fa-map-marker-alt fs-5"></i></div>
+<div style="flex: 1;">
+<h5 class="fw-bold" style="color: var(--primary-blue); margin-bottom: 0.5rem;">
+<i class="fas fa-building me-2"></i>ที่อยู่สำนักงาน
+</h5>
+<p class="text-muted mb-0" style="font-size: 1rem;">
+สำนักงานเขตพื้นที่การศึกษาประถมศึกษาขอนแก่น เขต 2<br>
+ตำบลในเมือง อำเภอบ้านไผ่ จังหวัดขอนแก่น 41000
+</p>
+</div>
+</div>
+<div class="contact-item animate__animated animate__fadeInLeft" style="animation-delay: 0.1s;">
+<div class="contact-icon"><i class="fas fa-phone-alt fs-5"></i></div>
+<div style="flex: 1;">
+<h5 class="fw-bold" style="color: var(--primary-blue); margin-bottom: 0.5rem;">
+<i class="fas fa-headset me-2"></i>โทรศัพท์
+</h5>
+<p class="text-muted mb-0" style="font-size: 1rem;">
+<strong>0-4322-2345</strong> ต่อ <strong>101</strong> (กลุ่มเทคโนโลยีเพื่อการศึกษา)<br>
+<span style="font-size: 0.9rem;">จันทร์-ศุกร์ | 08:30 - 16:30 น.</span>
+</p>
+</div>
+</div>
+<div class="contact-item animate__animated animate__fadeInLeft" style="animation-delay: 0.2s;">
+<div class="contact-icon"><i class="fas fa-envelope fs-5"></i></div>
+<div style="flex: 1;">
+<h5 class="fw-bold" style="color: var(--primary-blue); margin-bottom: 0.5rem;">
+<i class="fas fa-at me-2"></i>อีเมล
+</h5>
+<p class="text-muted mb-0" style="font-size: 1rem;">
+<a href="mailto:info@kkn2.go.th" style="color: var(--primary-blue); text-decoration: none; font-weight: 500;">
+info@kkn2.go.th
+</a><br>
+<span style="font-size: 0.9rem;">ตอบกลับภายใน 24 ชั่วโมง</span>
+</p>
+</div>
+</div>
+<div class="contact-item animate__animated animate__fadeInLeft" style="animation-delay: 0.3s;">
+<div class="contact-icon"><i class="fas fa-clock fs-5"></i></div>
+<div style="flex: 1;">
+<h5 class="fw-bold" style="color: var(--primary-blue); margin-bottom: 0.5rem;">
+<i class="fas fa-calendar-check me-2"></i>เวลาทำการ
+</h5>
+<p class="text-muted mb-0" style="font-size: 1rem;">
+<strong>วันจันทร์ - ศุกร์</strong><br>
+<strong>08:30 - 16:30</strong> น. (ยกเว้นวันหยุดราชการ)
+</p>
+</div>
+</div>
+</div>
+<div class="col-lg-6 d-flex align-items-center justify-content-center">
+<div class="map-container animate__animated animate__fadeInRight" style="border: 3px solid #e9ecef; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+<iframe
+class="map-frame"
+src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3825.625234256789!2d102.83651197550045!3d16.436020184362975!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31228c1e5b1d6a2d%3A0x9e6c3e1b1c0d6c3d!2sOffice+of+the+Primary+Educational+Service+Area+2%2C+Khon+Kaen!5e0!3m2!1sen!2sth!4v1717000000000!5m2!1sen!2sth"
+allowfullscreen
+loading="lazy"
+title="แผนที่ สพป.ขอนแก่น เขต 2"
+style="border: none;">
+</iframe>
+</div>
+</div>
+</div>
+</section>
+</div>
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // โฆษณา Modal popup จะแสดงทุกครั้งที่เปิดหน้า (ไม่เก็บใน localStorage)
-  setTimeout(() => {
-    const modal = new bootstrap.Modal(document.getElementById('promotionModal'));
-    modal.show();
-  }, 1000); // แสดงหลังจากเพจโหลดเสร็จ 1 วินาที
-
-  // 🔗 ตั้งค่าลิงก์ปุ่มต่าง ๆ
-  // ปุ่ม "ดูข่าวสารทั้งหมด"
-  const newsBtn = document.querySelector('a[href="/news"]');
-  if (newsBtn) {
-    newsBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      // ตอนนี้ยังไม่มีหน้า news ให้ไปแทน ก็ scroll ไปยังข่าว
-      document.querySelector('.news-card').scrollIntoView({ behavior: 'smooth' });
-    });
-  }
-
-  // ปุ่มดาวน์โหลดคู่มือ
-  const downloadBtn = document.querySelector('a[data-download-guide]');
-  if (downloadBtn) {
-    downloadBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('คู่มือการใช้งานระบบ E-Certificate\n\nคู่มือฉบับสมบูรณ์จะเปิดให้ดาวน์โหลดในอีกไม่กี่วันนี้ กรุณารอติดตามข่าวสารประกาศจากสำนักงาน');
-    });
-  }
-
-  // ปุ่มลงทะเบียนอบรม
-  const trainingBtn = document.querySelector('a[data-training-register]');
-  if (trainingBtn) {
-    trainingBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('ข้อมูลการอบรม\n\nวันที่: 5-7 ธันวาคม 2568\nเวลา: 08:30 - 16:30 น.\nสถานที่: ห้องประชุม สพป.ขอนแก่น เขต 2\nค่าลงทะเบียน: ฟรี\n\nระบบลงทะเบียนจะเปิดเร็ว ๆ นี้ โปรดติดตามประกาศต่อไป');
-    });
-  }
-
-  // ปุ่มข้อมูลเพิ่มเติมความปลอดภัย
-  const securityBtn = document.querySelector('a[data-security-info]');
-  if (securityBtn) {
-    securityBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('ความปลอดภัยของระบบ E-Certificate\n\n✓ เข้ารหัส SSL/TLS\n✓ สำรองข้อมูลรายวัน\n✓ ปฏิบัติตามมาตรฐาน ISO 27001\n✓ ปลอดภัยและเชื่อถือได้\n\nสำหรับข้อมูลเพิ่มเติม โปรดติดต่อ 0-4322-2345 ต่อ 101');
-    });
-  }
-
-  // 🎬 ปุ่มเล่นวิดีโอ
-  const videoThumbnail = document.querySelector('.video-thumbnail');
-  if (videoThumbnail) {
-    videoThumbnail.style.cursor = 'pointer';
-    videoThumbnail.addEventListener('click', () => {
-      alert('วิดีโอสาธิตการใช้งานระบบ\n\nวิดีโอจะเปิดให้ชมในระบบเร็ว ๆ นี้\n\nข้อมูล:\n• ระยะเวลา: 15 นาที\n• สำหรับ: ผู้เริ่มต้นใหม่\n• เนื้อหา: ลำดับขั้นตอนแบบละเอียด');
-    });
-  }
-
-  // Carousel auto-play
-  const carousel = document.querySelector('#announcementCarousel');
-  if (carousel) {
-    new bootstrap.Carousel(carousel, {
-      interval: 6000,
-      pause: 'hover'
-    });
-  }
-
-  // Navbar smooth scroll
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-      const href = this.getAttribute('href');
-      if (href !== '#') {
-        e.preventDefault();
-        const target = document.querySelector(href);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-    });
-  });
+// โฆษณา Modal popup จะแสดงทุกครั้งที่เปิดหน้า (ไม่เก็บใน localStorage)
+setTimeout(() => {
+const modal = new bootstrap.Modal(document.getElementById('promotionModal'));
+modal.show();
+}, 1000); // แสดงหลังจากเพจโหลดเสร็จ 1 วินาที
+// 🔗 ตั้งค่าลิงก์ปุ่มต่าง ๆ
+// ปุ่ม "ดูข่าวสารทั้งหมด"
+const newsBtn = document.querySelector('a[href="/news"]');
+if (newsBtn) {
+newsBtn.addEventListener('click', (e) => {
+e.preventDefault();
+// ตอนนี้ยังไม่มีหน้า news ให้ไปแทน ก็ scroll ไปยังข่าว
+document.querySelector('.news-card').scrollIntoView({ behavior: 'smooth' });
+});
+}
+// ปุ่มดาวน์โหลดคู่มือ
+const downloadBtn = document.querySelector('a[data-download-guide]');
+if (downloadBtn) {
+downloadBtn.addEventListener('click', (e) => {
+e.preventDefault();
+alert('คู่มือการใช้งานระบบ E-Certificate
+คู่มือฉบับสมบูรณ์จะเปิดให้ดาวน์โหลดในอีกไม่กี่วันนี้ กรุณารอติดตามข่าวสารประกาศจากสำนักงาน');
+});
+}
+// ปุ่มลงทะเบียนอบรม
+const trainingBtn = document.querySelector('a[data-training-register]');
+if (trainingBtn) {
+trainingBtn.addEventListener('click', (e) => {
+e.preventDefault();
+alert('ข้อมูลการอบรม
+วันที่: 5-7 ธันวาคม 2568
+เวลา: 08:30 - 16:30 น.
+สถานที่: ห้องประชุม สพป.ขอนแก่น เขต 2
+ค่าลงทะเบียน: ฟรี
+ระบบลงทะเบียนจะเปิดเร็ว ๆ นี้ โปรดติดตามประกาศต่อไป');
+});
+}
+// ปุ่มข้อมูลเพิ่มเติมความปลอดภัย
+const securityBtn = document.querySelector('a[data-security-info]');
+if (securityBtn) {
+securityBtn.addEventListener('click', (e) => {
+e.preventDefault();
+alert('ความปลอดภัยของระบบ E-Certificate
+✓ เข้ารหัส SSL/TLS
+✓ สำรองข้อมูลรายวัน
+✓ ปฏิบัติตามมาตรฐาน ISO 27001
+✓ ปลอดภัยและเชื่อถือได้
+สำหรับข้อมูลเพิ่มเติม โปรดติดต่อ 0-4322-2345 ต่อ 101');
+});
+}
+// 🎬 ปุ่มเล่นวิดีโอ
+const videoThumbnail = document.querySelector('.video-thumbnail');
+if (videoThumbnail) {
+videoThumbnail.style.cursor = 'pointer';
+videoThumbnail.addEventListener('click', () => {
+alert('วิดีโอสาธิตการใช้งานระบบ
+วิดีโอจะเปิดให้ชมในระบบเร็ว ๆ นี้
+ข้อมูล:
+• ระยะเวลา: 15 นาที
+• สำหรับ: ผู้เริ่มต้นใหม่
+• เนื้อหา: ลำดับขั้นตอนแบบละเอียด');
+});
+}
+// Carousel auto-play
+const carousel = document.querySelector('#announcementCarousel');
+if (carousel) {
+new bootstrap.Carousel(carousel, {
+interval: 6000,
+pause: 'hover'
+});
+}
+// Navbar smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+anchor.addEventListener('click', function(e) {
+const href = this.getAttribute('href');
+if (href !== '#') {
+e.preventDefault();
+const target = document.querySelector(href);
+if (target) {
+target.scrollIntoView({ behavior: 'smooth' });
+}
+}
+});
+});
 </script>
