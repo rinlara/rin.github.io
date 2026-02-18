@@ -2634,52 +2634,13 @@ app.listen(PORT, () => {
 
 module.exports = { db };
 
+
 // ========================
-// รันเซิร์ฟเวอร์
+// รันเซิร์ฟเวอร์ (สำหรับ Render)
 // ========================
-function findAvailablePort(startPort = 3000) {
-  const net = require('net');
-  return new Promise((resolve) => {
-    const server = net.createServer();
-    server.listen(startPort, () => {
-      const port = server.address().port;
-      server.close(() => resolve(port));
-    });
-    server.on('error', () => {
-      resolve(findAvailablePort(startPort + 1));
-    });
-  });
-}
+const PORT = process.env.PORT || 3000;
 
-findAvailablePort(3000).then((availablePort) => {
-  process.env.PORT = availablePort;
-  if (!process.env.APP_URL) {
-    process.env.APP_URL = `http://localhost:${availablePort}`;
-  }
-  app.listen(availablePort, () => {
-    console.log(`✅ ระบบทำงานที่ ${process.env.APP_URL}`);
-    console.log(`🔑 ครูเก่า: ใช้รหัสผ่าน '123456' หากล็อกอินไม่ได้`);
-    console.log(`🔒 ลืมรหัสผ่าน: เข้าที่ /forgot-password`);
-    if (transporter) {
-      console.log(`📧 ระบบส่งอีเมล: เปิดใช้งาน (ใช้ ${process.env.EMAIL_USER})`);
-    } else {
-      console.log(`📧 ระบบส่งอีเมล: ยังไม่ได้ตั้งค่า`);
-    }
-  });
-}).catch(err => {
-  console.error('❌ ไม่สามารถเปิดเซิร์ฟเวอร์ได้:', err);
-  process.exit(1);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
-process.on('uncaughtException', (err) => {
-  console.error('❌ Uncaught Exception:', err);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
-});
-
-// 🔧 ติดตั้ง package (รันครั้งเดียว):
-// npm install express-rate-limit express-slow-down helmet
-module.exports = { db };

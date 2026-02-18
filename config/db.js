@@ -1,25 +1,12 @@
-// config/db.js
-const mysql = require('mysql2');
-const util = require('util');
+const { Pool } = require('pg');
 
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '28012547',
-  database: 'certificate_system'
+const db = new Pool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+  ssl: { rejectUnauthorized: false }
 });
-
-// ทดสอบการเชื่อมต่อ (ไม่บังคับ แต่ดีมาก)
-db.connect((err) => {
-  if (err) {
-    console.error('❌ เชื่อมต่อฐานข้อมูลไม่ได้:', err);
-    return;
-  }
-  console.log('✅ เชื่อมต่อ MySQL สำเร็จ (ฐานข้อมูล: certificate_system)');
-});
-
-// ✅ เพิ่ม Promise wrapper สำหรับ async/await
-db.query = util.promisify(db.query);
-db.execute = util.promisify(db.execute);
 
 module.exports = db;

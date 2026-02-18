@@ -148,10 +148,8 @@ app.get('/api/admin/stats', (req, res) => {
   });
 });
 
-// =============== Start Server ===============
-// เปลี่ยนจาก 3000 เป็น 3001 หรือ 8080
-app.listen(3001, () => {
-  console.log('🚀 ระบบทำงานที่ http://localhost:3003');
+const PORT = process.env.PORT || 3000;
 
-  console.log(`📁 โฟลเดอร์อัปโหลด: /uploads`);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
