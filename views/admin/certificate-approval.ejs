@@ -232,13 +232,20 @@ const baseUrl = locals.baseUrl || '';
                   </div>
 
                   <!-- Buttons -->
-                  <div class="d-flex gap-2 mt-3">
-                    <button class="btn btn-sm btn-success" onclick="approveCertificate(<%= cert.id %>)">
-                      <i class="fas fa-check me-1"></i>อนุมัติ
-                    </button>
-                    <button class="btn btn-sm btn-danger" onclick="showRejectModal(<%= cert.id %>)">
-                      <i class="fas fa-times me-1"></i>ปฏิเสธ
-                    </button>
+                <div class="mt-2">
+
+<button class="btn btn-success btn-sm approve-btn"
+        data-id="<%= cert.id %>">
+<i class="fas fa-check"></i> อนุมัติ
+</button>
+
+<button class="btn btn-danger btn-sm reject-btn"
+        data-id="<%= cert.id %>">
+<i class="fas fa-times"></i> ปฏิเสธ
+</button>
+
+</div>
+
                     <a href="<%= cert.file_path ? (cert.file_path.startsWith('http') ? cert.file_path : baseUrl + cert.file_path) : '#' %>" 
                        target="_blank" class="btn btn-sm btn-outline-primary">
                       <i class="fas fa-eye me-1"></i>ดูเต็ม

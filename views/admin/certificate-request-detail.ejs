@@ -1,82 +1,46 @@
 <!-- views/admin/certificate-request-detail.ejs -->
-<%- include('../partials/header.ejs') %>
+<%- include('../partials/header.ejs', { user: typeof user !== 'undefined' ? user : null }) %>
 
 <style>
-  .bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  }
-  
-  .bg-gradient-success {
-    background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-  }
-  
-  .bg-gradient-info {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  }
-  
-  .bg-gradient-warning {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  }
-  
-  .bg-gradient-danger {
-    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-  }
-  
-  .certificate-card {
-    transition: all 0.3s ease;
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-  }
-  
-  .certificate-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    border-color: #667eea;
-  }
-  
-  .number-badge {
-    font-size: 1rem;
-    font-weight: bold;
-    padding: 6px 12px;
-    border-radius: 6px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  }
-  
-  .status-badge {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-  }
-  
-  .action-btn {
-    transition: all 0.2s ease;
-  }
-  
-  .action-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
+  .bg-gradient-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+  .bg-gradient-success { background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%); }
+  .bg-gradient-info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+  .bg-gradient-warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+  .bg-gradient-danger { background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%); }
+  .certificate-card { transition: all 0.3s ease; border: 2px solid #e9ecef; border-radius: 12px; }
+  .certificate-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); border-color: #667eea; }
+  .number-badge { font-size: 1rem; font-weight: bold; padding: 6px 12px; border-radius: 6px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); }
+  .status-badge { padding: 6px 12px; border-radius: 20px; font-weight: 600; }
+  .action-btn { transition: all 0.2s ease; }
+  .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+  .text-truncate-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 </style>
 
 <!-- Header -->
 <div class="container-fluid px-4 py-4">
+  
+  <!-- ✅ Alert Messages -->
+  <% if (typeof error !== 'undefined' && error) { %>
+  <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i><%= error %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <% } %>
+  <% if (typeof success !== 'undefined' && success) { %>
+  <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+    <i class="fas fa-check-circle me-2"></i><%= success %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <% } %>
+
   <div class="card shadow-lg border-0 mb-4">
     <div class="card-header bg-gradient-primary text-white py-4">
-      <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
-          <h3 class="mb-1 fw-bold">
-            <i class="fas fa-info-circle me-2"></i>
-            รายละเอียดคำขอหมายเลขเกียรติบัตร
-          </h3>
-          <p class="mb-0 opacity-75">
-            <i class="fas fa-hashtag me-2"></i>
-            รหัสคำขอ: <strong>#<%= request.id %></strong>
-          </p>
+          <h3 class="mb-1 fw-bold"><i class="fas fa-info-circle me-2"></i>รายละเอียดคำขอหมายเลขเกียรติบัตร</h3>
+          <p class="mb-0 opacity-75"><i class="fas fa-hashtag me-2"></i>รหัสคำขอ: <strong>#<%= typeof request !== 'undefined' && request ? request.id : '-' %></strong></p>
         </div>
-        <a href="/admin/certificate-requests" class="btn btn-light btn-lg">
-          <i class="fas fa-arrow-left me-2"></i>
-          ย้อนกลับ
-        </a>
+        <a href="/admin/certificate-requests" class="btn btn-light btn-lg"><i class="fas fa-arrow-left me-2"></i>ย้อนกลับ</a>
       </div>
     </div>
   </div>
@@ -86,76 +50,83 @@
     <div class="col-md-8">
       <div class="card shadow-lg border-0 mb-4">
         <div class="card-header bg-gradient-info text-white py-3">
-          <h6 class="mb-0 fw-bold">
-            <i class="fas fa-file-alt me-2"></i>ข้อมูลคำขอ
-          </h6>
+          <h6 class="mb-0 fw-bold"><i class="fas fa-file-alt me-2"></i>ข้อมูลคำขอ</h6>
         </div>
         <div class="card-body">
+          <% 
+            const req = typeof request !== 'undefined' && request ? request : {};
+            const formatDate = (date) => {
+              if (!date) return '-';
+              try { return new Date(date).toLocaleDateString('th-TH'); } catch(e) { return '-'; }
+            };
+            const formatDateTime = (date) => {
+              if (!date) return '-';
+              try { return new Date(date).toLocaleDateString('th-TH') + ' ' + new Date(date).toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'}); } catch(e) { return '-'; }
+            };
+          %>
+          
           <div class="row mb-3">
             <div class="col-md-4">
               <p class="text-muted mb-1"><strong>ชื่อโครงการ/กิจกรรม:</strong></p>
-              <p class="fw-bold text-dark"><%= request.event_name %></p>
+              <p class="fw-bold text-dark text-truncate-2"><%= req.event_name || '-' %></p>
             </div>
             <div class="col-md-4">
               <p class="text-muted mb-1"><strong>วันที่ขอ:</strong></p>
-              <p class="fw-bold text-dark"><%= new Date(request.request_date).toLocaleDateString('th-TH') %></p>
+              <p class="fw-bold text-dark"><%= formatDate(req.request_date) %></p>
             </div>
             <div class="col-md-4">
               <p class="text-muted mb-1"><strong>วันที่จัดกิจกรรม:</strong></p>
-              <p class="fw-bold text-dark"><%= new Date(request.event_date).toLocaleDateString('th-TH') %></p>
+              <p class="fw-bold text-dark"><%= formatDate(req.event_date) %></p>
             </div>
           </div>
           
           <div class="row mb-3">
             <div class="col-md-6">
               <p class="text-muted mb-1"><strong>ชื่อคนขอ:</strong></p>
-              <p class="fw-bold text-dark"><%= request.requester_name %></p>
+              <p class="fw-bold text-dark"><%= req.requester_name || '-' %></p>
             </div>
             <div class="col-md-6">
               <p class="text-muted mb-1"><strong>ชื่อเจ้าของลายเซ็น:</strong></p>
-              <p class="fw-bold text-dark"><%= request.signature_owner %></p>
+              <p class="fw-bold text-dark"><%= req.signature_owner || '-' %></p>
             </div>
           </div>
           
           <div class="row mb-3">
             <div class="col-md-4">
               <p class="text-muted mb-1"><strong>จำนวนที่ขอ:</strong></p>
-              <p class="fw-bold text-dark"><%= request.certificate_count %> หมายเลข</p>
+              <p class="fw-bold text-dark"><%= typeof req.certificate_count !== 'undefined' ? req.certificate_count : 0 %> หมายเลข</p>
             </div>
             <div class="col-md-4">
               <p class="text-muted mb-1"><strong>สถานะ:</strong></p>
-              <% if (request.status === 'pending') { %>
-                <span class="badge bg-warning text-dark fs-6">
-                  <i class="fas fa-clock me-1"></i>
-                  รอตรวจสอบ
-                </span>
-              <% } else if (request.status === 'approved') { %>
-                <span class="badge bg-success fs-6">
-                  <i class="fas fa-check-circle me-1"></i>
-                  อนุมัติแล้ว
-                </span>
-              <% } else if (request.status === 'rejected') { %>
-                <span class="badge bg-danger fs-6">
-                  <i class="fas fa-times-circle me-1"></i>
-                  ไม่อนุมัติ
-                </span>
+              <% if (req.status === 'pending') { %>
+                <span class="badge bg-warning text-dark fs-6"><i class="fas fa-clock me-1"></i>รอตรวจสอบ</span>
+              <% } else if (req.status === 'approved') { %>
+                <span class="badge bg-success fs-6"><i class="fas fa-check-circle me-1"></i>อนุมัติแล้ว</span>
+              <% } else if (req.status === 'rejected') { %>
+                <span class="badge bg-danger fs-6"><i class="fas fa-times-circle me-1"></i>ไม่อนุมัติ</span>
+              <% } else { %>
+                <span class="badge bg-secondary fs-6">-</span>
               <% } %>
             </div>
             <div class="col-md-4">
               <p class="text-muted mb-1"><strong>วันที่สร้าง:</strong></p>
-              <p class="fw-bold text-dark">
-                <%= new Date(request.created_at).toLocaleDateString('th-TH') %>
-                <small class="text-muted"><%= new Date(request.created_at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) %></small>
-              </p>
+              <p class="fw-bold text-dark"><%= formatDateTime(req.created_at) %></p>
             </div>
           </div>
           
-          <% if (request.description) { %>
+          <% if (req.description && req.description.trim() !== '') { %>
             <div class="row">
               <div class="col-md-12">
                 <p class="text-muted mb-1"><strong>รายละเอียดเพิ่มเติม:</strong></p>
-                <p class="text-muted"><%= request.description %></p>
+                <p class="text-muted"><%= req.description %></p>
               </div>
+            </div>
+          <% } %>
+          
+          <% if (req.status === 'rejected' && req.rejection_reason) { %>
+            <div class="alert alert-danger mt-3 mb-0">
+              <strong><i class="fas fa-times-circle me-1"></i>เหตุผลที่ปฏิเสธ:</strong>
+              <p class="mb-0 mt-1"><%= req.rejection_reason %></p>
             </div>
           <% } %>
         </div>
@@ -165,61 +136,53 @@
     <div class="col-md-4">
       <div class="card shadow-lg border-0 mb-4">
         <div class="card-header bg-gradient-success text-white py-3">
-          <h6 class="mb-0 fw-bold">
-            <i class="fas fa-user me-2"></i>ข้อมูลผู้ขอ
-          </h6>
+          <h6 class="mb-0 fw-bold"><i class="fas fa-user me-2"></i>ข้อมูลผู้ขอ</h6>
         </div>
         <div class="card-body">
           <div class="text-center mb-3">
-            <% if (request.profile_image) { %>
-              <img src="<%= request.profile_image %>" alt="Profile" class="rounded-circle mb-3" width="100" height="100" style="object-fit: cover;">
+            <% if (req.profile_image && req.profile_image.trim() !== '') { %>
+              <img src="<%= req.profile_image %>" alt="Profile" class="rounded-circle mb-3" width="100" height="100" style="object-fit: cover;" onerror="this.src='https://via.placeholder.com/100?text=No+Image'">
             <% } else { %>
               <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
                 <i class="fas fa-user fa-3x text-muted"></i>
               </div>
             <% } %>
-            <h5 class="fw-bold"><%= request.full_name %></h5>
-            <p class="text-muted mb-1"><%= request.email %></p>
+            <h5 class="fw-bold"><%= req.full_name || '-' %></h5>
+            <p class="text-muted mb-1"><%= req.email || '-' %></p>
           </div>
           
           <div class="mb-3">
             <p class="text-muted mb-1"><strong>โรงเรียน:</strong></p>
-            <p class="fw-bold text-dark"><%= request.school_name %></p>
+            <p class="fw-bold text-dark"><%= req.school_name || '-' %></p>
           </div>
           
           <div class="mb-3">
-            <p class="text-muted mb-1"><strong>ตำแหน่ง:</strong></p>
-            <p class="fw-bold text-dark"><%= request.position_or_subject %></p>
+            <p class="text-muted mb-1"><strong>ตำแหน่ง/วิชา:</strong></p>
+            <p class="fw-bold text-dark"><%= req.position_or_subject || '-' %></p>
           </div>
           
           <div class="mb-3">
             <p class="text-muted mb-1"><strong>ประเภทผู้ใช้:</strong></p>
-            <span class="badge bg-primary">
-              <%= request.user_type === 'teacher' ? 'ครู' : 'บุคลากร' %>
-            </span>
+            <span class="badge bg-primary"><%= req.user_type === 'teacher' ? 'ครู' : req.user_type === 'staff' ? 'บุคลากร' : '-' %></span>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Action Buttons -->
-  <% if (request.status === 'pending') { %>
+  <!-- Action Buttons (เฉพาะสถานะ pending) -->
+  <% if (req.status === 'pending') { %>
     <div class="row mb-4">
       <div class="col-md-12">
         <div class="alert alert-warning border-0 shadow-sm">
-          <h6 class="alert-heading fw-bold">
-            <i class="fas fa-exclamation-triangle me-2"></i>คำขอรอการตรวจสอบ
-          </h6>
+          <h6 class="alert-heading fw-bold"><i class="fas fa-exclamation-triangle me-2"></i>คำขอรอการตรวจสอบ</h6>
           <hr class="my-2">
-          <div class="d-flex gap-2 justify-content-center">
-            <button onclick="approveRequest(<%= request.id %>)" class="btn btn-success btn-lg action-btn shadow-sm">
-              <i class="fas fa-check-circle me-2"></i>
-              <strong>อนุมัติคำขอ</strong>
+          <div class="d-flex gap-2 justify-content-center flex-wrap">
+            <button onclick="approveRequest(<%= req.id %>)" class="btn btn-success btn-lg action-btn shadow-sm">
+              <i class="fas fa-check-circle me-2"></i><strong>อนุมัติคำขอ</strong>
             </button>
-            <button onclick="rejectRequest(<%= request.id %>)" class="btn btn-danger btn-lg action-btn shadow-sm">
-              <i class="fas fa-times-circle me-2"></i>
-              <strong>ปฏิเสธคำขอ</strong>
+            <button onclick="rejectRequest(<%= req.id %>)" class="btn btn-danger btn-lg action-btn shadow-sm">
+              <i class="fas fa-times-circle me-2"></i><strong>ปฏิเสธคำขอ</strong>
             </button>
           </div>
         </div>
@@ -227,111 +190,74 @@
     </div>
   <% } %>
 
-  <!-- Certificates List -->
-  <% if (request.status === 'approved' && certificates.length > 0) { %>
+  <!-- Certificates List (เฉพาะสถานะ approved) -->
+  <% 
+    const certs = (typeof certificates !== 'undefined' && Array.isArray(certificates)) ? certificates : [];
+    const usedCount = certs.filter(c => c.used).length;
+  %>
+  
+  <% if (req.status === 'approved' && certs.length > 0) { %>
     <div class="card shadow-lg border-0 mb-4">
       <div class="card-header bg-gradient-primary text-white py-3">
-        <div class="d-flex justify-content-between align-items-center">
-          <h6 class="mb-0 fw-bold">
-            <i class="fas fa-certificate me-2"></i>หมายเลขเกียรติบัตรที่สร้าง (<%= certificates.length %> หมายเลข)
-          </h6>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <h6 class="mb-0 fw-bold"><i class="fas fa-certificate me-2"></i>หมายเลขเกียรติบัตรที่สร้าง (<%= certs.length %> หมายเลข)</h6>
           <div class="d-flex gap-2">
-            <button onclick="copyAllNumbers()" class="btn btn-success btn-sm">
-              <i class="fas fa-copy me-1"></i>
-              คัดลอกทั้งหมด
-            </button>
-            <a href="/certificates/<%= request.id %>" class="btn btn-info btn-sm">
-              <i class="fas fa-eye me-1"></i>
-              ดูแบบเต็ม
-            </a>
+            <button onclick="copyAllNumbers()" class="btn btn-success btn-sm"><i class="fas fa-copy me-1"></i>คัดลอกทั้งหมด</button>
+            <a href="/certificates/<%= req.id %>" class="btn btn-info btn-sm"><i class="fas fa-eye me-1"></i>ดูแบบเต็ม</a>
           </div>
         </div>
       </div>
       <div class="card-body">
         <div class="row">
-          <% for (var i = 0; i < certificates.length; i++) { 
-             var cert = certificates[i];
-          %>
+          <% certs.forEach((cert, idx) => { %>
             <div class="col-md-4 col-lg-3 mb-3">
               <div class="card certificate-card shadow-sm h-100">
                 <div class="card-body p-3 text-center">
-                  <div class="mb-2">
-                    <span class="text-muted small">
-                      #<%= cert.sequence_number %>
-                    </span>
-                  </div>
-                  
-                  <div class="number-badge bg-white text-dark w-100 text-center py-2 fs-5">
-                    <%= cert.certificate_number %>
-                  </div>
-                  
+                  <div class="mb-2"><span class="text-muted small">#<%= cert.sequence_number || idx+1 %></span></div>
+                  <div class="number-badge bg-white text-dark w-100 text-center py-2 fs-5"><%= cert.certificate_number || '-' %></div>
                   <div class="mt-2">
                     <% if (cert.used) { %>
-                      <span class="badge bg-success">
-                        <i class="fas fa-check-circle me-1"></i>
-                        ใช้แล้ว
-                      </span>
+                      <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>ใช้แล้ว</span>
                     <% } else { %>
-                      <span class="badge bg-warning text-dark">
-                        <i class="fas fa-clock me-1"></i>
-                        ยังไม่ได้ใช้
-                      </span>
+                      <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>ยังไม่ได้ใช้</span>
                     <% } %>
                   </div>
-                  
                   <% if (cert.used && cert.recipient_name) { %>
-                    <div class="mt-2 small text-muted">
-                      <i class="fas fa-user me-1"></i>
-                      <%= cert.recipient_name %>
-                    </div>
+                    <div class="mt-2 small text-muted text-truncate-2"><i class="fas fa-user me-1"></i><%= cert.recipient_name %></div>
                   <% } %>
                 </div>
               </div>
             </div>
-          <% } %>
+          <% }); %>
         </div>
       </div>
     </div>
-  <% } else if (request.status === 'approved' && certificates.length === 0) { %>
+  <% } else if (req.status === 'approved') { %>
     <div class="alert alert-info border-0 shadow-sm">
-      <i class="fas fa-info-circle me-2"></i>
-      ยังไม่มีการสร้างหมายเลขเกียรติบัตรสำหรับคำขอนี้
+      <i class="fas fa-info-circle me-2"></i>ยังไม่มีการสร้างหมายเลขเกียรติบัตรสำหรับคำขอนี้
     </div>
   <% } %>
 
   <!-- Statistics -->
-  <% if (certificates.length > 0) { %>
+  <% if (certs.length > 0) { %>
     <div class="row mb-4">
       <div class="col-md-12">
         <div class="card shadow-lg border-0">
           <div class="card-header bg-gradient-info text-white py-3">
-            <h6 class="mb-0 fw-bold">
-              <i class="fas fa-chart-pie me-2"></i>สถิติการใช้งาน
-            </h6>
+            <h6 class="mb-0 fw-bold"><i class="fas fa-chart-pie me-2"></i>สถิติการใช้งาน</h6>
           </div>
           <div class="card-body">
             <div class="row">
               <div class="col-md-4 text-center mb-3 mb-md-0">
-                <div class="display-6 fw-bold text-primary">
-                  <%= certificates.length %>
-                </div>
+                <div class="display-6 fw-bold text-primary"><%= certs.length %></div>
                 <small class="text-muted">จำนวนทั้งหมด</small>
               </div>
               <div class="col-md-4 text-center mb-3 mb-md-0">
-                <div class="display-6 fw-bold text-success">
-                  <% var usedCount = 0;
-                     for (var i = 0; i < certificates.length; i++) {
-                       if (certificates[i].used) usedCount++;
-                     }
-                  %>
-                  <%= usedCount %>
-                </div>
+                <div class="display-6 fw-bold text-success"><%= usedCount %></div>
                 <small class="text-muted">ใช้แล้ว</small>
               </div>
               <div class="col-md-4 text-center">
-                <div class="display-6 fw-bold text-warning">
-                  <%= certificates.length - usedCount %>
-                </div>
+                <div class="display-6 fw-bold text-warning"><%= certs.length - usedCount %></div>
                 <small class="text-muted">ยังไม่ได้ใช้</small>
               </div>
             </div>
@@ -342,71 +268,147 @@
   <% } %>
 </div>
 
-<%- include('../partials/footer') %>
+<%- include('../partials/footer.ejs') %>
 
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  // อนุมัติคำขอ
+  // ✅ ตรวจสอบว่า SweetAlert2 โหลดแล้ว
+  if (typeof Swal === 'undefined') {
+    console.error('❌ SweetAlert2 not loaded!');
+  }
+
+  // ✅ อนุมัติคำขอ
   function approveRequest(requestId) {
-    if (!confirm('คุณแน่ใจว่าต้องการอนุมัติคำขอนี้?')) {
+    if (typeof Swal === 'undefined') {
+      if (!confirm('คุณแน่ใจว่าต้องการอนุมัติคำขอนี้?')) return;
+      doApprove(requestId);
       return;
     }
     
-    fetch('/admin/approve-request/' + requestId, {
-      method: 'POST'
-    })
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(data) {
+    Swal.fire({
+      title: 'ยืนยันการอนุมัติ?',
+      html: '<p class="text-start small">ระบบจะสร้างหมายเลขเกียรติบัตรอัตโนมัติ<br><code>12345/2569</code></p>',
+      icon: 'question', showCancelButton: true,
+      confirmButtonText: '<i class="fas fa-check me-1"></i>อนุมัติ',
+      cancelButtonText: '<i class="fas fa-times me-1"></i>ยกเลิก',
+      confirmButtonColor: '#166534'
+    }).then(r => {
+      if (r.isConfirmed) doApprove(requestId);
+    });
+  }
+  
+  function doApprove(requestId) {
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({title: 'กำลังประมวลผล...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+    }
+    
+    fetch('/admin/approve-request/' + requestId, { method: 'POST', headers: {'Content-Type': 'application/json'} })
+    .then(res => res.json())
+    .then(data => {
       if (data.success) {
-        alert('✓ ' + data.message);
-        location.reload();
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({icon: 'success', title: 'อนุมัติเรียบร้อย!', text: data.message, timer: 2500, showConfirmButton: false})
+          .then(() => location.reload());
+        } else {
+          alert('✓ ' + data.message);
+          location.reload();
+        }
       } else {
-        alert('✗ ' + data.message);
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({icon: 'error', title: 'เกิดข้อผิดพลาด', text: data.message});
+        } else {
+          alert('✗ ' + data.message);
+        }
       }
     })
-    .catch(function(error) {
-      alert('เกิดข้อผิดพลาด: ' + error.message);
+    .catch(err => {
+      console.error('Approve error:', err);
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({icon: 'error', title: 'Error', text: err.message});
+      } else {
+        alert('เกิดข้อผิดพลาด: ' + err.message);
+      }
     });
   }
 
-  // ปฏิเสธคำขอ
+  // ✅ ปฏิเสธคำขอ
   function rejectRequest(requestId) {
-    if (!confirm('คุณแน่ใจว่าต้องการปฏิเสธคำขอนี้?')) {
+    if (typeof Swal === 'undefined') {
+      if (!confirm('คุณแน่ใจว่าต้องการปฏิเสธคำขอนี้?')) return;
+      doReject(requestId, 'ไม่ระบุเหตุผล');
       return;
+    }
+    
+    Swal.fire({
+      title: 'ยืนยันการปฏิเสธ?',
+      input: 'textarea', inputPlaceholder: 'เหตุผล (ถ้ามี)...', inputAttributes: {rows: 3},
+      icon: 'warning', showCancelButton: true,
+      confirmButtonText: '<i class="fas fa-times me-1"></i>ปฏิเสธ',
+      cancelButtonText: '<i class="fas fa-ban me-1"></i>ยกเลิก',
+      confirmButtonColor: '#b91c1c',
+      preConfirm: (reason) => { if (!reason) Swal.showValidationMessage('กรุณาระบุเหตุผล'); return reason; }
+    }).then(r => {
+      if (r.isConfirmed && r.value) doReject(requestId, r.value);
+    });
+  }
+  
+  function doReject(requestId, reason) {
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({title: 'กำลังประมวลผล...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
     }
     
     fetch('/admin/reject-request/' + requestId, {
-      method: 'POST'
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ reason: reason || 'ไม่ระบุเหตุผล' })
     })
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(data) {
+    .then(res => res.json())
+    .then(data => {
       if (data.success) {
-        alert('✓ ' + data.message);
-        window.location.href = '/admin/certificate-requests';
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({icon: 'success', title: 'ปฏิเสธเรียบร้อย', text: 'คำขอถูกปฏิเสธแล้ว', timer: 2000, showConfirmButton: false})
+          .then(() => location.href = '/admin/certificate-requests');
+        } else {
+          alert('✓ ' + data.message);
+          window.location.href = '/admin/certificate-requests';
+        }
       } else {
-        alert('✗ ' + data.message);
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({icon: 'error', title: 'เกิดข้อผิดพลาด', text: data.message});
+        } else {
+          alert('✗ ' + data.message);
+        }
       }
     })
-    .catch(function(error) {
-      alert('เกิดข้อผิดพลาด: ' + error.message);
+    .catch(err => {
+      console.error('Reject error:', err);
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({icon: 'error', title: 'Error', text: err.message});
+      } else {
+        alert('เกิดข้อผิดพลาด: ' + err.message);
+      }
     });
   }
 
-  // คัดลอกหมายเลขทั้งหมด
+  // ✅ คัดลอกหมายเลขทั้งหมด
   function copyAllNumbers() {
-    var allNumbers = '';
-    var certs = <%= JSON.stringify(certificates) %>;
-    
-    for (var i = 0; i < certs.length; i++) {
-      allNumbers += certs[i].certificate_number + '\n';
+    const certs = <%= JSON.stringify(certs).replace(/</g, '\\u003c') %>;
+    if (!certs || certs.length === 0) {
+      alert('ไม่มีหมายเลขให้คัดลอก');
+      return;
     }
     
-    navigator.clipboard.writeText(allNumbers).then(function() {
-      alert('คัดลอกหมายเลขทั้งหมดเรียบร้อยแล้ว!');
-    }).catch(function(err) {
+    const allNumbers = certs.map(c => c.certificate_number).filter(n => n).join('\n');
+    
+    navigator.clipboard.writeText(allNumbers).then(() => {
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({icon: 'success', title: 'คัดลอกเรียบร้อย!', text: 'คัดลอก ' + certs.length + ' หมายเลขไปยังคลิปบอร์ด', timer: 2000, showConfirmButton: false});
+      } else {
+        alert('คัดลอกหมายเลขทั้งหมดเรียบร้อยแล้ว!');
+      }
+    }).catch(err => {
+      console.error('Copy error:', err);
       alert('เกิดข้อผิดพลาดในการคัดลอก');
     });
   }
